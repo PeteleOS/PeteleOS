@@ -1,0 +1,18 @@
+</$objtype/mkfile
+
+TARG=9con\
+	xms\
+	xmr\
+	hayes\
+
+BIN=/$objtype/bin
+
+UPDATE=\
+	mkfile\
+	$HFILES\
+	${TARG:%=%.c}\
+	/sys/man/1/9con\
+
+</sys/src/cmd/mkmany
+
+

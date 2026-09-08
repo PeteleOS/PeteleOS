@@ -1,0 +1,4 @@
+#!/bin/rc
+bind -a '#I1' /net.alt
+ndb/cs -x .alt
+9aux/listen -t /rc/bin/service /net.alt/tcp
