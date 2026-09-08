@@ -1,0 +1,41 @@
+.TH SCREENLOCK 8
+.SH NAME
+screenlock \- disable access to a terminal
+.SH SYNOPSIS
+.B screenlock
+.SH DESCRIPTION
+.I Screenlock
+grabs the screen, keyboard, and mouse devices
+to disable access to the Plan 9 terminal on which it is run.
+The screen can be unlocked by typing the invoking user's Plan 9 password
+and a newline.
+.SH FILES
+.TF /lib/bunny.bit
+.TP
+.B /lib/bunny.bit
+the image displayed while the terminal is locked
+.SH SOURCE
+.B /sys/src/cmd/screenlock.c
+.SH SEE ALSO
+.IR auth (2),
+.IR factotum (4)
+.SH DIAGNOSTICS
+Per
+.BR BUGS ,
+a missing
+.L role=server
+attribute makes
+.I screenlock
+misleadingly report a password mismatch.
+.SH BUGS
+Use of this program on communal terminals is anti-social.
+.PP
+.I Screenlock
+uses
+.IR auth_userpasswd ,
+which requires a
+.L role=server
+attribute in a
+.I factotum
+entry for the invoking user.
+This requirement may be a mistake.
