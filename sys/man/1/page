@@ -1,8 +1,8 @@
 .TH PAGE 1
 .SH NAME
-page \- view 
-FAX, 
-image, graphic, PostScript, PDF, and
+page \- view
+FAX,
+image, graphic, and
 typesetter output
 files
 .SH SYNOPSIS
@@ -20,13 +20,12 @@ files
 .SH DESCRIPTION
 .I Page
 is a general purpose document viewer.
+NOTE: PostScript and PDF support is disabled in the commercial build
+(AFPL Ghostscript removed).
 It can be used to display the individual pages
 of a
-PostScript,
-PDF,
-or 
 .IR tex (1)
-or 
+or
 .IR troff (1)
 device independent output
 file.
@@ -207,22 +206,12 @@ The up and down arrow pan up and down one half screen height,
 changing pages when panning off the top or bottom of the page.
 .PP
 .I Page
-calls
-.IR gs (1)
-to draw each page of PostScript
-and
-PDF
-.IR files .
-It also calls a variety of conversion programs, such as those described in
+calls conversion programs, such as those described in
 .IR jpg (1),
 to convert the various raster graphics formats
 into Inferno bitmap files.
 Pages are converted ``on the fly,'' as needed.
 .SH EXAMPLES
-.TP
-.L
-page /sys/src/cmd/gs/examples/tiger.eps
-Display a color PostScript file.
 .TP
 .L
 page /usr/inferno/icons/*.bit
@@ -232,7 +221,6 @@ Browse the Inferno bitmap library.
 man -t page | page -w
 Preview this manual in a new window.
 .SH "SEE ALSO
-.IR gs (1),
 .IR jpg (1),
 .IR tex (1),
 .IR troff (1)

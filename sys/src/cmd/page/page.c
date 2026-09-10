@@ -182,14 +182,14 @@ main(int argc, char **argv)
 	buf[Ninput] = '\0';
 	if(imagemode)
 		doc = initgfx(nil, 0, nil, nil, 0);
-	else if(strncmp((char*)buf, "%PDF-", 5) == 0)
-		doc = initpdf(b, argc, argv, buf, Ninput);
-	else if(strncmp((char*)buf, "\x04%!", 2) == 0)
-		doc = initps(b, argc, argv, buf, Ninput);
-	else if(buf[0] == '\x1B' && strstr((char*)buf, "@PJL"))
-		doc = initps(b, argc, argv, buf, Ninput);
-	else if(strncmp((char*)buf, "%!", 2) == 0)
-		doc = initps(b, argc, argv, buf, Ninput);
+	else if(strncmp((char*)buf, "%PDF-", 5) == 0
+	|| strncmp((char*)buf, "\x04%!", 2) == 0
+	|| (buf[0] == '\x1B' && strstr((char*)buf, "@PJL"))
+	|| strncmp((char*)buf, "%!", 2) == 0){
+		/* AFPL gs removed in commercial build: no PS/PDF support. */
+		fprint(2, "page: PostScript/PDF unsupported (AFPL gs removed)\n");
+		wexits("nogs");
+	}
 	else if(strcmp((char*)buf, "\xF7\x02\x01\x83\x92\xC0\x1C;") == 0)
 		doc = initdvi(b, argc, argv, buf, Ninput);
 	else if(strncmp((char*)buf, "\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1", 8) == 0)

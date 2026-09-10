@@ -133,95 +133,14 @@ spawnmonitor(int fd)
 	_exits(0);
 }
 
-int 
+int
 spawngs(GSInfo *g, char *safer)
 {
-	char *args[16];
-	char tb[32], gb[32];
-	int i, nargs;
-	int devnull;
-	int stdinout[2];
-	int dataout[2];
-	int errout[2];
-
-	/*
-	 * spawn gs
-	 *
- 	 * gs's standard input is fed from stdinout.
-	 * gs output written to fd-2 (i.e. output we generate intentionally) is fed to stdinout.
-	 * gs output written to fd 1 (i.e. ouptut gs generates on error) is fed to errout.
-	 * gs data output is written to fd 3, which is dataout.
-	 */
-	if(pipe(stdinout) < 0 || pipe(dataout)<0 || pipe(errout)<0)
-		return -1;
-
-	nargs = 0;
-	args[nargs++] = "gs";
-	args[nargs++] = "-dNOPAUSE";
-	args[nargs++] = safer;
-	args[nargs++] = "-sDEVICE=plan9";
-	args[nargs++] = "-sOutputFile=/fd/3";
-	args[nargs++] = "-dQUIET";
-	args[nargs++] = "-r100";
-	sprint(tb, "-dTextAlphaBits=%d", textbits);
-	sprint(gb, "-dGraphicsAlphaBits=%d", gfxbits);
-	if(textbits)
-		args[nargs++] = tb;
-	if(gfxbits)
-		args[nargs++] = gb;
-	args[nargs++] = "-";
-	args[nargs] = nil;
-
-	gspid = fork();
-	if(gspid == 0) {
-		close(stdinout[1]);
-		close(dataout[1]);
-		close(errout[1]);
-
-		/*
-		 * Horrible problem: we want to dup fd's 0-4 below,
-		 * but some of the source fd's might have those small numbers.
-		 * So we need to reallocate those.  In order to not step on
-		 * anything else, we'll dup the fd's to higher ones using
-		 * dup(x, -1), but we need to use up the lower ones first.
-		 */
-		while((devnull = open("/dev/null", ORDWR)) < 5)
-			;
-
-		stdinout[0] = dup(stdinout[0], -1);
-		errout[0] = dup(errout[0], -1);
-		dataout[0] = dup(dataout[0], -1);
-
-		dup(stdinout[0], 0);
-		dup(errout[0], 1);
-		dup(devnull, 2);	/* never anything useful */
-		dup(dataout[0], 3);
-		dup(stdinout[0], 4);
-		for(i=5; i<20; i++)
-			close(i);
-		exec("/bin/gs", args);
-		wexits("exec");
-	}
-	close(stdinout[0]);
-	close(errout[0]);
-	close(dataout[0]);
-	atexit(killgs);
-
-	if(teegs)
-		stdinout[1] = spawnreader(stdinout[1]);
-
-	gsfd = g->gsfd = stdinout[1];
-	g->gsdfd = dataout[1];
-	g->gspid = gspid;
-
-	spawnmonitor(errout[1]);
-	Binit(&g->gsrd, g->gsfd, OREAD);
-
-	gscmd(g, "/PAGEOUT (/fd/4) (w) file def\n");
-	gscmd(g, "/PAGE== { PAGEOUT exch write==only PAGEOUT (\\n) writestring PAGEOUT flushfile } def\n");
-	waitgs(g);
-
-	return 0;
+	/* AFPL Ghostscript removed in commercial build: always fail. */
+	USED(g);
+	USED(safer);
+	werrstr("ghostscript (AFPL) removed in commercial build");
+	return -1;
 }
 
 int

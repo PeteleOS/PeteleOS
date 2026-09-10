@@ -47,5 +47,6 @@ if(~ $fout -)
 # pages.  We have to include the options twice because -I only takes
 # effect if it appears before other options.
 
-exec gs $opt -dSAFER -dNOPAUSE -dBATCH -q -s'DEVICE='$outdev $opt $lang \
-	-s'OutputFile=-' -c save pop -f $fin >$fout
+# AFPL Ghostscript removed in commercial build: no PDF->PS conversion.
+echo 'pdf2ps: gs (AFPL) removed in commercial build' >[1=2]
+exit nogs

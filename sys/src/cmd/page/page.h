@@ -47,6 +47,7 @@ Image *rot270(Image*);
 Image *resample(Image*, Image*);
 
 /* ghostscript interface shared by ps, pdf */
+/* AFPL gs removed in commercial build: spawngs always fails (see gs.c) */
 typedef struct GSInfo	GSInfo;
 struct GSInfo {
 	int gsfd;
