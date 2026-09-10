@@ -1,7 +1,7 @@
 .HTML "Fossil, an Archival File Server
 ... .FP times
 ... .fp 1 R R.nomath
-... .fp 5 CW LucidaSansCW83
+... .fp 5 CW CW
 .TL
 Fossil, an Archival File Server
 .AU

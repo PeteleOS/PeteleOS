@@ -25,7 +25,7 @@
 .nr p \\np+1
 .nr s 0 1
 ..
-.fp 4 BI LucidaSansI
+.fp 4 BI I
 .bd 4 3
 .de sc
 .LP

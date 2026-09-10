@@ -1,5 +1,5 @@
 .HTML "Changes to the Programming Environment in the Fourth Release of Plan 9
-.FP lucidasans
+.\" .FP lucidasans removed in commercial build (B&H fonts deleted)
 .TL
 Changes to the Programming Environment
 .br

@@ -10,7 +10,8 @@ switch($#*){
 		infile = $*
 }
 
-FONTS='.FP lucidasans'
+# Lucida (B&H) removed in commercial build; use native troff fonts.
+FONTS=''
 
 MACS ='.de BT
 .nr PX \\n(.s

@@ -162,7 +162,8 @@ threadmain(int argc, char *argv[])
 	if(fontname == nil)
 		fontname = getenv("font");
 	if(fontname == nil)
-		fontname = "/lib/font/bit/lucm/unicode.9.font";
+	/* lucm (B&H) removed in commercial build; X11 fixed substitute */
+		fontname = "/lib/font/bit/fixed/unicode.9x15.font";
 	s = getenv("tabstop");
 	if(s != nil)
 		maxtab = strtol(s, nil, 0);

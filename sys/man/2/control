@@ -1054,8 +1054,8 @@ at position 0 (NUL), since that position is used to render all
 characters not otherwise defined in the font (see
 .IR draw (2)).
 The file
-.B /lib/font/bit/lucm/passwd.9.font
-defines such a font.
+.B /lib/font/bit/fixed/unicode.9x15.font
+may be used where such a font is needed.
 .PP
 The control messages the entry control accepts are:
 .TF "\fLborder b"
@@ -1142,9 +1142,9 @@ If only one font is named, it is used for all keys.
 If two are named, the second is used for key caps with special names such
 as Shift and Enter.
 (Good choices on the Bitsy are
-.B /lib/font/bit/lucidasans/boldlatin1.6.font
+.B /lib/font/bit/misc/latin1.8x13.font
 for the first and
-.B /lib/font/bit/lucidasans/unicode.6.font
+.B /lib/font/bit/fixed/unicode.9x15.font
 for the second argument.)
 If neither is specified, both will be set to the default global font.
 .TP

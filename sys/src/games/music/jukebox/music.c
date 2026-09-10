@@ -580,12 +580,13 @@ makewindow(int dx, int dy, int wflag){
 		sysfatal("initdraw: %r");
 
 	initcontrols();
+	/* lucidasans (B&H) removed in commercial build; X11 fixed substitutes */
 	if(dx <= 320)
-		colorinit("/lib/font/bit/lucidasans/unicode.6.font",
-			"/lib/font/bit/lucidasans/boldunicode.8.font");
+		colorinit("/lib/font/bit/fixed/unicode.9x15.font",
+			"/lib/font/bit/fixed/unicode.9x15.font");
 	else
-		colorinit("/lib/font/bit/lucidasans/unicode.8.font",
-			"/lib/font/bit/lucidasans/boldunicode.10.font");
+		colorinit("/lib/font/bit/fixed/unicode.9x15.font",
+			"/lib/font/bit/fixed/unicode.9x15.font");
 	makecontrols();
 	resizeready = 1;
 

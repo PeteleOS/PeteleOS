@@ -67,14 +67,12 @@ struct HTMLfont{
 };
 
 /* R must be first; it's the default representation for fonts we don't recognize */
+/* Lucida troff fonts (B&H) removed in commercial build */
 HTMLfont htmlfonts[] =
 {
 	"R",		nil,	0,
-	"LucidaSans",	nil,	0,
 	"I",		"i",	Italic,
-	"LucidaSansI",	"i",	Italic,
 	"CW",		"tt",	CW,
-	"LucidaCW",	"tt",	CW,
 	nil,	nil,
 };
 

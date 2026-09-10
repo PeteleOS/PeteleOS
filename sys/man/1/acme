@@ -71,8 +71,8 @@ The
 .RB ( -F )
 option sets the main font, usually variable-pitch (alternate, usually fixed-pitch);
 the default is
-.B /lib/font/bit/lucidasans/euro.8.font
-.RB ( \&.../lucm/unicode.9.font ).
+.B /lib/font/bit/fixed/unicode.9x15.font
+.RB ( \&.../fixed/unicode.9x15.font ).
 Tab intervals are set to the width of 4 (or the value of
 .BR $tabstop )
 numeral zeros in the appropriate font.

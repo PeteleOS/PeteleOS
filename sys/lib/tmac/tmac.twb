@@ -84,13 +84,13 @@
 .nf
 .ps 30p
 .vs 30p
-.fp 1 R Lucida
-.fp 2 I LucidaI
-.fp 3 B LucidaB
-.fp 4 BI LucidaBI
-.fp 5 S LucidaS
-.fp 6 SB LucidaSB
-.fp 7 SI LucidaSI
-.fp 8 SK LucidaSBI
-.fp 9 CW LucidaCW
+.fp 1 R R
+.fp 2 I I
+.fp 3 B B
+.fp 4 BI BI
+.fp 5 S S
+.fp 6 SB B
+.fp 7 SI I
+.fp 8 SK BI
+.fp 9 CW CW
 .ft B

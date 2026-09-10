@@ -3,7 +3,8 @@ bind -a $home/bin/$cputype /bin
 bind -c tmp /tmp
 if(! syscall create /tmp/xxx 1 0666 >[2]/dev/null)
 	ramfs	# in case we're running off a cd
-font = /lib/font/bit/pelm/euro.9.font
+# pelm (B&H) removed in commercial build; X11 fixed substitute
+font = /lib/font/bit/fixed/unicode.9x15.font
 upas/fs
 fn cd { builtin cd $* && awd }  # for acme
 switch($service){
@@ -27,7 +28,8 @@ case cpu
 	fn cpu%{ $* }
 	news
 	if (! test -e /mnt/term/mnt/wsys) {	# cpu call from drawterm
-		font=/lib/font/bit/pelm/latin1.8.font
+		# pelm (B&H) removed; X11 misc substitute
+		font=/lib/font/bit/misc/latin1.8x13.font
 		exec rio
 	}
 case con

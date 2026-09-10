@@ -47,7 +47,8 @@ double	mapscale;
 double	maps;
 int (*projection)(struct place*, double*, double*);
 
-char *fontname = "/lib/font/bit/lucida/unicode.6.font";
+/* lucida (B&H) removed in commercial build; X11 fixed substitute */
+char *fontname = "/lib/font/bit/fixed/unicode.9x15.font";
 
 /* types Coord and Loc correspond to types in map(3) thus:
    Coord == struct coord;

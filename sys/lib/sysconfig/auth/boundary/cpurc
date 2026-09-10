@@ -96,7 +96,8 @@ if(test -f /dev/mousectl){
 			echo 'res 3' > /dev/mousectl
 			9aux/vga -l $vgasize
 			echo -n ctlpoff > /dev/consctl
-			font=/lib/font/bit/pelm/euro.9.font
+			# pelm (B&H) removed; X11 fixed substitute
+			font=/lib/font/bit/fixed/unicode.9x15.font
 			#rio -s
 		}
 	}

@@ -966,12 +966,12 @@ corresponding to the Latin-1 character set;
 another might hold the standard phonetic character set, Unicode characters
 with value 0250 to 02E9.
 These files are collected in directories corresponding to typefaces:
-.CW /lib/font/bit/pelm
-contains the Pellucida Monospace character set, with subfonts holding
+.CW /lib/font/bit/fixed
+contains a Unicode character set, with subfonts holding
 the Latin-1, Greek, Cyrillic and other components of the typeface.
 A suffix on subfont files encodes (in a subfont-specific
 way) the size of the images:
-.CW /lib/font/bit/pelm/latin1.9
+.CW /lib/font/bit/fixed/9x15.0000
 contains the Latin-1 Pellucida Monospace characters with lower
 case letters 9 pixels high;
 .CW /lib/font/bit/jis/jis5400.16
@@ -987,7 +987,7 @@ The font file is presented as an argument to the window system
 to determine how plain text is displayed in text windows and
 applications.
 Here is the beginning of the font file
-.CW /lib/font/bit/pelm/jis.9.font ,
+.CW /lib/font/bit/fixed/unicode.9x15.font ,
 which describes the layout of a font covering that portion of
 the Unicode Standard for which we have characters of typical
 display size, using Japanese characters

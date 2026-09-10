@@ -1,7 +1,7 @@
 mnihongo is a fairly clumsy troff post-processor that 
 catches unicode characters that might be japanese,
 looks them up in a font file (currently
-/lib/font/bit/pelm/unicode.9x24.font) to get the
+/lib/font/bit/fixed/unicode.9x15.font) to get the
 bits, converts that to postscript, and dumps that
 in the output.
 

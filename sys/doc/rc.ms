@@ -118,7 +118,7 @@ Variables may be given values by typing, for example:
 .P1
 path=(. /bin)
 user=td
-font=/lib/font/bit/pelm/ascii.9.font
+font=/lib/font/bit/fixed/unicode.9x15.font
 .P2
 The parentheses indicate that the value assigned to
 .CW path

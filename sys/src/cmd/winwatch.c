@@ -247,7 +247,8 @@ main(int argc, char **argv)
 	int Etimer;
 	Event e;
 
-	fontname = "/lib/font/bit/lucidasans/unicode.8.font";
+	/* lucidasans (B&H) removed in commercial build; X11 fixed substitute */
+	fontname = "/lib/font/bit/fixed/unicode.9x15.font";
 	ARGBEGIN{
 	case 'f':
 		fontname = EARGF(usage());

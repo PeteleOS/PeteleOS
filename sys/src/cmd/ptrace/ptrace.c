@@ -924,7 +924,8 @@ threadmain(int argc, char **argv)
 		sysfatal("no memory");
 	if(newwin)
 		mkwin(Wx, Wy);
-	if(initdraw(nil, "/lib/font/bit/pelm/unicode.8.font", argv0) < 0)
+	/* pelm (B&H) removed in commercial build; X11 fixed substitute */
+	if(initdraw(nil, "/lib/font/bit/fixed/unicode.9x15.font", argv0) < 0)
 		if(initdraw(nil, nil, argv0) < 0)
 			sysfatal("initdraw: %r");
 	colors();

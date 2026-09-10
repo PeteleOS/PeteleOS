@@ -25,9 +25,10 @@ Channel	*cexit;
 Channel	*cplumb;
 Mousectl *mousectl;
 
+/* lucidasans (B&H) removed in commercial build; X11 fixed substitutes */
 char *fontnames[2] = {
-	"/lib/font/bit/lucidasans/unicode.8.font",
-	"/lib/font/bit/lucidasans/passwd.6.font",
+	"/lib/font/bit/fixed/unicode.9x15.font",
+	"/lib/font/bit/fixed/unicode.9x15.font",
 };
 
 int	snarffd = -1;

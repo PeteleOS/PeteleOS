@@ -185,10 +185,11 @@ mkcol(int i, int c0, int c1, int c2)
 static void
 colinit(void)
 {
-	mediumfont = openfont(display, "/lib/font/bit/lucidasans/unicode.10.font");
+	/* lucidasans (B&H) removed in commercial build; X11 fixed substitutes */
+	mediumfont = openfont(display, "/lib/font/bit/fixed/unicode.9x15.font");
 	if(mediumfont == nil)
 		mediumfont = font;
-	tinyfont = openfont(display, "/lib/font/bit/lucidasans/unicode.7.font");
+	tinyfont = openfont(display, "/lib/font/bit/fixed/unicode.9x15.font");
 	if(tinyfont == nil)
 		tinyfont = font;
 	topmargin = mediumfont->height+2;

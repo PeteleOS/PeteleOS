@@ -54,7 +54,9 @@ x ...\n	device control functions:
 
 int	hpos;	/* horizontal position where we are supposed to be next (left = 0) */
 int	vpos;	/* current vertical position (down positive) */
-char	*fontfile	= "/lib/font/bit/pelm/unicode.9x24.font";
+/* pelm (B&H) removed in commercial build; X11 fixed has CJK via shinonome.
+ * Smaller than 9x24 but renders; pass another font via -f? No: hardcoded. */
+char	*fontfile	= "/lib/font/bit/fixed/unicode.9x15.font";
 
 char	*pschar(char *, char *hex, int *wid, int *ht);
 int	kanji(char *);
