@@ -119,13 +119,10 @@ The
 flag can be used to specify a mount point other than
 .BR /mnt .
 .PP
-The files to be played are recognized by one of four extensions, and an appropriate
+The files to be played are recognized by one of three extensions, and an appropriate
 player is then selected to play them.  Files without a recognized extension are played by the
 .I pac
-player:
-.TP
-\&.mp3
-/bin/games/mp3dec
+player (note: MP3 support removed in commercial build):
 .TP
 \&.pac
 /bin/games/pac4dec

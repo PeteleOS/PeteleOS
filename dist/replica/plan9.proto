@@ -105,8 +105,6 @@ sys	- sys sys
 		*	- sys sys
 		acid	- sys sys
 			+	- sys sys
-		antiword	- sys sys
-			+	- sys sys
 		astar	- sys sys
 			+	- sys sys
 		backup	- sys sys
@@ -116,8 +114,6 @@ sys	- sys sys
 		fax	- sys sys
 			+	- sys sys
 		firmware	- sys sys
-			+	- sys sys
-		ghostscript	- sys sys
 			+	- sys sys
 		git		- sys sys
 			+	- sys sys
@@ -150,8 +146,6 @@ sys	- sys sys
 		plumb	- sys sys
 			+	- sys sys
 		postscript	- sys sys
-			+	- sys sys
-		scribble	- sys sys
 			+	- sys sys
 		ssh	- sys sys
 			+	- sys sys

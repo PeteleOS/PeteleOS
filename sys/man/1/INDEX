@@ -190,8 +190,6 @@ mkdir mkdir
 ml mlmgr
 mlmgr mlmgr
 mlowner mlmgr
-mp3dec mp3dec
-mp3enc mp3enc
 html2ms ms2html
 ms2html ms2html
 mtime mtime

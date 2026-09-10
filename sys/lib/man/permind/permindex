@@ -2,7 +2,6 @@
 .xx "assemblers" "" "0a, 1a, 2a, 5a, 6a, 7a, 8a, ka, qa, va \-" "" "2a(1)" 4
 .xx "compilers" "" "0c, 1c, 2c, 5c, 6c, 7c, 8c, kc, qc, vc \- C" "" "2c(1)" 5
 .xx "" "" "0l, 1l, 2l, 5l, 6l, 7l, 8l, kl, ql, vl \- loaders" "" "2l(1)" 8
-.xx "" "mp3dec \- decode audio MPEG files (layers" "1, 2 and 3)" "" "mp3dec(1)" 138
 .xx "" "vt \- emulate a" "100 or VT-220 terminal" "" "vt(1)" 260
 .xx "" "172.31.204.64/27," "10.12.0.0/24 \- Antwerp Plan 9 Networks" "" 
 .xx "" "apm \- Advanced Power Management" "1.2 BIOS interface" "" "apm(3)" 583
@@ -11,14 +10,12 @@
 .xx "" "0a," "1a, 2a, 5a, 6a, 7a, 8a, ka, qa, va \- assemblers" "" "2a(1)" 4
 .xx "" "0c," "1c, 2c, 5c, 6c, 7c, 8c, kc, qc, vc \- C compilers" "" "2c(1)" 5
 .xx "" "0l," "1l, 2l, 5l, 6l, 7l, 8l, kl, ql, vl \- loaders" "" "2l(1)" 8
-.xx "" "mp3dec \- decode audio MPEG files (layers 1," "2 and 3)" "" "mp3dec(1)" 138
 .xx "" "pushssl \- attach SSL version" "2 encryption to a communication channel" "" "pushssl(2)" 493
 .xx "" "vt \- emulate a VT-100 or" "220 terminal" "" "vt(1)" 260
 .xx "" "" "27, 10.12.0.0/24 \- Antwerp Plan 9 Networks" "" 
 .xx "" "0a, 1a," "2a, 5a, 6a, 7a, 8a, ka, qa, va \- assemblers" "" "2a(1)" 4
 .xx "" "0c, 1c," "2c, 5c, 6c, 7c, 8c, kc, qc, vc \- C compilers" "" "2c(1)" 5
 .xx "" "0l, 1l," "2l, 5l, 6l, 7l, 8l, kl, ql, vl \- loaders" "" "2l(1)" 8
-.xx "" "\- decode audio MPEG files (layers 1, 2 and" "3)" "mp3dec" "mp3dec(1)" 138
 .xx "zipfs \- mount archival file systems" "" "32vfs, cpiofs, tapfs, tarfs, tpfs, v6fs, v10fs," "" "tapefs(4)" 715
 .xx "" "fff2p3, pdiv4, add4, sub4 \- operations on" "3-d points and planes" "/pn2f3, ppp2f3," "arith3(2)" 294
 .xx "" "qball \-" "3-d rotation controller" "" "qball(2)" 497
@@ -218,9 +215,7 @@
 .xx "" "" "audio \- digital audio jukebox" "" "audio(7)" 807
 .xx "controller" "" "audio \- SoundBlaster or ESS1688 audio" "" "audio(3)" 586
 .xx "serial, usbeject, usbfat_ \- Universal Serial Bus/" "" "audio, ccid, disk, ether, kb, print, probe," "" "usb(4)" 722
-.xx "" "mp3enc \- create mp3" "audio files" "" "mp3enc(1)" 139
 .xx "" "audio \- digital" "audio jukebox" "" "audio(7)" 807
-.xx "" "mp3dec \- decode" "audio MPEG files (layers 1, 2 and 3)" "" "mp3dec(1)" 138
 .xx "" "attach," "auth \- messages to establish a connection" "" "attach(5)" 739
 .xx "" "/login, noworld, auth_proxy, fauth_proxy," "auth_allocrpc, auth_freerpc, auth_rpc,/" "" "auth(2)" 299
 .xx "" "/amount_getkey, auth_freeAI, auth_chuid," "auth_challenge, auth_response,/" "" "auth(2)" 299
@@ -411,7 +406,6 @@
 .xx "" "totitlerune, toupperrune \- Unicode" "character classes and cases" "/tolowerrune," "isalpharune(2)" 440
 .xx "" "_toupper, _tolower, toupper, tolower \- ASCII" "character classification" "/isascii, toascii," "ctype(2)" 339
 .xx "" "freq \- print histogram of" "character frequencies" "" "freq(1)" 91
-.xx "" "scribblealloc, recognize \-" "character recognition" "" "scribble(2)" 517
 .xx "" "UTF, Unicode, ASCII, rune \-" "character set and format" "" "utf(6)" 797
 .xx "" "tcs \- translate" "character sets" "" "tcs(1)" 233
 .xx "" "doquote, needsrcquote \- quoted" "character strings" "/quotefmtinstall," "quote(2)" 501
@@ -620,7 +614,6 @@
 .xx "" "snap, snapfs \-" "create and mount process snapshots" "" "snap(4)" 712
 .xx "writing, create file" "open," "create, close \- open a file for reading or" "" "open(2)" 477
 .xx "" "vac, unvac \-" "create, extract a vac archive on Venti" "" "vac(1)" 253
-.xx "" "mp3enc \-" "create mp3 audio files" "" "mp3enc(1)" 139
 .xx "" "/createboxbox, createbutton, createcolumn," "createentry, createkeyboard, createlabel,/" "" "control(2)" 321
 .xx "opendirfile,/" "Tree, alloctree, freetree, File," "createfile, closefile, removefile, walkfile," "" "9pfile(2)" 281
 .xx "" "/createentry, createkeyboard, createlabel," "createmenu, createradiobutton, createrow,/" "" "control(2)" 321
@@ -683,7 +676,6 @@
 .xx "encoding byte arrays as/" "dec64, enc64," "dec32, enc32, dec16, enc16, encodefmt \-" "" "encode(2)" 363
 .xx "" "xd \- hex, octal," "decimal, or ASCII dump" "" "xd(1)" 265
 .xx "" "uuencode, uudecode \-" "decode a file as printable ASCII" "" "uuencode(1)" 252
-.xx "" "mp3dec \-" "decode audio MPEG files (layers 1, 2 and 3)" "" "mp3dec(1)" 138
 .xx "rsaprivalloc,/" "asn1dump, asn1toRSApriv," "decodePEM, rsadecrypt, rsaencrypt, rsagen," "" "rsa(2)" 512
 .xx "" "/wunlock, rsleep, rwakeup, rwakeupall, incref," "decref \- spin locks, queueing rendezvous/" "" "lock(2)" 442
 .xx "" "encrypt," "decrypt, netcrypt \- DES encryption" "" "encrypt(2)" 364
@@ -1112,7 +1104,6 @@
 .xx "" "keyfs, warning \- authentication database" "files" "" "keyfs(4)" 692
 .xx "" "\- machine-independent access to executable" "files" "/beswal, beswav, leswab, leswal, leswav" "mach(2)" 445
 .xx "" "mk, membername \- maintain (make) related" "files" "" "mk(1)" 131
-.xx "" "mp3enc \- create mp3 audio" "files" "" "mp3enc(1)" 139
 .xx "" "graphic, and typesetter output" "files" "page \- view FAX, image," "page(1)" 157
 .xx "" "qer, runq \- queue management for spooled" "files" "" "qer(8)" 924
 .xx "" "rio \- window system" "files" "" "rio(4)" 708
@@ -1126,7 +1117,6 @@
 .xx "" "bundle \- collect" "files for distribution" "" "bundle(1)" 36
 .xx "" "acme \- control" "files for text windows" "" "acme(4)" 652
 .xx "" "pemdecode, pemencode \- encode" "files in Privacy Enhanced Mail (PE) format" "" "pem(8)" 905
-.xx "" "mp3dec \- decode audio MPEG" "files (layers 1, 2 and 3)" "" "mp3dec(1)" 138
 .xx "" "tweak \- edit image" "files, subfont files, face files, etc." "" "tweak(1)" 247
 .xx "access/" "/globalsym, textsym, file2pc, fileelem," "filesym, fileline, fnbound \- symbol table" "" "symbol(2)" 542
 .xx "" "cifs - Microsoft™ Windows network" "filesystem client" "" "cifs(4)" 659
@@ -1589,7 +1579,6 @@
 .xx "" "cpp \- C" "language preprocessor" "" "cpp(1)" 51
 .xx "" "ssl \- SSL record" "layer" "" "ssl(3)" 639
 .xx "" "tls \- TLS1 and SSL3 record" "layer" "" "tls(3)" 641
-.xx "" "mp3dec \- decode audio MPEG files" "layers 1, 2 and 3)" "" "mp3dec(1)" 138
 .xx "" "ls," "lc \- list contents of directory" "" "ls(1)" 124
 .xx "" "9load, 9pxeload, 9loadusb, 9loadask," "ld \- PC bootstrap program" "" "9load(8)" 823
 .xx "exponent" "frexp," "ldexp, modf \- split into mantissa and" "" "frexp(2)" 399
@@ -1868,15 +1857,12 @@
 .xx "" "cp, fcp, mv \- copy," "move files" "" "cp(1)" 50
 .xx "" "/xformplane, pushmat, popmat, rot, qrot, scale," "move, xform, ixform, persp, look, viewport \-/" "" "matrix(2)" 450
 .xx "" "initmouse, readmouse, closemouse," "moveto, getrect, drawgetrect, menuhit,/" "" "mouse(2)" 461
-.xx "2 and 3)" "" "mp3dec \- decode audio MPEG files (layers 1," "" "mp3dec(1)" 138
-.xx "" "" "mp3enc \- create mp3 audio files" "" "mp3enc(1)" 139
 .xx "" "/uvtomp, mptouv, vtomp, mptov, mpdigdiv," "mpadd, mpsub, mpleft, mpright, mpmul,/" "" "mp(2)" 463
 .xx "" "/mpnew, mpfree, mpbits, mpnorm, mpcopy," "mpassign, mprand, strtomp, mpfmt,mptoa,/" "" "mp(2)" 463
 .xx "" "/mpright, mpmul, mpexp, mpmod, mpdiv," "mpcmp, mpextendedgcd, mpinvert, mpsignif,/" "" "mp(2)" 463
 .xx "" "/mpnew, mpfree, mpbits, mpnorm," "mpcopy, mpassign, mprand, strtomp,/" "" "mp(2)" 463
 .xx "" "/mptoi, itomp, uvtomp, mptouv, vtomp, mptov," "mpdigdiv, mpadd, mpsub, mpleft, mpright,/" "" "mp(2)" 463
 .xx "" "/mpleft, mpright, mpmul, mpexp, mpmod," "mpdiv, mpcmp, mpextendedgcd, mpinvert,/" "" "mp(2)" 463
-.xx "" "mp3dec \- decode audio" "MPEG files (layers 1, 2 and 3)" "" "mp3dec(1)" 138
 .xx "" "mpadd, mpsub, mpleft, mpright, mpmul," "mpexp, mpmod, mpdiv, mpcmp,/" "/mpdigdiv," "mp(2)" 463
 .xx "" "/mpmul, mpexp, mpmod, mpdiv, mpcmp," "mpextendedgcd, mpinvert, mpsignif,/" "" "mp(2)" 463
 .xx "" "/mpcopy, mpassign, mprand, strtomp," "mpfmt,mptoa, betomp, mptobe, letomp,/" "" "mp(2)" 463
@@ -2415,7 +2401,6 @@
 .xx "" "clocks, process/process group ids, user, null," "reboot, etc." "cons \- console," "cons(3)" 590
 .xx "" "\- halt any local file systems and optionally" "reboot the system" "fshalt, reboot" "fshalt(8)" 866
 .xx "server connection" "reboot \-" "reboot the system upon loss of remote file" "" "reboot(8)" 926
-.xx "" "scribblealloc," "recognize \- character recognition" "" "scribble(2)" 517
 .xx "" "ssl \- SSL" "record layer" "" "ssl(3)" 639
 .xx "" "tls \- TLS1 and SSL3" "record layer" "" "tls(3)" 641
 .xx "" "/rectXrect, rectclip, combinerect, Dx, Dy, Pt," "Rect, Rpt \- arithmetic on points and/" "" "addpt(2)" 286
@@ -2566,7 +2551,6 @@
 .xx "" "draw \-" "screen graphics" "" "draw(3)" 593
 .xx "" "lens \- interactive" "screen magnifier" "" "lens(1)" 118
 .xx "" "" "screenlock \- disable access to a terminal" "" "screenlock(8)" 935
-.xx "recognition" "" "scribblealloc, recognize \- character" "" "scribble(2)" 517
 .xx "" "at, drain, expect, pass \- dialer" "scripting tools" "" "expect(1)" 81
 .xx "" "cpurc, cpurc.local, termrc, termrc.local \- boot" "scripts" "" "cpurc(8)" 843
 .xx "" "usage \- command-line parsing for shell" "scripts" "getflags," "getflags(8)" 867

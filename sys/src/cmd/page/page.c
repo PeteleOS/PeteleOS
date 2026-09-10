@@ -77,7 +77,7 @@ usage(void)
 void
 main(int argc, char **argv)
 {
-	Document *doc;
+	Document *doc = nil;
 	Biobuf *b;
 	enum { Ninput = 16 };
 	uchar buf[Ninput+1];
