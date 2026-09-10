@@ -5,9 +5,10 @@ if(! ~ $#* 1){
 	exit usage
 }
 
+# NOTE (commercial build): no longer prepends /sys/doc/preamble
+# (embedded B&H Lucida fonts, removed).
 {
 echo %!PS-Adobe-2.0
-cat /sys/doc/preamble
 grep -v '^%%DocumentFonts' $1
 } > cleanps.tmp
 mv cleanps.tmp $1

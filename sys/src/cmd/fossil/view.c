@@ -1055,7 +1055,8 @@ threadmain(int argc, char **argv)
 	}
 
 	fs = atreeinit(dir);
-	initdraw(0, "/lib/font/bit/lucidasans/unicode.8.font", "tree");
+	/* lucidasans (B&H) removed in commercial build; X11 fixed substitute */
+	initdraw(0, "/lib/font/bit/fixed/unicode.9x15.font", "tree");
 	t.root = fs->root;
 	t.offset = ZP;
 	t.clipr = allocimage(display, Rect(0,0,1,1), GREY1, 1, DOpaque);

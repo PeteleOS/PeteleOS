@@ -1,10 +1,11 @@
-# mkfile rules to get fonts in Lucida Sans.
+# mkfile rules to get fonts for man pages.
+# Lucida Sans (B&H) removed in commercial build; use native troff fonts.
 # if you want to use Times, change these next lines to
 # MAN=mantimes
 # FONTS=''
 MAN=man
-FONTS='.fp 1 R LucidaSans
-.fp 2 I LucidaSansI
-.fp 3 B LucidaSansB
-.fp 5 L LucidaCW
+FONTS='.fp 1 R R
+.fp 2 I I
+.fp 3 B B
+.fp 5 L CW
 '

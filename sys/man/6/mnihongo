@@ -11,7 +11,7 @@ provides a simple
 post-processor that formats Unicode characters that 
 might be Japanese text.
 It looks up the characters in the bitmap font
-.B /lib/font/bit/pelm/unicode.9x24.font
+.B /lib/font/bit/fixed/unicode.9x15.font
 and generates bitmap images embedded in the output.
 .PP
 During troff processing, widths of the Japanese characters
@@ -23,7 +23,7 @@ which is at best a simple approximation to the truth.
 .br
 .B /sys/lib/tmac/tmac.nihongo
 .br
-.B /lib/font/bit/pelm/unicode.9x24.font
+.B /lib/font/bit/fixed/unicode.9x15.font
 .SH SOURCE
 .B /sys/src/cmd/9aux/mnihongo
 .SH SEE ALSO

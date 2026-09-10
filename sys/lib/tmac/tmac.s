@@ -234,21 +234,21 @@
 .	fp 3 B PB
 .	fp 4 BI PX\}
 .if '\\$1'lucidabright'\{\
-.	fp 1 R LucidaBright
-.	fp 2 I LucidaBright-Italic
-.	fp 3 B LucidaBright-Demi
-.	fp 4 BI LucidaBright-DemiItalic
-.	fp 5 CW LucidaSansCW\}
+.	fp 1 R PA
+.	fp 2 I PI
+.	fp 3 B PB
+.	fp 4 BI PX
+.	fp 5 CW CW\}
 .if '\\$1'lucidasans'\{\
-.	fp 1 R LucidaSans
-.	fp 2 I LucidaSansI
-.	fp 3 B LucidaSansB
-.	fp 5 CW LucidaCW\}
+.	fp 1 R R
+.	fp 2 I I
+.	fp 3 B B
+.	fp 5 CW CW\}
 .if '\\$1'syntax'\{\
 .	fp 1 R Syntax
 .	fp 2 I SyntaxI
 .	fp 3 B SyntaxB
-.	fp 5 CW LucidaCW\}
+.	fp 5 CW CW\}
 .if '\\$1'century'\{\
 .	ie '\\*(.T'202'\{\
 .		fp 1 NR Centsb

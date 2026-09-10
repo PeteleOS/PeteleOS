@@ -153,7 +153,7 @@ Other files in
 A font with wide coverage of the Unicode Standard
 should be used for best results.
 (Try
-.BR /lib/font/bit/pelm/unicode.9.font .)
+.BR /lib/font/bit/fixed/unicode.9x15.font .)
 .br
 If the
 .I pattern

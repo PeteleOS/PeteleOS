@@ -108,13 +108,16 @@ struct strtab charcode[256] = {
 
 #define FONTABSIZE 0x27
 
+/* Lucida printer fonts (B&H) removed in commercial build: emit Courier
+ * (a PostScript base font) instead. Font names are not copyrightable;
+ * the .pfa files are gone, so output must reference resident fonts. */
 struct strtab fontname[FONTABSIZE] = {
-	{19, "LucidaSansUnicode00", 0},
-	{19, "LucidaSansUnicode01", 0},
-	{19, "LucidaSansUnicode02", 0},
-	{19, "LucidaSansUnicode03", 0},
-	{19, "LucidaSansUnicode04", 0},
-	{19, "LucidaSansUnicode05", 0},
+	{7, "Courier", 0},
+	{7, "Courier", 0},
+	{7, "Courier", 0},
+	{7, "Courier", 0},
+	{7, "Courier", 0},
+	{7, "Courier", 0},
 	{0, "", 0},
 	{0, "", 0},
 	{0, "", 0},
@@ -141,12 +144,12 @@ struct strtab fontname[FONTABSIZE] = {
 	{0, "", 0},
 	{0, "", 0},
 	{0, "", 0},
-	{19, "LucidaSansUnicode20", 0},
-	{19, "LucidaSansUnicode21", 0},
-	{19, "LucidaSansUnicode22", 0},
+	{7, "Courier", 0},
+	{7, "Courier", 0},
+	{7, "Courier", 0},
 	{0, "", 0},
-	{19, "LucidaSansUnicode24", 0},
-	{19, "LucidaSansUnicode25", 0},
+	{7, "Courier", 0},
+	{7, "Courier", 0},
 	{7, "Courier", 0}
 };
 

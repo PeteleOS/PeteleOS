@@ -113,7 +113,8 @@ init(void)
 	tinyfont = openfont(display, "/lib/font/bit/misc/ascii.5x7.font");
 	if(tinyfont == nil)
 		tinyfont = font;
-	mediumfont = openfont(display, "/lib/font/bit/pelm/latin1.8.font");
+	/* pelm (B&H) removed in commercial build; MIT misc substitute */
+	mediumfont = openfont(display, "/lib/font/bit/misc/latin1.8x13.font");
 	if(mediumfont == nil)
 		mediumfont = font;
 	datefont = font;

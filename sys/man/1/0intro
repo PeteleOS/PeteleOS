@@ -173,7 +173,7 @@ Here is a typical profile:
 bind -a $home/bin/rc /bin
 bind -a $home/bin/$cputype /bin
 bind -c $home/tmp /tmp
-font = /lib/font/bit/pelm/euro.9.font
+font = /lib/font/bit/fixed/unicode.9x15.font
 upas/fs
 switch($service){
 case terminal

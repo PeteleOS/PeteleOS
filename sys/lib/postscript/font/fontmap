@@ -1,23 +1,25 @@
-LucidaSans			LucidaSans
-LucidaSans-Demi 		LucidaSans-Demi
-LucidaSans-DemiItalic 		LucidaSans-DemiItalic
-LucidaSans-Italic 		LucidaSans-Italic
-LucidaSans-Typewriter83	LucidaSans-Typewriter83
-LucidaSansUnicode00		lsunr00.pfa
-LucidaSansUnicode01		lsunr01.pfa
-LucidaSansUnicode02		lsunr02.pfa
-LucidaSansUnicode03		lsunr03.pfa
-LucidaSansUnicode04		lsunr04.pfa
-LucidaSansUnicode05		lsunr05.pfa
-LucidaSansUnicode20		lsunr20.pfa
-LucidaSansUnicode21		lsunr21.pfa
-LucidaSansUnicode22		lsunr22.pfa
-LucidaSansUnicode24		lsunr24.pfa
-LucidaSansUnicode25		lsunr25.pfa
-LucidaTypewriter 		LucidaTypewriter
+% Lucida printer fonts (B&H) removed in commercial build.
+% Alias kept for troff compatibility: map Lucida names to Courier (resident).
+LucidaSans			Courier
+LucidaSans-Demi 		Courier-Bold
+LucidaSans-DemiItalic 		Courier-BoldOblique
+LucidaSans-Italic 		Courier-Oblique
+LucidaSans-Typewriter83	Courier
+LucidaSansUnicode00		Courier
+LucidaSansUnicode01		Courier
+LucidaSansUnicode02		Courier
+LucidaSansUnicode03		Courier
+LucidaSansUnicode04		Courier
+LucidaSansUnicode05		Courier
+LucidaSansUnicode20		Courier
+LucidaSansUnicode21		Courier
+LucidaSansUnicode22		Courier
+LucidaSansUnicode24		Courier
+LucidaSansUnicode25		Courier
+LucidaTypewriter 		Courier
 
 % alias for troff
-LucidaCW			LucidaTypewriter
+LucidaCW			Courier
 
 % Postscript versions of TeX fonts
 CMB10		cm/cmb10.pfa

@@ -273,7 +273,8 @@ xheight
 
 special	S	special/S.
 
-# LucidaSans support fonts; latin-1 only
+# LucidaSans support fonts removed in commercial build (B&H fonts deleted);
+# the map tables below are orphaned and unused.
 
 map
 	!	33
@@ -481,9 +482,7 @@ map
 xheight
 	0.535
 
-troff	LucidaSansI	lucida/latin1I.	LucidaSans
-troff	LucidaSansB	lucida/latin1B.	LucidaSans
-troff	LucidaCW		lucida/latin1CW.
+# troff LucidaSansI/B/CW removed in commercial build (fonts deleted).
 
 # now the unicode sequences.  here we suppress two-char sequences
 # better expressed as plain unicode.
@@ -2340,7 +2339,7 @@ map
 xheight
 	0.535
 
-troff	LucidaSans	lucida/unicode.
+# troff LucidaSans removed in commercial build (fonts deleted).
 
 # etc.
 

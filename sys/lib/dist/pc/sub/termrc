@@ -7,7 +7,8 @@ if not
 
 if(~ $debug yes) echo env...
 sysname=gnot
-font=/lib/font/bit/lucidasans/typelatin1.7.font
+# lucidasans (B&H) removed in commercial build; X11 fixed substitute
+font=/lib/font/bit/fixed/unicode.9x15.font
 
 for (i in '#P' '#f' '#m' '#t' '#v') {
 	if(~ $debug yes) echo bind $i

@@ -2,7 +2,7 @@
 .vs 12
 .ll 4.7i
 .in |1.45i
-.fp 1 R LucidaSans
+.fp 1 R R
 .ft 1
 .fi
 This book was typeset by the authors; the input text

@@ -58,7 +58,8 @@ ginit(void)
 #ifdef PLAN9PORT
 	smallfont = openmemsubfont(unsharp("#9/font/lucsans/lstr.10"));
 #else
-	smallfont = openmemsubfont("/lib/font/bit/lucidasans/lstr.10");
+	/* lucidasans (B&H) removed in commercial build; MIT misc subfont */
+	smallfont = openmemsubfont("/lib/font/bit/misc/6x10.0");
 #endif
 	black = memblack;
 	blue = allocrepl(DBlue);

@@ -1,4 +1,3 @@
-# mkfile rules to get fonts in Lucida Sans.
-# if you don't have Lucida fonts, change this next line to
-# FONTS=''
-FONTS='.FP lucidasans'
+# mkfile rules for doc fonts.
+# Lucida Sans (B&H) removed in commercial build; use native troff fonts.
+FONTS=''

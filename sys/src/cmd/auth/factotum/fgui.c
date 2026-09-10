@@ -94,10 +94,12 @@ threadmain(int argc, char *argv[])
 	initcontrols();
 	hide();
 
-	/* get an invisible font for passwords */
-	invis = openfont(display, "/lib/font/bit/lucm/passwd.9.font");
+	/* get an invisible font for passwords.
+	 * lucm (B&H) removed in commercial build: fall back to the default
+	 * font. NOTE: passwords may echo visibly instead of hidden. */
+	invis = openfont(display, "/lib/font/bit/fixed/unicode.9x15.font");
 	if (invis == nil)
-		sysfatal("fgui: %s: %r", "/lib/font/bit/lucm/passwd.9.font");
+		sysfatal("fgui: %s: %r", "/lib/font/bit/fixed/unicode.9x15.font");
 	namectlfont(invis, "invisible");
 
 	/* serialize all requests */

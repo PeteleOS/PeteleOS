@@ -1,5 +1,5 @@
 .HTML "Plan 9 — The Documents (Volume 2)
-.FP lucidasans
+.\" .FP lucidasans removed in commercial build (B&H fonts deleted)
 .na
 .ds CH
 .

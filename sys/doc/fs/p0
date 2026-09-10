@@ -11,7 +11,7 @@
 .EQ
 delim $$
 .EN
-.FP lucidasans
+.\" .FP lucidasans removed in commercial build (B&H fonts deleted)
 
 .TL
 The 64-bit Standalone Plan 9 File Server

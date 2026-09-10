@@ -103,7 +103,6 @@
 .xx "" "factotum, fgui \- authentication" "agent" "" "factotum(4)" 673
 .xx "SATA (Serial AT) storage device/" "sdahci \-" "AHCI (Advanced Host Controller Interface)" "" "sdahci(3)" 633
 .xx "storecond, _tas \- atomic RMW operations" "" "ainc, adec, cas, casv, casp, loadlink," "" "atom(2)" 298
-.xx "language interpreter)" "gs \-" "Aladdin Ghostscript (PostScript and PDF" "" "gs(1)" 98
 .xx "" "sleep," "alarm \- delay, ask for delayed note" "" "sleep(2)" 532
 .xx "" "dsasigfree, dsaprivtopub - digital signature" "algorithm" "/dsaprivfree, dsasigalloc," "dsa(2)" 356
 .xx "" "X509gen, X509verify \- RSA encryption" "algorithm" "/rsapubfree, X509toRSApub," "rsa(2)" 512
@@ -579,7 +578,6 @@
 .xx "" "units \-" "conversion program" "" "units(1)" 250
 .xx "" "mug -" "convert an image to a face icon" "" "mug(1)" 148
 .xx "" "dd \-" "convert and copy a file" "" "dd(1)" 64
-.xx "" "ps2pdf, pdf2ps \-" "convert between PostScript and PDF" "" "ps2pdf(1)" 177
 .xx "" "ms2html, html2ms \-" "convert between troff's ms macros and html" "" "ms2html(1)" 141
 .xx "" "gmtime, asctime, tm2sec, timezone \-" "convert date and time" "ctime, localtime," "ctime(2)" 337
 .xx "" "crop, iconv \- frame, crop, and" "convert image" "" "crop(1)" 54
@@ -974,7 +972,7 @@
 .xx "" "abort \- generate a" "fault" "" "abort(2)" 283
 .xx "descriptor to a file server" "" "fauth \- set up authentication on a file" "" "fauth(2)" 375
 .xx "" "/newns, addns, login, noworld, auth_proxy," "fauth_proxy, auth_allocrpc, auth_freerpc,/" "" "auth(2)" 299
-.xx "typesetter output files" "page \- view" "FAX, image, graphic, PostScript, PDF, and" "" "page(1)" 157
+.xx "typesetter output files" "page \- view" "FAX, image, graphic, and" "" "page(1)" 157
 .xx "telephone dialer network" "telco," "faxreceive, faxsend, fax, telcofax, telcodata \-" "" "telco(4)" 716
 .xx "" "Fcall, convS2M, convD2M, convM2S, convM2D," "fcallfmt, dirfmt, dirmodefmt, read9pmsg,/" "" "fcall(2)" 376
 .xx "setvbuf,/" "fopen, freopen, fdopen, fileno," "fclose, sopenr, sopenw, sclose, fflush," "" "fopen(2)" 388
@@ -1115,7 +1113,7 @@
 .xx "" "\- machine-independent access to executable" "files" "/beswal, beswav, leswab, leswal, leswav" "mach(2)" 445
 .xx "" "mk, membername \- maintain (make) related" "files" "" "mk(1)" 131
 .xx "" "mp3enc \- create mp3 audio" "files" "" "mp3enc(1)" 139
-.xx "" "graphic, PostScript, PDF, and typesetter output" "files" "page \- view FAX, image," "page(1)" 157
+.xx "" "graphic, and typesetter output" "files" "page \- view FAX, image," "page(1)" 157
 .xx "" "qer, runq \- queue management for spooled" "files" "" "qer(8)" 924
 .xx "" "rio \- window system" "files" "" "rio(4)" 708
 .xx "" "rm \- remove" "files" "" "rm(1)" 195
@@ -1291,7 +1289,6 @@
 .xx "" "" "getuser, sysname \- get user or system name" "" "getuser(2)" 409
 .xx "" "" "getwd \- get current directory" "" "getwd(2)" 410
 .xx "" "/drawerror, initdisplay, closedisplay, getdefont," "getwindow, gengetwindow, flushimage,/" "" "graphics(2)" 411
-.xx "interpreter)" "gs \- Aladdin" "Ghostscript (PostScript and PDF language" "" "gs(1)" 98
 .xx "toppm, topng, toico \- view and convert/" "jpg," "gif, png, ppm, bmp, v210, yuv, ico, togif," "" "jpg(1)" 111
 .xx "" "/lookup, findlocal, getauto, findsym, localsym," "globalsym, textsym, file2pc, fileelem, filesym,/" "" "symbol(2)" 542
 .xx "date and time" "ctime, localtime," "gmtime, asctime, tm2sec, timezone \- convert" "" "ctime(2)" 337
@@ -1304,7 +1301,7 @@
 .xx "" "" "graph \- draw a graph" "" "graph(1)" 96
 .xx "" "statusbar \- display a bar" "graph status window" "" "statusbar(8)" 948
 .xx "" "gview \- interactive" "graph viewer" "" "gview(1)" 101
-.xx "output files" "page \- view FAX, image," "graphic, PostScript, PDF, and typesetter" "" "page(1)" 157
+.xx "output files" "page \- view FAX, image," "graphic, and typesetter" "" "page(1)" 157
 .xx "" "newcontrolset, resizecontrolset \- interactive" "graphical controls" "/namectlimage," "control(2)" 321
 .xx "" "runestringwidth, runestringnwidth \-" "graphical size of strings" "/runestringsize," "stringsize(2)" 539
 .xx "" "draw \- screen" "graphics" "" "draw(3)" 593
@@ -1321,7 +1318,6 @@
 .xx "" "postnote \- send a note to a process or process" "group" "" "postnote(2)" 485
 .xx "" "cons \- console, clocks, process/process" "group ids, user, null, reboot, etc." "" "cons(3)" 590
 .xx "" "binalloc, bingrow, binfree \-" "grouped memory allocation" "" "bin(2)" 306
-.xx "language interpreter)" "" "gs \- Aladdin Ghostscript (PostScript and PDF" "" "gs(1)" 98
 .xx "" "/printnetkey, status, enable, disable, authsrv," "guard.srv, debug, wrkey, login, newns, none,/" "" "auth(8)" 833
 .xx "" "" "gview \- interactive graph viewer" "" "gview(1)" 101
 .xx "uncompress, zip, unzip \- compress and/" "" "gzip, gunzip, bzip2, bunzip2, compress," "" "gzip(1)" 103
@@ -1422,7 +1418,7 @@
 .xx "" "" "image \- external format for images" "" "image(6)" 766
 .xx "replclipr, line, poly, fillpoly, bezier,/" "" "Image, draw, gendraw, drawreplxy, drawrepl," "" "draw(2)" 350
 .xx "" "tweak \- edit" "image files, subfont files, face files, etc." "" "tweak(1)" 247
-.xx "typesetter output files" "page \- view FAX," "image, graphic, PostScript, PDF, and" "" "page(1)" 157
+.xx "typesetter output files" "page \- view FAX," "image, graphic, and" "" "page(1)" 157
 .xx "" "mug - convert an" "image to a face icon" "" "mug(1)" 148
 .xx "" "httpd, save," "imagemap, man2html, webls \- HTTP server" "" "httpd(8)" 871
 .xx "" "\- allocating, freeing, reading, writing" "images" "/bytesperline, wordsperline" "allocimage(2)" 289
@@ -1590,7 +1586,6 @@
 .xx "" "bc \- arbitrary-precision arithmetic" "language" "" "bc(1)" 31
 .xx "" "hoc \- interactive floating point" "language" "" "hoc(1)" 107
 .xx "" "flag, rfork, shift, wait, whatis, ., ~ \- command" "language" "rc, cd, eval, exec, exit," "rc(1)" 181
-.xx "" "gs \- Aladdin Ghostscript (PostScript and PDF" "language interpreter)" "" "gs(1)" 98
 .xx "" "cpp \- C" "language preprocessor" "" "cpp(1)" 51
 .xx "" "ssl \- SSL record" "layer" "" "ssl(3)" 639
 .xx "" "tls \- TLS1 and SSL3 record" "layer" "" "tls(3)" 641
@@ -2064,7 +2059,7 @@
 .xx "" "vprintf, vsprintf, vsnprintf \- print formatted" "output" "/printf, sprintf, snprintf, vfprintf," "fprintf(2)" 393
 .xx "" "lp \- printer" "output" "" "lp(1)" 122
 .xx "" "runevseprint, runevsmprint \- print formatted" "output" "/vseprint, vsmprint, runevsnprint," "print(2)" 487
-.xx "" "image, graphic, PostScript, PDF, and typesetter" "output files" "page \- view FAX," "page(1)" 157
+.xx "" "image, graphic, and typesetter" "output files" "page \- view FAX," "page(1)" 157
 .xx "" "proof \- troff" "output interpreter" "" "proof(1)" 175
 .xx "" "troff2html \- convert troff" "output into HTML" "" "troff2html(1)" 246
 .xx "" "mailcmd \- mail the" "output of a failed command" "" "mailcmd(1)" 127
@@ -2084,7 +2079,7 @@
 .xx "" "/packetheader, packetpeek, packetprefix," "packetsha1, packetsize, packetsplit,/" "" "venti-packet(2)" 571
 .xx "" "/packetpeek, packetprefix, packetsha1," "packetsize, packetsplit, packetstats,/" "" "venti-packet(2)" 571
 .xx "buffers" "/packetsize, packetsplit, packetstats," "packettrailer, packettrim \- zero-copy network" "" "venti-packet(2)" 571
-.xx "PDF, and typesetter output files" "" "page \- view FAX, image, graphic, PostScript," "" "page(1)" 157
+.xx "and typesetter output files" "" "page \- view FAX, image, graphic," "" "page(1)" 157
 .xx "" "hget \- retrieve a web" "page corresponding to a url" "" "hget(1)" 105
 .xx "" "man, lookman, sig \- print or find" "pages of this manual" "" "man(1)" 128
 .xx "" "p \-" "paginate" "" "p(1)" 156
@@ -2122,10 +2117,7 @@
 .xx "" "nfsserver, portmapper," "pcnfsd \- NFS service" "" "nfsserver(8)" 900
 .xx "" "lpt \- parallel port interface for" "PC's" "" "lpt(3)" 618
 .xx "" "plan9.ini \- configuration file for" "PCs" "" "plan9.ini(8)" 908
-.xx "" "pdf2ps \- convert between PostScript and" "PDF" "ps2pdf," "ps2pdf(1)" 177
-.xx "" "page \- view FAX, image, graphic, PostScript," "PDF, and typesetter output files" "" "page(1)" 157
-.xx "" "gs \- Aladdin Ghostscript (PostScript and" "PDF language interpreter)" "" "gs(1)" 98
-.xx "" "ps2pdf," "pdf2ps \- convert between PostScript and PDF" "" "ps2pdf(1)" 177
+.xx "" "page \- view FAX, image, graphic," "and typesetter output files" "" "page(1)" 157
 .xx "" "/pldist3, vdiv3, vrem3, pn2f3, ppp2f3, fff2p3," "pdiv4, add4, sub4 \- operations on 3-d points/" "" "arith3(2)" 294
 .xx "Privacy Enhanced Mail (PE) format" "" "pemdecode, pemencode \- encode files in" "" "pem(8)" 905
 .xx "bitsy-specific utilities" "bitsyload, light," "pencal, keyboard, params, prompter \-" "" "bitsyload(1)" 35
@@ -2210,9 +2202,7 @@
 .xx "" "/mailplumb, msgs, Arch, Spam, Reply, Send," "Post, Delmesg, Save \- file based mail reader" "" "msgs(1)" 142
 .xx "" "/erealloc9p, estrdup9p, listensrv, postfd," "postmountsrv, readbuf, readstr, respond,/" "" "9p(2)" 273
 .xx "process group" "" "postnote \- send a note to a process or" "" "postnote(2)" 485
-.xx "" "ps2pdf, pdf2ps \- convert between" "PostScript and PDF" "" "ps2pdf(1)" 177
-.xx "" "gs \- Aladdin Ghostscript" "PostScript and PDF language interpreter)" "" "gs(1)" 98
-.xx "" "page \- view FAX, image, graphic," "PostScript, PDF, and typesetter output files" "" "page(1)" 157
+.xx "" "page \- view FAX, image, graphic," "and typesetter output files" "" "page(1)" 157
 .xx "" "lp \-" "PostScript preprocessors" "" "lp(8)" 884
 .xx "square root" "exp, log, log10, pow," "pow10, sqrt \- exponential, logarithm, power," "" "exp(2)" 374
 .xx "" "apm \- Advanced" "Power Management 1.2 BIOS interface" "" "apm(3)" 583
@@ -2331,7 +2321,6 @@
 .xx "" "version \- negotiate" "protocol version" "" "version(5)" 749
 .xx "" "authsrv, p9any, p9sk1, p9sk2 \- authentication" "protocols" "" "authsrv(6)" 755
 .xx "" "icmp, icmpv6, ipmux, rudp, tcp, udp \- network" "protocols over IP" "ip, esp, gre," "ip(3)" 606
-.xx "and PDF" "" "ps2pdf, pdf2ps \- convert between PostScript" "" "ps2pdf(1)" 177
 .xx "" "ps," "psu \- process status" "" "ps(1)" 176
 .xx "" "/rectXrect, rectclip, combinerect, Dx, Dy," "Pt, Rect, Rpt \- arithmetic on points and/" "" "addpt(2)" 286
 .xx "" "/nhgetl, nhgets, hnputv, hnputl, hnputs," "ptclbsum, readipifc \- Internet Protocol/" "" "ip(2)" 437
@@ -3072,7 +3061,7 @@
 .xx "" "keyboard \- how to" "type characters" "" "keyboard(6)" 768
 .xx "" "man \- macros to" "typeset manual" "" "man(6)" 771
 .xx "" "eqn \-" "typeset mathematics" "" "eqn(1)" 79
-.xx "" "view FAX, image, graphic, PostScript, PDF, and" "typesetter output files" "page \-" "page(1)" 157
+.xx "" "view FAX, image, graphic, and" "typesetter output files" "page \-" "page(1)" 157
 .xx "" "htmlroff \- HTML formatting and" "typesetting" "" "htmlroff(1)" 108
 .xx "" "htmlroff \- HTML formatting and" "typesetting" "" "htmlroff(6)" 763
 .xx "" "troff, nroff, dpost \- text formatting and" "typesetting" "" "troff(1)" 244
@@ -3205,7 +3194,7 @@
 .xx "" "bandt2 \-" "Viaduct bridge-and-tunnel client and server" "" "bandt2(8)" 836
 .xx "" "findviaduct \- look up data about" "Viaduct bridging-and-tunnelling clients" "" "findviaduct(8)" 850
 .xx "" "v210, yuv, ico, togif, toppm, topng, toico \-" "view and convert pictures" "/png, ppm, bmp," "jpg(1)" 111
-.xx "and typesetter output files" "page \-" "view FAX, image, graphic, PostScript, PDF," "" "page(1)" 157
+.xx "and typesetter output files" "page \-" "view FAX, image, graphic," "" "page(1)" 157
 .xx "" "cvsfs \- cvs repository" "viewer" "" "cvsfs(4)" 663
 .xx "" "gview \- interactive graph" "viewer" "" "gview(1)" 101
 .xx "" "vncs, vncv \- remote frame buffer server and" "viewer for Virtual Network Computing (VN)" "" "vnc(1)" 258

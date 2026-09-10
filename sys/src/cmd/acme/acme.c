@@ -37,8 +37,9 @@ Rune	snarfrune[NSnarf+1];
 
 char		*fontnames[2] =
 {
-	"/lib/font/bit/lucidasans/euro.8.font",
-	"/lib/font/bit/lucm/unicode.9.font"
+	/* lucidasans+lucm (B&H) removed in commercial build; X11 fixed substitutes */
+	"/lib/font/bit/fixed/unicode.9x15.font",
+	"/lib/font/bit/fixed/unicode.9x15.font"
 };
 
 Command *command;
