@@ -1,6 +1,6 @@
 .TH GZIP 1
 .SH NAME
-gzip, gunzip, bzip2, bunzip2, lzip, lunzip, compress, uncompress, zip, unzip \- compress and expand data
+gzip, gunzip, bzip2, bunzip2, compress, uncompress, zip, unzip \- compress and expand data
 .SH SYNOPSIS
 .B gzip
 .RB [ -cvD [ 1-9 ]]
@@ -18,16 +18,6 @@ gzip, gunzip, bzip2, bunzip2, lzip, lunzip, compress, uncompress, zip, unzip \- 
 .BR ... ]
 .br
 .B bunzip2
-.RB [ -cvD ]
-.RI [ file
-.BR ... ]
-.PP
-.B lzip
-.RB [ -cvD [ 1-9 ]]
-.RI [ file
-.BR ... ]
-.br
-.B lunzip
 .RB [ -cvD ]
 .RI [ file
 .BR ... ]
@@ -110,32 +100,6 @@ recognizes the extension
 .B .tbz2
 as a synonym for
 .BR .tbz .
-.PP
-.I Lzip
-and
-.I lunzip
-are also similar in interface to
-.I gzip
-and
-.IR gunzip ,
-but use a specific LZMA (Lempel-Ziv-Markov) compression algorithm,
-which often produces smaller compressed files than
-.IR bzip2 .
-The default suffix for output files is
-.BR .lz ,
-with
-.B .tar.lz
-becoming
-.BR .tlz .
-Note that the popular
-.I xz
-compression program uses different LZMA compression algorithms
-and so files compressed by it will not be understood by
-.I lunzip
-and vice versa
-(and may not even be understood by other
-.I xz
-implementations).
 .PP
 .I Compress
 and

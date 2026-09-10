@@ -7,7 +7,6 @@
 
 enum {
 	Pac,
-	Mp3,
 	Pcm,
 	Ogg,
 };
@@ -26,7 +25,6 @@ Channel	*playc, *pacc;
 
 char *playprog[] = {
 [Pac] = "/bin/games/pac4dec",
-[Mp3] = "/bin/games/mp3dec",
 [Pcm] = "/bin/cp",
 [Ogg] = "/bin/games/vorbisdec",
 };
@@ -56,10 +54,7 @@ pac4dec(void *a)
 		snprint(buf, sizeof buf, "%s.pac", pfd->filename);
 		fd = open(buf, OREAD);
 		if (fd < 0){
-			snprint(buf, sizeof buf, "%s.mp3", pfd->filename);
-			fd = open(buf, OREAD);
-		}
-		if (fd < 0){
+			/* mp3dec (GPL libmad) removed in commercial build: skip .mp3 fallback */
 			snprint(buf, sizeof buf, "%s.ogg", pfd->filename);
 			fd = open(buf, OREAD);
 		}
@@ -87,12 +82,14 @@ pac4dec(void *a)
 		snprint(args[2], sizeof args[2], "/fd/1");
 		argv[3] = nil;
 	}else if(strcmp(ext, ".mp3") == 0){
-		type = Mp3;
-		snprint(args[0], sizeof args[0], "mp3dec");
-		snprint(args[1], sizeof args[1], "-q");
-		snprint(args[2], sizeof args[1], "-s");
-		snprint(args[3], sizeof args[1], "/fd/%d", fd);
-		argv[4] = nil;
+		/* mp3dec (GPL libmad) removed in commercial build */
+		fprint(2, "mp3 unsupported in commercial build (GPL mp3dec removed): %s\n", pfd->filename);
+		pb = nbrecvp(spare);
+		pb->cmd = Error;
+		pb->off = 0;
+		pb->len = snprint(pb->data, sizeof(pb->data), "startplay: %s: mp3 unsupported (GPL removed)", pfd->filename);
+		sendp(full, pb);
+		threadexits("nomp3");
 	}else if(strcmp(ext, ".ogg") == 0){
 		type = Ogg;
 		snprint(args[0], sizeof args[0], "vorbisdec");

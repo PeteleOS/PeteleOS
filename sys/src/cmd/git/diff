@@ -43,6 +43,7 @@ for(f in `$nl{git/walk $bparam -c -f$filt $cparam $files}){
 		a=/dev/null
 	if(! test -f b/$f)
 		b=/dev/null
-	ape/diff -u $a $b
+	# GNU diff (GPL) removed in commercial build; use native Plan 9 diff.
+	diff -u $a $b
 }
 exit ''

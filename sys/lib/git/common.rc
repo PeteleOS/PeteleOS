@@ -87,11 +87,10 @@ fn merge1 {@{
 
 	if(mergeperm $ours $base $theirs){
 		mkdir -p `$nl{basename -d $tmp}
-		if(! ape/diff3 -3 -m $ours $base $theirs > $tmp)
-			echo merge needed: $out >[1=2]
-		mv $tmp $out
-		git/add $out
-		chmod $mergedperms $out
+		# GNU diff3 (GPL) removed in commercial build; needs BSD diff3 port.
+		echo merge needed: $out >[1=2]
+		echo 'diff3 (GPL) removed in commercial build' >[1=2]
+		exit nodiff3
 	}
 	if not {
 		rm -f $tmp $out

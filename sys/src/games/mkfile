@@ -18,8 +18,6 @@ BIN=/$objtype/bin/games
 DIRS=\
 #	blabs\
 	mahjongg\
-	mp3dec\
-	mp3enc\
 	music\
 	sokoban\
 	sudoku\
