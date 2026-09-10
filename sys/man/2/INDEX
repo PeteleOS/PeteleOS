@@ -1154,9 +1154,6 @@ runestrncmp runestrcat
 runestrncpy runestrcat
 runestrrchr runestrcat
 runestrstr runestrcat
-recognize scribble
-scribble scribble
-scribblealloc scribble
 closescsi scsi
 openscsi scsi
 scsi scsi

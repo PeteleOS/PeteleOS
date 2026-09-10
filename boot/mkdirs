@@ -305,7 +305,6 @@ lst=( \
 	./sys/lib/ssh \
 	./sys/lib/troff/contour \
 	./sys/log/timesync.d \
-	./sys/src/cmd/gs/obj \
 	./sys/src/cmd/ip/rtcp \
 	./sys/src/cmd/unix/drawterm/bin \
 	./tmp \

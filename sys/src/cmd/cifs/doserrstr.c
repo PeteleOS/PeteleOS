@@ -2,136 +2,114 @@
 #include <libc.h>
 
 /*
- * This file is derrived from nterr.h in the samba distribution
+ * dos error strings for the cifs client.
+ * rewritten for PeteleOS; error numbers are protocol facts
+ * from the SMB specification (errdos/errsrv/errhrd classes).
  */
-
-/*
-   Unix SMB/CIFS implementation.
-   DOS error code constants
-   Copyright (C) Andrew Tridgell              1992-2000
-   Copyright (C) John H Terpstra              1996-2000
-   Copyright (C) Luke Kenneth Casson Leighton 1996-2000
-   Copyright (C) Paul Ashton                  1998-2000
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
-
 
 static struct {
 	int	err;
 	char	*msg;
 } DOSerrs[] = {
-	/* smb x/open error codes for the errdos error class */
+	/* errdos class */
 	{ (0<<16)|1,	"no error" },
-	{ (1<<16)|1,	"invalid function" },
-	{ (2<<16)|1,	"file not found" },
-	{ (3<<16)|1,	"directory not found" },
+	{ (1<<16)|1,	"bad function" },
+	{ (2<<16)|1,	"file does not exist" },
+	{ (3<<16)|1,	"directory does not exist" },
 	{ (4<<16)|1,	"too many open files" },
-	{ (5<<16)|1,	"access denied" },
-	{ (6<<16)|1,	"invalid fid" },
-	{ (7<<16)|1,	"memory control blocks destroyed." },
+	{ (5<<16)|1,	"permission denied" },
+	{ (6<<16)|1,	"bad fid" },
+	{ (7<<16)|1,	"memory arena trashed" },
 	{ (8<<16)|1,	"out of memory" },
-	{ (9<<16)|1,	"invalid memory block address" },
-	{ (10<<16)|1,	"invalid environment" },
-	{ (12<<16)|1,	"invalid open mode" },
-	{ (13<<16)|1,	"invalid data (only from ioctl call)" },
+	{ (9<<16)|1,	"bad memory address" },
+	{ (10<<16)|1,	"bad environment" },
+	{ (12<<16)|1,	"bad open mode" },
+	{ (13<<16)|1,	"bad data" },
 	{ (14<<16)|1,	"reserved" },
-	{ (15<<16)|1,	"invalid drive" },
-	{ (16<<16)|1,	"attempt to delete current directory" },
-	{ (17<<16)|1,	"rename/move across filesystems" },
-	{ (18<<16)|1,	"no more files found" },
-	{ (31<<16)|1,	"general failure" },
-	{ (32<<16)|1,	"share mode conflict with open mode" },
-	{ (33<<16)|1,	"lock conflicts" },
-	{ (50<<16)|1,	"request unsupported" },
-	{ (64<<16)|1,	"network name not available" },
-	{ (66<<16)|1,	"ipc unsupported (guess)" },
-	{ (67<<16)|1,	"invalid share name" },
-	{ (80<<16)|1,	"file already exists" },
-	{ (87<<16)|1,	"invalid paramater" },
+	{ (15<<16)|1,	"bad drive" },
+	{ (16<<16)|1,	"remove current directory" },
+	{ (17<<16)|1,	"rename across filesystems" },
+	{ (18<<16)|1,	"no more files" },
+	{ (31<<16)|1,	"failure" },
+	{ (32<<16)|1,	"sharing violation" },
+	{ (33<<16)|1,	"lock violation" },
+	{ (50<<16)|1,	"not supported" },
+	{ (64<<16)|1,	"network name missing" },
+	{ (66<<16)|1,	"bad ipc" },
+	{ (67<<16)|1,	"bad share name" },
+	{ (80<<16)|1,	"file exists" },
+	{ (87<<16)|1,	"bad parameter" },
 	{ (110<<16)|1,	"cannot open" },
-	{ (122<<16)|1,  "insufficent buffer" },
-	{ (123<<16)|1,	"invalid name" },
+	{ (122<<16)|1,  "buffer too small" },
+	{ (123<<16)|1,	"bad name" },
 	{ (124<<16)|1,	"unknown level" },
-	{ (158<<16)|1,	"this region already locked" },
+	{ (158<<16)|1,	"region locked" },
 
 	{ (183<<16)|1,	"rename failed" },
 
-	{ (230<<16)|1,	"named pipe invalid" },
+	{ (230<<16)|1,	"bad pipe" },
 	{ (231<<16)|1,	"pipe busy" },
 	{ (232<<16)|1,	"close in progress" },
-	{ (233<<16)|1,	"no reader of named pipe" },
-	{ (234<<16)|1,	"more data to be returned" },
+	{ (233<<16)|1,	"pipe has no reader" },
+	{ (234<<16)|1,	"more data" },
 	{ (259<<16)|1,	"no more items" },
-	{ (267<<16)|1,	"invalid directory name in a path" },
+	{ (267<<16)|1,	"bad directory in path" },
 	{ (282<<16)|1,	"extended attributes" },
 	{ (1326<<16)|1,	"authentication failed" },
 	{ (2123<<16)|1,	"buffer too small" },
 	{ (2142<<16)|1,	"unknown ipc" },
 	{ (2151<<16)|1,	"no such print job" },
-	{ (2455<<16)|1,	"invalid group" },
+	{ (2455<<16)|1,	"bad group" },
 
-	/* Error codes for the ERRSRV class */
-	{ (1<<16)|2,	"non specific error" },
+	/* errsrv class */
+	{ (1<<16)|2,	"error" },
 	{ (2<<16)|2,	"bad password" },
 	{ (3<<16)|2,	"reserved" },
 	{ (4<<16)|2,	"permission denied" },
-	{ (5<<16)|2,	"tid invalid" },
-	{ (6<<16)|2,	"invalid server name" },
-	{ (7<<16)|2,	"invalid device" },
+	{ (5<<16)|2,	"bad tid" },
+	{ (6<<16)|2,	"bad server name" },
+	{ (7<<16)|2,	"bad device" },
 	{ (22<<16)|2,	"unknown smb" },
 	{ (49<<16)|2,	"print queue full" },
-	{ (50<<16)|2,	"queued item too big" },
-	{ (52<<16)|2,	"fid invalid in print file" },
-	{ (64<<16)|2,	"unrecognised command" },
-	{ (65<<16)|2,	"smb server internal error" },
-	{ (67<<16)|2,	"fid/pathname invalid" },
+	{ (50<<16)|2,	"spool file too big" },
+	{ (52<<16)|2,	"bad print fid" },
+	{ (64<<16)|2,	"bad command" },
+	{ (65<<16)|2,	"server error" },
+	{ (67<<16)|2,	"bad fid or path" },
 	{ (68<<16)|2,	"reserved 68" },
-	{ (69<<16)|2,	"access is invalid" },
+	{ (69<<16)|2,	"bad access" },
 	{ (70<<16)|2,	"reserved 70" },
-	{ (71<<16)|2,	"attribute mode invalid" },
+	{ (71<<16)|2,	"bad attributes" },
 	{ (81<<16)|2,	"message server paused" },
-	{ (82<<16)|2,	"not receiving messages" },
-	{ (83<<16)|2,	"no room for message" },
-	{ (87<<16)|2,	"too many remote usernames" },
-	{ (88<<16)|2,	"operation timed out" },
+	{ (82<<16)|2,	"not receiving" },
+	{ (83<<16)|2,	"no room" },
+	{ (87<<16)|2,	"too many names" },
+	{ (88<<16)|2,	"timed out" },
 	{ (89<<16)|2,	"no resources" },
-	{ (90<<16)|2,	"too many userids" },
-	{ (91<<16)|2,	"bad userid" },
-	{ (250<<16)|2,	"retry with mpx mode" },
-	{ (251<<16)|2,	"retry with standard mode" },
-	{ (252<<16)|2,	"resume mpx mode" },
-	{ (0xffff<<16)|2, "function not supported" },
+	{ (90<<16)|2,	"too many uids" },
+	{ (91<<16)|2,	"bad uid" },
+	{ (250<<16)|2,	"use mpx mode" },
+	{ (251<<16)|2,	"use standard mode" },
+	{ (252<<16)|2,	"resume mpx" },
+	{ (0xffff<<16)|2, "not supported" },
 
-	/* Error codes for the ERRHRD class */
+	/* errhrd class */
 	{ (19<<16)|3,	"read only media" },
 	{ (20<<16)|3,	"unknown device" },
 	{ (21<<16)|3,	"drive not ready" },
 	{ (22<<16)|3,	"unknown command" },
-	{ (23<<16)|3,	"data (CRC) error" },
-	{ (24<<16)|3,	"bad request length" },
+	{ (23<<16)|3,	"crc error" },
+	{ (24<<16)|3,	"bad request size" },
 	{ (25<<16)|3,	"seek failed" },
 	{ (26<<16)|3,	"bad media" },
 	{ (27<<16)|3,	"bad sector" },
 	{ (28<<16)|3,	"no paper" },
 	{ (29<<16)|3,	"write fault" },
 	{ (30<<16)|3,	"read fault" },
-	{ (31<<16)|3,	"general hardware failure" },
+	{ (31<<16)|3,	"hardware failure" },
 	{ (34<<16)|3,	"wrong disk" },
-	{ (35<<16)|3,	"FCB unavailable" },
-	{ (36<<16)|3,	"share buffer exceeded" },
+	{ (35<<16)|3,	"no fcb" },
+	{ (36<<16)|3,	"share buffer full" },
 	{ (39<<16)|3,	"disk full" },
 
 };
@@ -145,33 +123,33 @@ doserrstr(uint err)
 
 	switch(err & 0xff){
  	case 1:
-		class = "dos";
-		break;
-	case 2:
-		class = "network";
-		break;
-	case 3:
-		class = "hardware";
-		break;
-	case 4:
-		class = "Xos";
-		break;
-	case 0xe1:
-		class = "mx1";
-		break;
-	case 0xe2:
-		class = "mx2";
-		break;
-	case 0xe3:
-		class = "mx3";
-		break;
-	case 0xff:
-		class = "packet";
-		break;
-	default:
-		class = "unknown";
-		break;
-	}
+ 		class = "dos";
+ 		break;
+ 	case 2:
+ 		class = "network";
+ 		break;
+ 	case 3:
+ 		class = "hardware";
+ 		break;
+ 	case 4:
+ 		class = "Xos";
+ 		break;
+ 	case 0xe1:
+ 		class = "mx1";
+ 		break;
+ 	case 0xe2:
+ 		class = "mx2";
+ 		break;
+ 	case 0xe3:
+ 		class = "mx3";
+ 		break;
+ 	case 0xff:
+ 		class = "packet";
+ 		break;
+ 	default:
+ 		class = "unknown";
+ 		break;
+ 	}
 
 	match = -1;
 	for(i = 0; i < nelem(DOSerrs); i++)

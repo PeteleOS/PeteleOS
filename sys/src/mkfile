@@ -31,7 +31,6 @@ LIBS=\
 	liboventi\
 	libplumb\
 	libregexp\
-	libscribble\
 	libsec\
 	libstdio\
 	libsunrpc\

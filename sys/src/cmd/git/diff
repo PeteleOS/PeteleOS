@@ -44,6 +44,7 @@ for(f in `$nl{git/walk $bparam -c -f$filt $cparam $files}){
 	if(! test -f b/$f)
 		b=/dev/null
 	# GNU diff (GPL) removed in commercial build; use native Plan 9 diff.
-	diff -u $a $b
+	# NOTE: native diff has no -u (unified); -c (context) is closest.
+	diff -c $a $b
 }
 exit ''

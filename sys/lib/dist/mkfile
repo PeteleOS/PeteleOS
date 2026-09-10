@@ -206,8 +206,7 @@ plan9.tar.bz2:V:
 		test -e $src9
 		bind /n/empty $src9/lib/font
 		bind /n/empty $src9/sys/lib/postscript/font
-		bind /n/empty $src9/sys/lib/ghostscript
-		bind /n/empty $src9/sys/src/cmd/gs
+		# NOTE (commercial build): ghostscript + gs trees removed, nothing to mask.
 		tar c plan9/LICENSE* plan9/NOTICE plan9/*/mkfile plan9/*/include \
 			plan9/acme/*/src plan9/acme/bin/source \
 			plan9/^(adm cron lib lp mail rc sys tmp usr)
