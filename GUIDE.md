@@ -92,6 +92,10 @@ the host. It boots a guest and runs `mkbootpbs`, `mkpxeboot` and `mk9fat`.
 To rebuild `boot/pxeboot.raw` by hand, shrink 9bootpbs and build the loader in a
 guest. The boot ramdisk shadows `/boot`, so the diff is read from `/root/boot`:
 
+> NOTE (commercial build): GNU `ape/patch` (GPL) has been removed.
+> Apply `/root/boot/9-pcboot-boot.diff` manually or with a BSD-licensed
+> patch port before running the commands below.
+
 ```
 cd / && ape/patch -p1 < /root/boot/9-pcboot-boot.diff
 mkbootpbs
