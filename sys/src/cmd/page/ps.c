@@ -348,6 +348,8 @@ Keepreading:
 	d->fwdonly = ps->clueless = dumb;
 	d->docname = argv[0];
 
+	/* AFPL gs removed in commercial build: spawngs always fails. */
+	fprint(2, "page: PostScript unsupported (AFPL gs removed)\n");
 	if(spawngs(ps, "-dSAFER") < 0)
 		return nil;
 

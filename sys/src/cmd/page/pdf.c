@@ -97,6 +97,8 @@ initpdf(Biobuf *b, int argc, char **argv, uchar *buf, int nbuf)
 	d->pagename = pdfpagename;
 	d->fwdonly = 0;
 
+	/* AFPL gs removed in commercial build: spawngs always fails. */
+	fprint(2, "page: PDF unsupported (AFPL gs removed)\n");
 	if(spawngs(pdf, "-dDELAYSAFER") < 0)
 		return nil;
 

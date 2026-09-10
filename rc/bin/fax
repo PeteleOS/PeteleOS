@@ -74,6 +74,9 @@ case *
 }
 
 # convert to g3
+# NOTE (commercial build): AFPL Ghostscript removed, so PostScript->fax
+# conversion via `gs -sDEVICE=dfaxlow` is unavailable. Only pre-made g3/fax
+# files can be sent.
 g3files=()
 a=1
 for(i in $infiles){
@@ -81,14 +84,11 @@ for(i in $infiles){
 	case *:*g3* *:*fax*
 		g3files=($g3files $i)
 	case *:*postscript
-		gs -dSAFER '-sDEVICE=dfaxlow' '-sOUTPUTFILE='$tmp'.'$#a'.%03d' \
-			-dNOPAUSE -dQUIET $i quit.ps
-		g3files=($g3files $tmp.$#a.*)
+		echo 'fax: PostScript input needs gs (AFPL) removed in commercial build' >[1=2]
+		exit nogs
 	case *
-		lp -dstdout $i >$tmpps
-		gs -dSAFER '-sDEVICE=dfaxlow' '-sOUTPUTFILE='$tmp'.'$#a'.%03d' \
-			-dNOPAUSE -dQUIET $tmpps quit.ps
-		g3files=($g3files $tmp.$#a.*)
+		echo 'fax: conversion needs gs (AFPL) removed in commercial build' >[1=2]
+		exit nogs
 	}
 	a=($a 1)		# count by increasing list length
 }
@@ -109,8 +109,9 @@ pages=`{echo $g3files|wc -w}
 } >>$script
 sed -f $script /sys/lib/fax/h.ps >$header
 
-gs -dSAFER '-sDEVICE=dfaxlow' '-sOUTPUTFILE='$header'.%03d' \
-	-dNOPAUSE -dQUIET $header quit.ps
+# AFPL Ghostscript removed in commercial build: header fax conversion unavailable.
+echo 'fax: header conversion needs gs (AFPL) removed in commercial build' >[1=2]
+exit nogs
 
 files=()
 for(i in $header.* $g3files){

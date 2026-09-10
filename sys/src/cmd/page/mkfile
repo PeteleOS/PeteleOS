@@ -2,6 +2,8 @@
 
 TARG=page
 
+# NOTE (commercial build): gs/ps/pdf stubbed (AFPL gs removed);
+# gs.$O, ps.$O, pdf.$O kept so page still builds for image/FAX/troff.
 HFILES=page.h
 OFILES=\
 	cache.$O\

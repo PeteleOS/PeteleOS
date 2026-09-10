@@ -1,4 +1,7 @@
 #!/bin/rc
+# AFPL Ghostscript removed in commercial build: psfax needs `gs -sDEVICE=dfaxlow`.
+echo 'psfax: gs (AFPL) removed in commercial build' >[1=2]
+exit nogs
 view=no
 stdin=no
 
@@ -38,12 +41,15 @@ fn sigint{
 }
 
 # gs insists on reading its standard input, so we read quit.ps to cut it off.
+# (AFPL gs removed: unreachable stub, kept for reference.)
 switch($stdin){
 case yes
 	cat > $tmpin
-	gs -dSAFER '-sDEVICE=dfaxlow' '-sOUTPUTFILE='$tmp'.%.3d' -dNOPAUSE -dQUIET $tmpin quit.ps
+	# gs -dSAFER ... (removed)
+	echo 'psfax: gs (AFPL) removed' >[1=2]; exit nogs
 case *
-	gs -dSAFER '-sDEVICE=dfaxlow' '-sOUTPUTFILE='$tmp'.%.3d' -dNOPAUSE -dQUIET $* quit.ps
+	# gs -dSAFER ... (removed)
+	echo 'psfax: gs (AFPL) removed' >[1=2]; exit nogs
 }
 
 pages=`{echo $tmp.*|wc -w}
@@ -72,7 +78,8 @@ echo -n $pages 		>>$script
 echo ∮			>>$script
 sed -f $script /sys/lib/fax/h.ps > $header
 
-gs -dSAFER '-sDEVICE=dfaxlow' '-sOUTPUTFILE='$header'.%.3d' -dNOPAUSE -dQUIET $header quit.ps
+# gs -dSAFER ... dfaxlow ... (AFPL gs removed: unreachable stub.)
+echo 'psfax: gs (AFPL) removed' >[1=2]; exit nogs
 
 files=()
 for(i in $header.* $tmp.*){
