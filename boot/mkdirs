@@ -4,34 +4,12 @@ set -e
 cd $(dirname $0)/..
 
 lst=( \
-	./386/bin \
-	./386/bin/ape \
-	./386/bin/auth \
-	./386/bin/aux \
-	./386/bin/bitsy \
-	./386/bin/dial \
-	./386/bin/disk \
-	./386/bin/fossil \
-	./386/bin/fs \
-	./386/bin/games \
-	./386/bin/ip/httpd \
-	./386/bin/ndb \
-	./386/bin/replica \
-	./386/bin/upas \
-	./386/bin/usb \
-	./386/bin/venti \
-	./386/lib \
-	./386/lib/ape \
-	./acme/bin/386 \
-	./acme/bin/alpha \
 	./acme/bin/amd64 \
-	./acme/bin/arm \
 	./acme/bin/arm64 \
-	./acme/bin/mips \
-	./acme/bin/power \
+	./acme/bin/mips64 \
 	./acme/bin/power64 \
-	./acme/bin/riscv \
 	./acme/bin/riscv64 \
+	./acme/bin/spim64 \
 	./amd64/bin \
 	./amd64/bin/ape \
 	./amd64/bin/auth \
@@ -50,23 +28,6 @@ lst=( \
 	./amd64/bin/venti \
 	./amd64/lib \
 	./amd64/lib/ape \
-	./arm/bin/ape \
-	./arm/bin/auth \
-	./arm/bin/aux \
-	./arm/bin/bitsy \
-	./arm/bin/dial \
-	./arm/bin/disk \
-	./arm/bin/fossil \
-	./arm/bin/fs \
-	./arm/bin/games \
-	./arm/bin/git \
-	./arm/bin/ip/httpd \
-	./arm/bin/ndb \
-	./arm/bin/replica \
-	./arm/bin/upas \
-	./arm/bin/usb \
-	./arm/bin/venti \
-	./arm/lib/ape \
 	./arm64/bin/ape \
 	./arm64/bin/auth \
 	./arm64/bin/aux \
@@ -129,22 +90,6 @@ lst=( \
 	./mail/grey/tmp \
 	./mail/queue \
 	./mail/tmp \
-	./mips/bin/ape \
-	./mips/bin/auth \
-	./mips/bin/aux \
-	./mips/bin/bitsy \
-	./mips/bin/dial \
-	./mips/bin/disk \
-	./mips/bin/fossil \
-	./mips/bin/fs \
-	./mips/bin/games \
-	./mips/bin/ip/httpd \
-	./mips/bin/ndb \
-	./mips/bin/replica \
-	./mips/bin/upas \
-	./mips/bin/usb \
-	./mips/bin/venti \
-	./mips/lib/ape \
 	./mnt/acme \
 	./mnt/apeselect \
 	./mnt/apm \
@@ -225,41 +170,8 @@ lst=( \
 	./power64/bin/usb \
 	./power64/bin/venti \
 	./power64/lib/ape \
-	./power/bin/ape \
-	./power/bin/auth \
-	./power/bin/aux \
-	./power/bin/bitsy \
-	./power/bin/dial \
-	./power/bin/disk \
-	./power/bin/fossil \
-	./power/bin/fs \
-	./power/bin/games \
-	./power/bin/ip/httpd \
-	./power/bin/ndb \
-	./power/bin/replica \
-	./power/bin/upas \
-	./power/bin/usb \
-	./power/bin/venti \
-	./power/lib/ape \
 	./rc/bin/dial \
 	./rc/bin/postscript \
-	./riscv/bin/ape \
-	./riscv/bin/auth \
-	./riscv/bin/aux \
-	./riscv/bin/bitsy \
-	./riscv/bin/dial \
-	./riscv/bin/disk \
-	./riscv/bin/fossil \
-	./riscv/bin/fs \
-	./riscv/bin/games \
-	./riscv/bin/git \
-	./riscv/bin/ip/httpd \
-	./riscv/bin/ndb \
-	./riscv/bin/replica \
-	./riscv/bin/upas \
-	./riscv/bin/usb \
-	./riscv/bin/venti \
-	./riscv/lib/ape \
 	./riscv64/bin/ape \
 	./riscv64/bin/auth \
 	./riscv64/bin/aux \
@@ -277,25 +189,19 @@ lst=( \
 	./riscv64/bin/usb \
 	./riscv64/bin/venti \
 	./riscv64/lib/ape \
-	./sparc/bin/ape \
-	./sparc/bin/auth \
-	./sparc/bin/aux \
-	./sparc/bin/bitsy \
-	./sparc/bin/dial \
-	./sparc/bin/disk \
-	./sparc/bin/fossil \
-	./sparc/bin/games \
-	./sparc/bin/ip/httpd \
-	./sparc/bin/ndb \
-	./sparc/bin/replica \
-	./sparc/bin/upas \
-	./sparc/bin/venti \
-	./sparc/lib/ape \
+	./mips64/bin/ape \
+	./mips64/bin/auth \
+	./mips64/bin/aux \
+	./mips64/bin/dial \
+	./mips64/bin/disk \
+	./mips64/bin/venti \
+	./mips64/lib/ape \
+	./spim64/bin/ape \
+	./spim64/lib/ape \
 	./sys/games/sudoku \
 	./sys/lib/backup/set1 \
-	./sys/lib/dist/bin/386 \
+	./sys/lib/dist/bin/amd64 \
 	./sys/lib/dist/pc/empty \
-	./sys/lib/dist/pc/glenda/bin/386 \
 	./sys/lib/dist/pc/glenda/tmp \
 	./sys/lib/dist/pc/multi \
 	./sys/lib/lp/log \
@@ -308,8 +214,8 @@ lst=( \
 	./sys/src/cmd/ip/rtcp \
 	./sys/src/cmd/unix/drawterm/bin \
 	./tmp \
-	./usr/glenda/bin/386 \
 	./usr/glenda/bin/amd64 \
+	./usr/glenda/bin/arm64 \
 	./usr/glenda/tmp \
 )
 
@@ -335,10 +241,6 @@ for i in "${lst[@]}"; do
 done
 
 lst=( \
-	./sys/src/9/vt4/qtm.h \
-	./sys/src/9/vt5/qtm.h \
-	./sys/src/boot/vt4/qtm.h \
-	./sys/src/boot/vt5/qtm.h \
 )
 
 for i in "${lst[@]}"; do

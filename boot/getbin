@@ -122,7 +122,7 @@ p9cpglob() {
 	done
 }
 
-echo "copying 386 and amd64 binaries and libraries to $PWD"
+echo "copying amd64 binaries and libraries to $PWD"
 
 if [ "$uselinux" = true ]; then
 	echo "mounting $ISO to $MNT"
@@ -131,23 +131,23 @@ if [ "$uselinux" = true ]; then
 	mkdir "$MNT"
 	sudo mount -t 9p -o unix,trans=unix,name="$USER",uname="$USER",noextend,nodev,nosuid "$NAMESPACE/$SRVNAME" "$MNT"
 
-	cp -Rp $MNT/386/bin/* 386/bin
-	cp -Rp $MNT/386/lib/* 386/lib
-	cp -Rp $MNT/386/9* $MNT/386/init $MNT/386/mbr $MNT/386/pbs* 386
 	cp -Rp $MNT/amd64/bin/* amd64/bin
 	cp -Rp $MNT/amd64/lib/* amd64/lib
 	cp -Rp $MNT/amd64/9* $MNT/amd64/init amd64
-	cp -Rp $MNT/acme/bin/386/* acme/bin/386
+	# BIOS boot loaders are 386 real-mode code with no amd64 equivalent
+	# on the ISO; vendor them into amd64/ so mk9fat/mkpxeboot/mkusbboot
+	# keep working without the deleted 386 toolchain.
+	for f in mbr pbs pbslba pbsraw 9load 9bootpbs 9loadusb; do
+		[ -f "$MNT/386/$f" ] && cp -Rp "$MNT/386/$f" amd64/
+	done
 	cp -Rp $MNT/acme/bin/amd64/* acme/bin/amd64
 else
-	p9cp 386/bin 386/bin
-	p9cp 386/lib 386/lib
-	p9cpglob 386 386 '9*' init mbr 'pbs*'
 	p9cp amd64/bin amd64/bin
 	p9cp amd64/lib amd64/lib
 	p9cpglob amd64 amd64 '9*' init
-	p9cp acme/bin/386 acme/bin/386
+	# same BIOS loaders as above, read from 386/ on the ISO, written to amd64/
+	p9cpglob 386 amd64 mbr 'pbs*' 9load 9bootpbs 9loadusb
 	p9cp acme/bin/amd64 acme/bin/amd64
 fi
 
-echo '386 and amd64 binaries and libraries installed successfully'
+echo 'amd64 binaries and libraries installed successfully'

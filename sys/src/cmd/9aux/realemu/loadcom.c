@@ -1,7 +1,7 @@
 #include <u.h>
 #include <libc.h>
 
-#include "/386/include/ureg.h"
+#include "/amd64/include/ureg.h"
 
 static uchar buf[0xFF01];
 

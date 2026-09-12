@@ -19,7 +19,6 @@ vgasize=none
 debugboot=1
 
 [common]
-bootfile=ether0!/386/9pc
 bootfile=ether0!/amd64/9k10f
 fs=10.0.2.1
 auth=10.0.2.1

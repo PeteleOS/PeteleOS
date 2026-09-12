@@ -23,7 +23,7 @@ if(! test -d /n/c:/plan9 && ! mkdir /n/c:/plan9) {
 	exit
 }
 
-if(! cp /386/^(9load ld.com) /386/9pcdisk /n/c:/plan9) {
+if(! cp /amd64/^(9load ld.com) /amd64/9k10disk /n/c:/plan9) {
 	echo 'Could not copy Plan 9 boot files into /n/c:/plan9.' >[1=2]
 	exit
 }

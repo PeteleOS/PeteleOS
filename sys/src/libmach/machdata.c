@@ -11,8 +11,6 @@
 #define PROFSYM		"_mainp"
 #define	FRAMENAME	".frame"
 
-extern	Machdata	mipsmach;
-
 int	asstype = AMIPS;		/* disassembler type */
 Machdata *machdata;		/* machine-dependent functions */
 

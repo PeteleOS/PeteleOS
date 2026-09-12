@@ -40,7 +40,7 @@ case go
 		prompt 'Install mbr' y n
 		switch($rd) {
 		case y
-			disk/mbr -m /386/mbr /dev/$disk/data
+			disk/mbr -m /amd64/mbr /dev/$disk/data
 			pickdisk=done
 		}
 	}

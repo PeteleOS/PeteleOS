@@ -481,11 +481,11 @@ cmd_newuser(void)
 	cmd_exec(msg);
 	sprint(msg, "create /usr/%s/bin/rc %s %s 775 d", user, user, user);
 	cmd_exec(msg);
-	sprint(msg, "create /usr/%s/bin/mips %s %s 775 d", user, user, user);
+	sprint(msg, "create /usr/%s/bin/mips64 %s %s 775 d", user, user, user);
 	cmd_exec(msg);
-	sprint(msg, "create /usr/%s/bin/386 %s %s 775 d", user, user, user);
+	sprint(msg, "create /usr/%s/bin/amd64 %s %s 775 d", user, user, user);
 	cmd_exec(msg);
-	sprint(msg, "create /usr/%s/bin/power %s %s 775 d", user, user, user);
+	sprint(msg, "create /usr/%s/bin/power64 %s %s 775 d", user, user, user);
 	cmd_exec(msg);
 	sprint(msg, "create /usr/%s/bin/alpha %s %s 775 d", user, user, user);
 	cmd_exec(msg);

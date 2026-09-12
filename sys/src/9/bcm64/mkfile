@@ -103,11 +103,11 @@ install:V: /$objtype/$p$CONF
 <../port/portmkfile
 <|../port/mkbootrules $CONF
 
-^($BCM)\.$O:R:	'../bcm/\1.c'
-	$CC $CFLAGS -. -I. -I../bcm ../bcm/$stem1.c
+^($BCM)\.$O:R:	'\1.c'
+	$CC $CFLAGS -. -I. $stem1.c
 
-^($OMAP)\.$O:R:	'../omap/\1.c'
-	$CC $CFLAGS -. -I. -I../bcm ../omap/$stem1.c
+^($OMAP)\.$O:R:	'\1.c'
+	$CC $CFLAGS -. -I. $stem1.c
 
 arch.$O clock.$O fpiarm.$O main.$O mmu4.$O screen.$O syscall.$O trap.$O trap4.$O: \
 	/$objtype/include/ureg.h
@@ -121,10 +121,10 @@ arch.$O clock.$O fpiarm.$O main.$O mmu4.$O screen.$O syscall.$O trap.$O trap4.$O
 #devusb.$O usbdwc.$O: ../port/usb.h
 #usbdwc.$O: dwcotg.h
 
-init.h:D:	../port/initcode.c ../bcm/init9.s
-	5c ../port/initcode.c
-	5a ../bcm/init9.s
-	5l -l -R1 -s -o init.out init9.5 initcode.5 /arm/lib/libc.a
+init.h:D:	../port/initcode.c init9.c
+	$CC ../port/initcode.c
+	$CC init9.c
+	$LD -l -R1 -s -o init.out init9.$O initcode.$O /$objtype/lib/libc.a
 	{echo 'uchar initcode[]={'
 	 xd -1x <init.out |
 		sed -e 's/^[0-9a-f]+ //' -e 's/ ([0-9a-f][0-9a-f])/0x\1,/g'

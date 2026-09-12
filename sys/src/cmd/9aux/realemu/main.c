@@ -9,7 +9,7 @@
 #include <thread.h>
 #include <9p.h>
 
-#include "/386/include/ureg.h"
+#include "/amd64/include/ureg.h"
 
 enum {
 	MEMSIZE = 0x100000,

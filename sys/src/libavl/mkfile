@@ -10,6 +10,6 @@ UPDATE=\
 	mkfile\
 	$HFILES\
 	${OFILES:%.$O=%.c}\
-	${LIB:/$objtype/%=/386/%}\
+	${LIB:/$objtype/%=/amd64/%}\
 
 </sys/src/cmd/mksyslib

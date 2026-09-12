@@ -1,0 +1,29 @@
+</$objtype/mkfile
+
+TARG=ja
+
+OFILES=\
+	y.tab.$O\
+	lex.$O\
+
+HFILES=\
+	../jc/j.out.h\
+	y.tab.h\
+	a.h\
+
+YFILES=a.y\
+
+BIN=/$objtype/bin
+
+< /sys/src/cmd/mkone
+YFLAGS=-D1 -d
+
+$O.ja: $OFILES
+	$LD $LDFLAGS -o $target $prereq
+
+lex.$O:	../cc/macbody ../cc/lexbody ../cc/compat
+
+install:V:	$BIN/$TARG
+
+$BIN/$TARG:	$O.out
+	cp $prereq $target

@@ -11,7 +11,7 @@
 #include "../port/error.h"
 #include "../port/netif.h"
 #include "etherif.h"
-#include "../bcm/ethermii.h"
+#include "ethermii.h"
 
 #define ETHERADDR	(VIRTIO+0x80100000ull)
 

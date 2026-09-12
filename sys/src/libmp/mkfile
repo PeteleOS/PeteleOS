@@ -26,18 +26,18 @@ update:V:
 		cd $i
 		mk $MKFLAGS $target
 	}
-	update /386/lib/libmp.a
+	update /amd64/lib/libmp.a
 
 installall:V:
 	for(objtype in $CPUS) mk $MKFLAGS install
 
 everything:V:
-	rm -f */*.[012456789kvx]
-	for(objtype in 386)@{
+	rm -f */*.[4679jx]
+	for(objtype in $CPUS)@{
 		echo $objtype
 		mk $MKFLAGS install
 	}
-	rm -f */*.[012456789kvx]
+	rm -f */*.[4679jx]
 
 test.$O: test.c /$objtype/include/u.h /sys/include/mp.h port/dat.h
 	$CC -Iport test.c
@@ -52,9 +52,8 @@ $O.bigtest: bigtest.$O /$objtype/lib/libmp.a
 	$LD -o $O.bigtest bigtest.$O
 
 allout:
-	objtype=386; mk; mk 8.test 8.bigtest
-	objtype=power; mk; mk q.test q.bigtest
-	objtype=mips; mk; mk v.test v.bigtest
+	objtype=amd64; mk; mk 6.test 6.bigtest
+	objtype=arm64; mk; mk 7.test 7.bigtest
 
 cleanout:
-	rm -f [qv8].* *.[qv8]
+	rm -f [67].* *.[67]

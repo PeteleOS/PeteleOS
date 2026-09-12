@@ -25,7 +25,7 @@ UPDATE=\
 	pdfprolog.ps\
 	$HFILES\
 	/sys/man/1/page\
-	/386/bin/page\
+	/amd64/bin/page\
 
 </sys/src/cmd/mkone
 

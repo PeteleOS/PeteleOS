@@ -14,7 +14,7 @@
 #define PCIWADDR(x) PADDR(x)
 #endif
 #include	"../port/error.h"
-#include	"../bcm/usb.h"
+#include	"usb.h"
 
 extern void dmaflush(int, void*, ulong);
 

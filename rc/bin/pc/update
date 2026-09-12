@@ -15,6 +15,6 @@ echo updating files
 9fs $fileserver
 disk/mkfs -s /n/$fileserver /n/$fileserver/sys/lib/sysconfig/proto/portproto
 9fat_
-cp /n/$fileserver/386/9pcdisk /n/9fat/9pcdisk
-cp /n/$fileserver/386/9load /n/9fat/9load
+cp /n/$fileserver/amd64/9k10disk /n/9fat/9k10disk
+cp /n/$fileserver/amd64/9load /n/9fat/9load
 unmount /n/9fat

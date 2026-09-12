@@ -27,15 +27,15 @@ update:V:
 		cd $i
 		mk $MKFLAGS update
 	}
-	update $UPDATEFLAGS /386/lib/libsec.a
+	update $UPDATEFLAGS /amd64/lib/libsec.a
 
 installall:V:
 	for(objtype in $CPUS) mk $MKFLAGS install
 
 everything:V:
-	rm -f */*.[012456789kqv]
-	for(objtype in 386)@{
+	rm -f */*.[4679jx]
+	for(objtype in $CPUS)@{
 		echo $objtype
 		mk $MKFLAGS install
 	}
-	rm -f */*.[012456789kqv]
+	rm -f */*.[4679jx]

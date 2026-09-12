@@ -57,16 +57,16 @@ root.bz2:DQ: boot.bz2
 # binding 9loadusb onto 9load will store the name 9loadusb in the
 # generated fat filesystem.  the same is true for plan9.ini.cd and plan9.ini.
 
-9load: /386/9load
+9load: /amd64/9load
 	cp $prereq $target
-	cp /386/9loaddebug 9loaddebug
+	cp /amd64/9loaddebug 9loaddebug
 
 # 9load no longer loads from floppies, and even if it did, this
 # no longer works, since 9load+9pcflop.gz won't fit on a floppy:
 #	disk/format: data does not fit on disk (2849 2849)
 #ndisk: 9load /sys/src/9/pc/9pcflop.gz plan9.ini /lib/vgadb
 #	dd -if /dev/zero -of ndisk -bs 1024 -count 1440 >[2]/dev/null
-#	disk/format -f -b /386/pbs -d ndisk \
+#	disk/format -f -b /amd64/pbs -d ndisk \
 #		9load /sys/src/9/pc/9pcflop.gz plan9.ini /lib/vgadb
 #	ls -l ndisk
 
@@ -78,7 +78,7 @@ cddisk:D: 9load /sys/src/9/pc/9pcflop.gz plan9.ini.cd /lib/vgadb
 	rfork n
 	cp -x plan9.ini.cd subst/plan9.ini
 	dd -if /dev/zero -of $target -bs 1024 -count 2880 >[2]/dev/null
-	disk/format -t 3½QD -f -b /386/pbs -d $target \
+	disk/format -t 3½QD -f -b /amd64/pbs -d $target \
 		/sys/src/9/pc/^(9pcflop 9pccd)^.gz subst/plan9.ini /lib/vgadb
 	ls -l $target
 

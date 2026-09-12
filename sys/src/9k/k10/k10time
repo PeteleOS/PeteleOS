@@ -172,7 +172,6 @@ port
 # pc		-.I.
 #
 dir
-	386
 	ip
 	port
 

@@ -69,8 +69,8 @@ boot boot #S/sdM0/
 
 bootdir
 	boot$CONF.out boot
-	/arm/bin/ip/ipconfig
-	/arm/bin/auth/factotum
-	/arm/bin/fossil/fossil
-	/arm/bin/venti/venti
-	/arm/bin/usb/usbd
+	/arm64/bin/ip/ipconfig
+	/arm64/bin/auth/factotum
+	/arm64/bin/fossil/fossil
+	/arm64/bin/venti/venti
+	/arm64/bin/usb/usbd

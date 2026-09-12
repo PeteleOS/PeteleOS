@@ -120,7 +120,7 @@ $O.cj:	cj.$O
 	$LD $LDFLAGS -o $O.cj cj.$O /$objtype/lib/libjpg.a
 
 %.update:V:
-	update $stem.c /386/bin/$stem
+	update $stem.c /amd64/bin/$stem
 
 compilers:V:
 	for(i in ?c)

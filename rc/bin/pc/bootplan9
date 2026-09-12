@@ -55,7 +55,7 @@ if(test $p9offset -gt 4128705) {	# 65536 * 63
 		echo >[1=2]
 		exit bad
 	case y
-		disk/mbr -m /386/mbr $disk/data
+		disk/mbr -m /amd64/mbr $disk/data
 	}
 }
 

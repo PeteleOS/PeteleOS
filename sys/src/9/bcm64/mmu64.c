@@ -15,7 +15,7 @@
 #include "mem.h"
 #include "dat.h"
 #include "fns.h"
-#include "../bcm/arm.h"
+#include "arm.h"
 
 typedef uvlong LPTE;
 

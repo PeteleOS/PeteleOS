@@ -202,7 +202,7 @@ case checkdone
 
 	if(test -f /n/distmedia/$distmediadir/dist/replica/plan9.db){
 		bind /n/distmedia/$distmediadir /n/dist
-		bind -a /n/dist/386/bin /bin
+		bind -a /n/dist/amd64/bin /bin
 		bind -a /n/dist/rc/bin /bin
 		exitifdone
 		mountdist=notdone

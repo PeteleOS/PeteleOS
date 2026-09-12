@@ -1,4 +1,4 @@
-objtype=arm
+objtype=arm64
 </$objtype/mkfile
 
 LIB=/$objtype/lib/libmp.a

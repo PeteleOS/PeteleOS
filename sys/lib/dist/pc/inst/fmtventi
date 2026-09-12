@@ -11,7 +11,7 @@ case checkready checkdone
 		exit
 	}
 	if(! test -e /bin/venti/fmtarenas || ! test -e /bin/venti/fmtisect || ! test -e /bin/venti/fmtindex || ! test -e /bin/venti/fmtbloom){
-		bind -a /n/dist/386/bin/venti /bin/venti
+		bind -a /n/dist/amd64/bin/venti /bin/venti
 		if(! test -e /bin/venti/fmtarenas || ! test -e /bin/venti/fmtisect || ! test -e /bin/venti/fmtindex || ! test -e /bin/venti/fmtbloom){
 			fmtventi=notdone
 			export fmtventi

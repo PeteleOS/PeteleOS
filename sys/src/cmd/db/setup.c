@@ -77,13 +77,13 @@ dumbmap(int fd)
 {
 	Map *dumb;
 
-	extern Mach mi386;
+	extern Mach mamd64;
 	extern Machdata i386mach;
 
 	dumb = newmap(0, 1);
 	setmap(dumb, fd, 0, 0xffffffff, 0, "data");
-	if (!mach) 			/* default machine = 386 */
-		mach = &mi386;
+	if (!mach) 			/* default machine = amd64 */
+		mach = &mamd64;
 	if (!machdata)
 		machdata = &i386mach;
 	return dumb;

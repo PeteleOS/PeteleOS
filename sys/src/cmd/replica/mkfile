@@ -30,7 +30,7 @@ UPDATE=\
 	$HFILES\
 	applychanges.c\
 	updatedb.c\
-	${TARG:%=/386/bin/replica/%}\
+	${TARG:%=/amd64/bin/replica/%}\
 	${SCRIPTS:%=/rc/bin/replica/%}\
 	/rc/bin/replica/defs\
 

@@ -28,8 +28,8 @@ $scr/%.iso:D: $src9/dist/replica/plan9.log
 	@ { cd pc; mk cddisk }
 	rm -f $target
 	bind pc/cddisk cdstub/bootdisk.img
-	bind /386/9load cdstub/9load
-	bind /386/pbsraw cdstub/pbsraw
+	bind /amd64/9load cdstub/9load
+	bind /amd64/pbsraw cdstub/pbsraw
 	if(! test -f $src9/bootdisk.img)
 		bind -a cdstub $src9
 	title=`{date | sed 's/(...) (...) (..) (..:..):.. (...) (....)/Plan 9 - \2 \3 \6 \4/'}

@@ -377,7 +377,7 @@ init(void)
 	setnetmtpt(conf.mpoint, sizeof conf.mpoint, nil);
 	conf.cputype = getenv("cputype");
 	if(conf.cputype == nil)
-		conf.cputype = "386";
+		conf.cputype = "amd64";
 
 	ctll = &firstctl;
 	v6paraminit(&conf);
