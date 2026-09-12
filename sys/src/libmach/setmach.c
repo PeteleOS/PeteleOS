@@ -16,15 +16,18 @@ struct machtab
 	Machdata	*machdata;		/* machine functions */
 };
 
-extern	Mach		mmips, mmips64, msparc, m68020, mi386, mamd64, mriscv, mriscv64,
-			marm, marm64, /* mmips2be, mmips2le, */ mpower, mpower64, malpha, msparc64;
-extern	Machdata	mipsmach, mipsmachle, sparcmach, m68020mach, i386mach, riscvmach, riscv64mach,
-			armmach, arm64mach, mipsmach2le, powermach, alphamach, sparc64mach;
+extern	Mach		mmips64, mamd64, mriscv64,
+			marm64, mpower64, msparc64, m68020, malpha;
+extern	Machdata	mipsmach, i386mach, riscv64mach,
+			arm64mach, mipsmach2le, powermach, sparc64mach,
+			m68020mach, alphamach;
 
 /*
- *	machine selection table.  machines with native disassemblers should
- *	follow the plan 9 variant in the table; native modes are selectable
- *	only by name.
+ *	machine selection table.  32-bit entries (68020, mips, sparc,
+ *	386, arm, power, alpha, riscv) were removed with the 32-bit
+ *	toolchains; only 64-bit entries remain.  machines with native
+ *	disassemblers should follow the plan 9 variant in the table;
+ *	native modes are selectable only by name.
  */
 Machtab	machines[] =
 {
@@ -46,72 +49,18 @@ Machtab	machines[] =
 		AMIPS,
 		&mmips64,
 		&mipsmach2le, 	},
-	{	"mipsLE",				/*plan 9 mips little endian*/
-		FMIPSLE,
-		0,
-		AMIPS,
-		&mmips,
-		&mipsmachle, 	},
-	{	"mips",				/*plan 9 mips*/
-		FMIPS,
-		FMIPSB,
-		AMIPS,
-		&mmips,
-		&mipsmach, 	},
 	{	"mips64",			/*plan 9 mips64*/
 		FMIPS2BE,
 		FMIPSB,
 		AMIPS,
 		&mmips64,
-		&mipsmach, 	},		/* shares debuggers with native mips */
-	{	"mipsco",			/*native mips - must follow plan 9*/
-		FMIPS,
-		FMIPSB,
-		AMIPSCO,
-		&mmips,
-		&mipsmach,	},
-	{	"sparc",			/*plan 9 sparc */
-		FSPARC,
-		FSPARCB,
-		ASPARC,
-		&msparc,
-		&sparcmach,	},
-	{	"sunsparc",			/*native sparc - must follow plan 9*/
-		FSPARC,
-		FSPARCB,
-		ASUNSPARC,
-		&msparc,
-		&sparcmach,	},
-	{	"386",				/*plan 9 386*/
-		FI386,
-		FI386B,
-		AI386,
-		&mi386,
-		&i386mach,	},
-	{	"86",				/*8086 - a peach of a machine*/
-		FI386,
-		FI386B,
-		AI8086,
-		&mi386,
-		&i386mach,	},
+		&mipsmach, 	},
 	{	"amd64",			/*amd64*/
 		FAMD64,
 		FAMD64B,
 		AAMD64,
 		&mamd64,
 		&i386mach,	},
-	{	"arm",				/*ARM*/
-		FARM,
-		FARMB,
-		AARM,
-		&marm,
-		&armmach,	},
-	{	"power",			/*PowerPC*/
-		FPOWER,
-		FPOWERB,
-		APOWER,
-		&mpower,
-		&powermach,	},
 	{	"power64",			/*PowerPC*/
 		FPOWER64,
 		FPOWER64B,
@@ -130,12 +79,6 @@ Machtab	machines[] =
 		ASPARC64,
 		&msparc64,
 		&sparc64mach,	},
-	{	"riscv",
-		FRISCV,
-		FRISCVB,
-		ARISCV,
-		&mriscv,
-		&riscvmach,	},
 	{	"riscv64",
 		FRISCV64,
 		FRISCV64B,
@@ -176,9 +119,9 @@ machbyname(char *name)
 	Machtab *mp;
 
 	if (!name) {
-		asstype = AMIPS;
-		machdata = &mipsmach;
-		mach = &mmips;
+		asstype = AAMD64;
+		machdata = &i386mach;
+		mach = &mamd64;
 		return 1;
 	}
 	for (mp = machines; mp->name; mp++){

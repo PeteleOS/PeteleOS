@@ -14,8 +14,6 @@ fn add {
 		files=($files /$2/$3)
 	}
 }
-add 386term 386 9pcf 'Plan 9 386 terminal'
-add 386cpu 386 9pccpuf 'Plan 9 386 cpu server'
 add amd64term amd64 9k10f 'Plan 9 amd64 terminal'
 add amd64cpu amd64 9k10cpuf 'Plan 9 amd64 cpu server'
 if(~ $#files 0){
@@ -28,11 +26,11 @@ img=/tmp/9fat.raw
 dd -bs 1048576 -if /dev/zero -of $img -count 16
 disk/partfs $img
 cd /dev/sdXX
-disk/mbr -m /386/mbr data
+disk/mbr -m /amd64/mbr data
 disk/fdisk -baw data
 disk/prep -bw -a 9fat plan9
 
-cp /386/9load /tmp/9load
+cp /amd64/9load /tmp/9load
 {
 	echo '[menu]'
 	for(i in $items)
@@ -45,7 +43,7 @@ cp /386/9load /tmp/9load
 	echo user'='glenda
 	echo console'='0 b115200
 } >/tmp/plan9.ini
-disk/format -b /386/pbslba -d -r 2 9fat /tmp/9load $files /tmp/plan9.ini
+disk/format -b /amd64/pbslba -d -r 2 9fat /tmp/9load $files /tmp/plan9.ini
 
 cp $img $out
 echo mk9fat: wrote $out >[1=2]

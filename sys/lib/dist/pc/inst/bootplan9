@@ -34,7 +34,7 @@ switch($rd) {
 case n
 	;
 case y
-	disk/mbr -m /386/mbr /dev/$disk/data
+	disk/mbr -m /amd64/mbr /dev/$disk/data
 }
 
 log Setting Plan 9 partition active.

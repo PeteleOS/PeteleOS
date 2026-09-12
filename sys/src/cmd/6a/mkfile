@@ -18,7 +18,7 @@ UPDATE=\
 	a.y\
 	lex.c\
 	a.h\
-	${TARG:%=/386/bin/%}\
+	${TARG:%=/amd64/bin/%}\
 
 < /sys/src/cmd/mkone
 YFLAGS=-D1 -d

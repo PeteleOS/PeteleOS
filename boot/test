@@ -9,22 +9,22 @@ shift || true
 
 case $task in
 build)
-	qemu=(-386)
+	qemu=(-amd64)
 	guest='rc /usr/glenda/bin/rc/buildall'
 	mark=BUILD
 	timeout=5400
 	;;
 smoke)
 	case ${1:-} in
-	-386|-amd64)	qemu=($1) ;;
-	*)		echo "usage: $prog smoke [-386 | -amd64]" >&2; exit 1 ;;
+	-amd64)	qemu=($1) ;;
+	*)		echo "usage: $prog smoke [-amd64]" >&2; exit 1 ;;
 	esac
 	guest='rc /usr/glenda/bin/rc/smoke'
 	mark=SMOKE
 	timeout=600
 	;;
 *)
-	echo "usage: $prog build | smoke [-386 | -amd64]" >&2
+	echo "usage: $prog build | smoke [-amd64]" >&2
 	exit 1
 	;;
 esac

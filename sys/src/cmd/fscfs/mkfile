@@ -13,7 +13,7 @@ HFILES=\
 CFILES=${OFILES:%.$O=%.c}
 
 UPDATE=mkfile\
-	/386/bin/$TARG\
+	/amd64/bin/$TARG\
 	$HFILES\
 	$CFILES\
 

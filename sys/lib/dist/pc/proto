@@ -55,14 +55,14 @@
 # acme could go
 #		acme	555 sys sys
 		awk	555 sys sys
-		bargraph	555 sys sys /sys/lib/dist/bin/386/bargraph
+		bargraph	555 sys sys /sys/lib/dist/bin/amd64/bargraph
 		basename	555 sys sys /sys/lib/dist/pc/multi/basename
 		cat	555 sys sys /sys/lib/dist/pc/multi/cat
 		chgrp	555 sys sys /sys/lib/dist/pc/multi/chgrp
 		chmod	555 sys sys /sys/lib/dist/pc/multi/chmod
 		cleanname	555 sys sys /sys/lib/dist/pc/multi/cleanname
 		cmp	555 sys sys /sys/lib/dist/pc/multi/cmp
-		cdsh	555 sys sys /sys/lib/dist/bin/386/cdsh
+		cdsh	555 sys sys /sys/lib/dist/bin/amd64/cdsh
 		cp	555 sys sys /sys/lib/dist/pc/multi/cp
 # cpu could go
 #		cpu	555 sys sys
@@ -81,7 +81,7 @@
 		ls	555 sys sys /sys/lib/dist/pc/multi/ls
 		mc	555 sys sys /sys/lib/dist/pc/multi/mc
 		mount	555 sys sys /sys/lib/dist/pc/multi/mount
-		multi	555 sys sys /sys/lib/dist/bin/386/multi
+		multi	555 sys sys /sys/lib/dist/bin/amd64/multi
 		mv	555 sys sys /sys/lib/dist/pc/multi/mv
 #		netkey	555 sys sys
 		ps	555 sys sys /sys/lib/dist/pc/multi/ps
@@ -98,7 +98,7 @@
 		stats	555 sys sys
 		syscall	555 sys sys /sys/lib/dist/pc/multi/syscall
 		tail	555 sys sys /sys/lib/dist/pc/multi/tail
-		tailfsrv	555 sys sys /sys/lib/dist/bin/386/tailfsrv
+		tailfsrv	555 sys sys /sys/lib/dist/bin/amd64/tailfsrv
 		tee	555 sys sys /sys/lib/dist/pc/multi/tee
 #		telnet	555 sys sys
 		test	555 sys sys /sys/lib/dist/pc/multi/test

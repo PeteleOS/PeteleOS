@@ -61,7 +61,7 @@ PIECES=\
 $O.multi: mkmulti mkfile
 	mkmulti $PIECES 
 	ls -l $O.multi
-	ls -l /386/bin/$PIECES | awk '{s += $6} END{print s}'
+	ls -l /amd64/bin/$PIECES | awk '{s += $6} END{print s}'
 
 scripts:V:
 	rm -rf ../../pc/multi

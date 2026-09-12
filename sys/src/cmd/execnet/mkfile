@@ -15,6 +15,6 @@ UPDATE=\
 	mkfile\
 	$HFILES\
 	${OFILES:%.$O=%.c}\
-	${TARG:%=/386/bin/%}\
+	${TARG:%=/amd64/bin/%}\
 
 </sys/src/cmd/mkone

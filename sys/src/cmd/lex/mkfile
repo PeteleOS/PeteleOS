@@ -19,7 +19,7 @@ UPDATE=\
 	sub1.c\
 	sub2.c\
 	header.c\
-	${TARG:%=/386/bin/%}\
+	${TARG:%=/amd64/bin/%}\
 
 </sys/src/cmd/mkone
 

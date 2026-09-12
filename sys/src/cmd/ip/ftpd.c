@@ -231,7 +231,7 @@ main(int argc, char **argv)
 	if(arg)
 		strecpy(cputype, cputype+sizeof cputype, arg);
 	else
-		strcpy(cputype, "mips");
+		strcpy(cputype, "amd64");
 	/* shurely /%s/bin */
 	snprint(bindir, sizeof(bindir), "/bin/%s/bin", cputype);
 

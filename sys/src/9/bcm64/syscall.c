@@ -10,7 +10,7 @@
 #include "../port/tos32.h"
 #include "ureg.h"
 
-#include "../bcm/arm.h"
+#include "arm.h"
 
 #include "ureg32.h"
 

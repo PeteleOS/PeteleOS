@@ -2,7 +2,7 @@
 #include <libc.h>
 #include <bio.h>
 #include <mach.h>
-#include "../cmd/ic/i.out.h"
+#include "../cmd/jc/j.out.h"
 
 static char *riscvexcep(Map*, Rgetter);
 
@@ -52,7 +52,7 @@ enum {
 
 /* copy anames from compiler */
 static
-#include "../cmd/ic/enam.c"
+#include "../cmd/jc/enam.c"
 
 static Opclass opOLOAD = {
 	"a,d",

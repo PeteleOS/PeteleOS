@@ -25,7 +25,7 @@ UPDATE=\
 	$YFILES\
 	re.c lex.c main.c parse.c proctab.c tran.c lib.c run.c\
 	maketab.c\
-	${TARG:%=/386/bin/%}\
+	${TARG:%=/amd64/bin/%}\
 
 </sys/src/cmd/mkone
 CFLAGS=-FTV -c -D_REGEXP_EXTENSION -D_RESEARCH_SOURCE -D_BSD_EXTENSION -DUTF

@@ -1,7 +1,6 @@
 </$objtype/mkfile
 
 TARG=\
-	8prefix\
 	9pcon\
 	accupoint\
 	acidleak\
@@ -55,7 +54,6 @@ DIRS=mnihongo\
 	gps\
 	na\
 	vga\
-	vmware\
 	realemu
 
 all:V:	$DIRS

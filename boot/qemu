@@ -10,7 +10,7 @@ pxe=boot/pxeboot.raw
 vgasize=1920x1080x32
 
 u9fs=false
-arch=386
+arch=amd64
 kind=term
 boot=multiboot
 vga=false
@@ -18,14 +18,13 @@ vga=false
 while [ $# -gt 0 ]; do
 	case "$1" in
 	-u9fs)		u9fs=true ;;
-	-386)		arch=386 ;;
 	-amd64)		arch=amd64 ;;
 	-cpu)		kind=cpu ;;
 	-smp)		smp=$2; shift; case $smp in ''|*[!0-9]*) echo 'boot/qemu: -smp needs a number' >&2; exit 1 ;; esac ;;
 	-9fat)		boot=9fat ;;
 	-vga)		vga=true ;;
 	*)
-		echo 'usage: boot/qemu [-386 | -amd64] [-cpu | -vga] [-smp n] [-9fat] [-u9fs]' >&2
+		echo 'usage: boot/qemu [-amd64] [-cpu | -vga] [-smp n] [-9fat] [-u9fs]' >&2
 		exit 1
 	esac
 	shift
@@ -71,7 +70,6 @@ if [ $boot = 9fat ]; then
 fi
 
 case $arch in
-386)	base=9pc ;;
 amd64)	base=9k10 ;;
 esac
 if [ $kind = cpu ]; then base=${base}cpuf; else base=${base}f; fi
@@ -79,7 +77,7 @@ elf=$arch/$base.elf
 if [ ! -f $elf ]; then
 	echo "boot/qemu: $elf missing" >&2
 	echo '# run boot/getbin to install the kernels' >&2
-	[ $arch = 386 ] && echo "# or build it in a guest: cd /sys/src/9/pc && mk CONF=${base#9} $base.elf" >&2
+	echo "# or build it in a guest: cd /sys/src/9k/k10 && mk CONF=${base#9k} $base.elf" >&2
 	echo '# or boot the menu disk instead: boot/qemu -9fat' >&2
 	exit 1
 fi

@@ -135,7 +135,7 @@ int	textfd;
 int	rfd;
 Biobuf	rfb;
 char*	portname = "/dev/eia0";
-char*	textfile = "/386/9pc";
+char*	textfile = "/amd64/9k10f";
 char*	procname = "1";
 char*	srvname;
 Channel* rchan;

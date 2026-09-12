@@ -1,36 +1,12 @@
-ARCH=\
-	bcm\
-	kw\
-	mtx\
-	omap\
-	pc\
-	ppc\
-	rb\
-	teg2\
+# 32-bit kernels removed; 64-bit kernels live in
+# sys/src/9k/k10, sys/src/9/bcm64, sys/src/9/loongson64
+ARCH=
 
 all:V:
-	for(i in $ARCH)@{
-		cd $i
-		mk
-	}
-	# build pc boots last
-	@{ cd pc; mk clean }
-	@{ cd pcboot; mk }
-pcboot:V:
-	@{ cd pc; mk clean }
-	@{ cd pcboot; mk }
+	@{ echo '9/mkfile: no 32-bit kernels left' }
 
 installall install:V:
-	for(i in $ARCH) @{
-		cd $i
-		mk $target
-	}
-	@{ cd pc; mk clean }
-	@{ cd pcboot; mk install }
-	@{ cd pc; mk clean }
+	@{ echo '9/mkfile: no 32-bit kernels left' }
 
 clean:V:
-	for(i in $ARCH pcboot) @{
-		cd $i
-		mk clean
-	}
+	@{ echo '9/mkfile: no 32-bit kernels left' }

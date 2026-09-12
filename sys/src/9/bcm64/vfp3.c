@@ -7,7 +7,7 @@
 #include "dat.h"
 #include "fns.h"
 #include "ureg.h"
-#include "../bcm/arm.h"
+#include "arm.h"
 
 /* subarchitecture code in m->havefp */
 enum {

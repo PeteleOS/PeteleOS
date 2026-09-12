@@ -27,7 +27,7 @@ if(pc/isfat $fat) {
 	}
 }
 
-disk/format -r 2 -d -b /386/pbs $fat /386/9load /386/9pcdisk
+disk/format -r 2 -d -b /amd64/pbs $fat /amd64/9load /amd64/9k10disk
 mount -c /srv/dos /n/9fat $fat
 cp $ini /n/9fat/plan9.ini
 unmount /n/9fat

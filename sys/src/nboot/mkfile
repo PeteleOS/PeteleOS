@@ -1,8 +1,6 @@
+# 32-bit nboot (bitsy/pc/zynq) removed; only efi (bootx64) left
 ARCH=\
-	bitsy\
 	efi\
-	pc\
-	zynq\
 
 all:V:
 	for(i in $ARCH)@{

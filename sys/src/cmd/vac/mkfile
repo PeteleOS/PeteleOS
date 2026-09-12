@@ -25,7 +25,7 @@ UPDATE=\
 	mkfile\
 	$CFILES\
 	$HFILES\
-	${TARG:%=/386/bin/%}
+	${TARG:%=/amd64/bin/%}
 
 default:V: all
 

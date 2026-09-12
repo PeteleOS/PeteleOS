@@ -100,7 +100,7 @@ OFILES=\
 
 UPDATE=\
 	mkfile\
-	/386/lib/ape/libap.a\
+	/amd64/lib/ape/libap.a\
 	${OFILES:%.$O=%.c}\
 
 </sys/src/cmd/mksyslib

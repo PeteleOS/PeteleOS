@@ -76,7 +76,7 @@ main(int argc, char **argv)
 				}
 				p = getenv("terminal");
 				if(p==0 || (p=strchr(p, ' '))==0 || p[1]==' ' || p[1]==0){
-					strcpy(b1, "/386/9pc");
+					strcpy(b1, "/amd64/9k10f");
 					dprint("missing or bad $terminal; assuming %s\n", b1);
 				}else{
 					p++;

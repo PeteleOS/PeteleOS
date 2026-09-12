@@ -1,20 +1,11 @@
-ARCH=\
-	pc\
+# 32-bit boot (pc/vt4/vt5) removed
+ARCH=
 
 all:V:
-	for(i in $ARCH)@{
-		cd $i
-		mk
-	}
+	@{ echo 'boot/mkfile: no 32-bit boot left' }
 
 installall install:V:
-	for(i in $ARCH) @{
-		cd $i
-		mk install
-	}
+	@{ echo 'boot/mkfile: no 32-bit boot left' }
 
 clean:V:
-	for(i in $ARCH) @{
-		cd $i
-		mk clean
-	}
+	@{ echo 'boot/mkfile: no 32-bit boot left' }

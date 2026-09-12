@@ -18,5 +18,5 @@ shift
 mkdir /tmp/bootfloppy.$pid
 cp $ini /tmp/bootfloppy.$pid/plan9.ini
 dd -bs 512 -count 1 < /dev/zero >/tmp/bootfloppy.$pid/plan9.nvr
-disk/format -b /386/pbs -f -d $disk /386/9load /tmp/bootfloppy.$pid/* $*
+disk/format -b /amd64/pbs -f -d $disk /amd64/9load /tmp/bootfloppy.$pid/* $*
 rm -rf /tmp/bootfloppy.$pid

@@ -1,4 +1,5 @@
 #!/bin/rc
 
 rfork en
-cd /sys/src/9/pcboot && mk clean && mk CONF'='bootpbs install && mk clean
+# 32-bit pcboot removed; boot images use prebuilt /amd64 binaries from boot/getbin
+echo 'mkbootpbs: pcboot removed, nothing to build' >[1=2]

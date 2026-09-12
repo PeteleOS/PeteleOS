@@ -6,7 +6,7 @@
 #
 # 'From scratch' procedure:
 # 1) bring system up as a terminal: 
-#	boot /386/9pcdisk
+#	boot /amd64/9pcdisk
 #	root is from 'il'
 #	login as 'bootes'
 # 2) don't forget to
@@ -21,12 +21,12 @@
 #	mk $sysname
 #
 partinit:
-	disk/mbr -m /386/mbr /dev/sdC0/data
+	disk/mbr -m /amd64/mbr /dev/sdC0/data
 	disk/fdisk -baw /dev/sdC0/data
 	disk/prep -banw /dev/sdC0/plan9
-	disk/format -b /386/pbslba -d -r 2 /dev/sdC0/9fat\
-		/386/9load\
-		/386/9pcauth\
+	disk/format -b /amd64/pbslba -d -r 2 /dev/sdC0/9fat\
+		/amd64/9load\
+		/amd64/9pcauth\
 		$sysname/plan9.ini\
 		$sysname/plan9.nvr
 
