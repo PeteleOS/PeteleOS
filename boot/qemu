@@ -77,7 +77,7 @@ elf=$arch/$base.elf
 if [ ! -f $elf ]; then
 	echo "boot/qemu: $elf missing" >&2
 	echo '# run boot/getbin to install the kernels' >&2
-	echo "# or build it in a guest: cd /sys/src/9k/k10 && mk CONF=${base#9k} $base.elf" >&2
+	echo "# or build it in a guest: cd /sys/src/9k/k10 && mk CONF=${base#9} $base.elf" >&2
 	echo '# or boot the menu disk instead: boot/qemu -9fat' >&2
 	exit 1
 fi

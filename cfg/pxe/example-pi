@@ -1,4 +1,5 @@
 # example raspberry pi
+# NOTE: written for 32-bit Pi (arm); adapt vgasize/monitor for arm64 (bcm64/pi5)
 vgasize=1600x1200x16
 monitor=vesa
 # console=0 b115200
