@@ -399,7 +399,7 @@ realmode(Cpu *cpu, struct Ureg *u, void *r)
 
 	cpu->reg[RFL] = GETUREG(flags);
 
-	if(i = GETUREG(trap)){
+	if(i = GETUREG(type)){
 		cpu->reg[RSS] = 0x0000;
 		cpu->reg[RSP] = 0x7C00;
 		cpu->reg[RCS] = (RMCODE>>4)&0xF000;
@@ -411,7 +411,7 @@ realmode(Cpu *cpu, struct Ureg *u, void *r)
 		cpu->reg[RSS] = GETUREG(ss);
 		cpu->reg[RSP] = GETUREG(sp);
 		cpu->reg[RCS] = GETUREG(cs);
-		cpu->reg[RIP] = GETUREG(pc);
+		cpu->reg[RIP] = GETUREG(ip);
 	}
 
 	startclock();
@@ -462,7 +462,7 @@ realmode(Cpu *cpu, struct Ureg *u, void *r)
 		case ESTACK:
 		case EGPF:
 		case EPF:
-			PUTUREG(trap, i);
+			PUTUREG(type, i);
 			err = trapstr[i];
 			break;
 		}
@@ -488,7 +488,7 @@ realmode(Cpu *cpu, struct Ureg *u, void *r)
 
 	PUTUREG(flags, cpu->reg[RFL]);
 
-	PUTUREG(pc, cpu->reg[RIP]);
+	PUTUREG(ip, cpu->reg[RIP]);
 	PUTUREG(cs, cpu->reg[RCS]);
 	PUTUREG(sp, cpu->reg[RSP]);
 	PUTUREG(ss, cpu->reg[RSS]);

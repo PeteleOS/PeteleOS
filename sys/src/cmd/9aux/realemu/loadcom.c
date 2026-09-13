@@ -32,9 +32,9 @@ main(int argc, char *argv[])
 	u.cs = u.ds = u.es = u.fs = u.gs = 0x1000;
 	u.ss = 0x0000;
 	u.sp = 0xfffe;
-	u.pc = 0x0100;
+	u.ip = 0x0100;
 
-	seek(rmem, (u.cs<<4) + u.pc, 0);
+	seek(rmem, (u.cs<<4) + u.ip, 0);
 	if(write(rmem, buf, len) != len)
 		sysfatal("write mem: %r");
 
