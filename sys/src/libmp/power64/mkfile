@@ -1,5 +1,5 @@
 objtype=power64
-</power/mkfile
+</$objtype/mkfile
 
 LIB=/$objtype/lib/libmp.a
 OFILES=\

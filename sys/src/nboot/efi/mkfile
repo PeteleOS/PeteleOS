@@ -47,6 +47,9 @@ efiboot.fat:D:	bootx64.efi
 
 
 test.iso:D:	efiboot.fat
+	# NOTE: /amd64/9bootiso was built from sys/src/nboot/pc (removed with
+	# the 32-bit toolchains), so this target cannot rebuild until a 64-bit
+	# ISO loader exists. bootx64.efi above is unaffected.
 	rm -fr tmp
 	mkdir tmp
 	mkdir tmp/cfg

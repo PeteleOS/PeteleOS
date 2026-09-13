@@ -47,8 +47,11 @@ expects, matching the original CD image.
 
 2. Install the binaries
 
-`boot/getbin` downloads the latest 9legacy CD image and copies the 386 and
-amd64 binaries, libraries and kernels into the tree. It reads the image with
+`boot/getbin` downloads the latest 9legacy CD image and copies the amd64
+binaries, libraries and kernels into the tree, plus the BIOS boot loaders
+(`mbr`, `pbs*`, `9load`, `9bootpbs`, `9loadusb`) vendored from the image's
+`386/` directory (32-bit support was removed; these real-mode loaders have
+no amd64 equivalent). It reads the image with
 `9660srv` and `9p` from [plan9port](https://github.com/9fans/plan9port), which
 must be installed.
 
@@ -58,14 +61,12 @@ must be installed.
 
 ### 1.2. virtio-9p mode
 
-With no arguments `boot/qemu` boots the 386 terminal kernel over virtio-9p, on
+With no arguments `boot/qemu` boots the amd64 terminal kernel over virtio-9p, on
 the serial console, with four CPUs and QEMU's slirp networking.
 
 ```
-./boot/qemu                 ## 386 terminal (default)
-./boot/qemu -amd64          ## amd64 terminal
-./boot/qemu -cpu            ## 386 cpu server
-./boot/qemu -amd64 -cpu     ## amd64 cpu server
+./boot/qemu                 ## amd64 terminal (default)
+./boot/qemu -cpu            ## amd64 cpu server
 ./boot/qemu -smp 8          ## eight CPUs
 ```
 
@@ -76,7 +77,6 @@ the serial console, with four CPUs and QEMU's slirp networking.
 
 ```
 ./boot/qemu -vga
-./boot/qemu -amd64 -vga
 ```
 
 #### 1.2.2. Boot from the 9fat disk
@@ -105,18 +105,17 @@ boots `boot/pxeboot.raw` over tftp, and serves the tree with u9fs over
 
 `boot/pxeboot.raw`, the PXE loader for `-u9fs`, is committed. `boot/9fat.raw`,
 the menu disk for `-9fat`, is built on demand. `boot/regen` rebuilds both from
-the host. It boots a guest and runs `mkbootpbs`, `mkpxeboot` and `mk9fat`.
+the host. It boots a guest and runs `mkpxeboot` and `mk9fat`
+(`mkbootpbs` is a no-op: the 32-bit `pcboot` sources were removed, so the
+BIOS loaders come prebuilt from `boot/getbin` instead).
 
 ```
 ./boot/regen
 ```
 
-To rebuild `boot/pxeboot.raw` by hand, shrink 9bootpbs and build the loader in a
-guest. The boot ramdisk shadows `/boot`, so the diff is read from `/root/boot`:
+To rebuild `boot/pxeboot.raw` by hand, run `mkpxeboot` in a guest:
 
 ```
-cd / && ape/patch -p1 < /root/boot/9-pcboot-boot.diff
-mkbootpbs
 mkpxeboot   ## writes boot/pxeboot.raw
 ```
 
@@ -135,14 +134,13 @@ mk9fat
 `boot/test` drives a guest through a CI task and reports on the serial console.
 
 ```
-boot/test build           ## boot 386, build every architecture
-boot/test smoke -386      ## boot 386, compile and run the smoke test
+boot/test build           ## boot amd64, build the 64-bit architectures
 boot/test smoke -amd64    ## boot amd64, compile and run the smoke test
 ```
 
 The smoke test is `usr/glenda/src/smoke/smoke.c`. It checks the compiler and
 library, then stresses the allocator, processes, pipes, the file system and the
-network. GitHub Actions runs all three on every push and pull request. See
+network. GitHub Actions runs both on every push and pull request. See
 `.github/workflows/ci.yml`.
 
 ## 3. Thanks

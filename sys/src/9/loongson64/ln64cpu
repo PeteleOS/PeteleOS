@@ -63,6 +63,6 @@ boot cpu
 
 bootdir
 	boot$CONF.out boot
-	/spim/bin/ip/ipconfig
-	/spim/bin/auth/factotum
+	/spim64/bin/ip/ipconfig
+	/spim64/bin/auth/factotum
 	nvram
