@@ -46,6 +46,7 @@ jobs:
       - name: Populate the checkout
         run: |
           export PATH="$PATH:$PLAN9/bin"
+          chmod +x 
           ./boot/mkdirs
           ./boot/getbin
 
