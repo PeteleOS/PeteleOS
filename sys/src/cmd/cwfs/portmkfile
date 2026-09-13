@@ -8,7 +8,7 @@ OFILES=\
 	9p2.$O\
 	auth.$O\
 	chk.$O\
-	con.$O\
+	9con.$O\
 	config.$O\
 	console.$O\
 	cw.$O\

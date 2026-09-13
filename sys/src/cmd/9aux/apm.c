@@ -153,7 +153,7 @@ static int
 _apmcall(int fd, Ureg *u)
 {
 if(apmdebug) fprint(2, "call ax 0x%lux bx 0x%lux cx 0x%lux\n",
-	u->ax&0xFFFF, u->bx&0xFFFF, u->cx&0xFFFF);
+	(ulong)(u->ax&0xFFFF), (ulong)(u->bx&0xFFFF), (ulong)(u->cx&0xFFFF));
 
 	seek(fd, 0, 0);
 	if(write(fd, u, sizeof *u) != sizeof *u)
@@ -164,7 +164,7 @@ if(apmdebug) fprint(2, "call ax 0x%lux bx 0x%lux cx 0x%lux\n",
 		return -1;
 
 if(apmdebug) fprint(2, "flags 0x%lux ax 0x%lux bx 0x%lux cx 0x%lux\n",
-	u->flags&0xFFFF, u->ax&0xFFFF, u->bx&0xFFFF, u->cx&0xFFFF);
+	(ulong)(u->flags&0xFFFF), (ulong)(u->ax&0xFFFF), (ulong)(u->bx&0xFFFF), (ulong)(u->cx&0xFFFF));
 
 	if(u->flags & 1) {	/* carry flag */
 		werrstr("%s", apmerror(u->ax>>8));
