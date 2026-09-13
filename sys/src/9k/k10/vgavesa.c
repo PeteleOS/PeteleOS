@@ -68,7 +68,7 @@ vbecall(Ureg *u)
 	}
 	pa = PADDR(RMBUF);
 	cmem->dev->write(cmem, modebuf, sizeof modebuf, pa);
-	u->trap = 0x10;
+	u->type = 0x10;
 	creg->dev->write(creg, u, sizeof *u, 0);
 
 	creg->dev->read(creg, u, sizeof *u, 0);
