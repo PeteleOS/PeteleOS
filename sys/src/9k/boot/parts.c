@@ -11,7 +11,7 @@
 #include "../boot/boot.h"
 
 typedef struct Fs Fs;
-#include "/sys/src/boot/pc/dosfs.h"
+#include "dosfs.h"
 
 #define	GSHORT(p)	(((p)[1]<<8)|(p)[0])
 #define	GLONG(p)	((GSHORT((p)+2)<<16)|GSHORT(p))
