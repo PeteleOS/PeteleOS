@@ -52,9 +52,6 @@ OBJ=\
 	$CONF.root.$O\
 	$CONF.rootc.$O\
 
-BCM=devfakertc|devusb|ethermii
-OMAP=kbd|mouse
-
 HFILES=
 
 LIB=\
@@ -103,11 +100,12 @@ install:V: /$objtype/$p$CONF
 <../port/portmkfile
 <|../port/mkbootrules $CONF
 
-^($BCM)\.$O:R:	'\1.c'
-	$CC $CFLAGS -. -I. $stem1.c
-
-^($OMAP)\.$O:R:	'\1.c'
-	$CC $CFLAGS -. -I. $stem1.c
+# NOTE: BCM/OMAP drivers (devfakertc, devusb, ethermii, kbd, mouse) now live
+# locally in bcm64/ (flattened from ../bcm and ../omap in upstream 9legacy).
+# They are built by the generic %.$O: %.c rule from ../port/portmkfile.
+# Do NOT add regex metarules like ^(devfakertc|...)\.$O:R here: they match
+# the same target/prerequisite as the generic rule and mk aborts with
+# "ambiguous recipes" (kernel arm64 build failure).
 
 arch.$O clock.$O fpiarm.$O main.$O mmu4.$O screen.$O syscall.$O trap.$O trap4.$O: \
 	/$objtype/include/ureg.h
