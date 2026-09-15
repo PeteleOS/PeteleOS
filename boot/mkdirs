@@ -11,6 +11,7 @@ lst=( \
 	./acme/bin/riscv64 \
 	./acme/bin/spim64 \
 	./amd64/bin \
+	./amd64/bin/9aux \
 	./amd64/bin/ape \
 	./amd64/bin/auth \
 	./amd64/bin/aux \
@@ -20,6 +21,8 @@ lst=( \
 	./amd64/bin/fossil \
 	./amd64/bin/fs \
 	./amd64/bin/games \
+	./amd64/bin/git \
+	./amd64/bin/ip \
 	./amd64/bin/ip/httpd \
 	./amd64/bin/ndb \
 	./amd64/bin/replica \
@@ -28,6 +31,8 @@ lst=( \
 	./amd64/bin/venti \
 	./amd64/lib \
 	./amd64/lib/ape \
+	./arm64/bin \
+	./arm64/bin/9aux \
 	./arm64/bin/ape \
 	./arm64/bin/auth \
 	./arm64/bin/aux \
@@ -38,12 +43,14 @@ lst=( \
 	./arm64/bin/fs \
 	./arm64/bin/games \
 	./arm64/bin/git \
+	./arm64/bin/ip \
 	./arm64/bin/ip/httpd \
 	./arm64/bin/ndb \
 	./arm64/bin/replica \
 	./arm64/bin/upas \
 	./arm64/bin/usb \
 	./arm64/bin/venti \
+	./arm64/lib \
 	./arm64/lib/ape \
 	./dist/replica/client \
 	./env \
@@ -154,6 +161,8 @@ lst=( \
 	./n/tapefs \
 	./n/temp \
 	./n/vac \
+	./power64/bin \
+	./power64/bin/9aux \
 	./power64/bin/ape \
 	./power64/bin/auth \
 	./power64/bin/aux \
@@ -163,15 +172,20 @@ lst=( \
 	./power64/bin/fossil \
 	./power64/bin/fs \
 	./power64/bin/games \
+	./power64/bin/git \
+	./power64/bin/ip \
 	./power64/bin/ip/httpd \
 	./power64/bin/ndb \
 	./power64/bin/replica \
 	./power64/bin/upas \
 	./power64/bin/usb \
 	./power64/bin/venti \
+	./power64/lib \
 	./power64/lib/ape \
 	./rc/bin/dial \
 	./rc/bin/postscript \
+	./riscv64/bin \
+	./riscv64/bin/9aux \
 	./riscv64/bin/ape \
 	./riscv64/bin/auth \
 	./riscv64/bin/aux \
@@ -182,21 +196,53 @@ lst=( \
 	./riscv64/bin/fs \
 	./riscv64/bin/games \
 	./riscv64/bin/git \
+	./riscv64/bin/ip \
 	./riscv64/bin/ip/httpd \
 	./riscv64/bin/ndb \
 	./riscv64/bin/replica \
 	./riscv64/bin/upas \
 	./riscv64/bin/usb \
 	./riscv64/bin/venti \
+	./riscv64/lib \
 	./riscv64/lib/ape \
+	./mips64/bin \
+	./mips64/bin/9aux \
 	./mips64/bin/ape \
 	./mips64/bin/auth \
 	./mips64/bin/aux \
 	./mips64/bin/dial \
 	./mips64/bin/disk \
+	./mips64/bin/fossil \
+	./mips64/bin/fs \
+	./mips64/bin/games \
+	./mips64/bin/git \
+	./mips64/bin/ip \
+	./mips64/bin/ip/httpd \
+	./mips64/bin/ndb \
+	./mips64/bin/replica \
+	./mips64/bin/upas \
+	./mips64/bin/usb \
 	./mips64/bin/venti \
+	./mips64/lib \
 	./mips64/lib/ape \
+	./spim64/bin \
+	./spim64/bin/9aux \
 	./spim64/bin/ape \
+	./spim64/bin/auth \
+	./spim64/bin/dial \
+	./spim64/bin/disk \
+	./spim64/bin/fossil \
+	./spim64/bin/fs \
+	./spim64/bin/games \
+	./spim64/bin/git \
+	./spim64/bin/ip \
+	./spim64/bin/ip/httpd \
+	./spim64/bin/ndb \
+	./spim64/bin/replica \
+	./spim64/bin/upas \
+	./spim64/bin/usb \
+	./spim64/bin/venti \
+	./spim64/lib \
 	./spim64/lib/ape \
 	./sys/games/sudoku \
 	./sys/lib/backup/set1 \
