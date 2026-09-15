@@ -11,6 +11,7 @@ FILES=\
 	machdata\
 	setmach\
 	sparc64\
+	sparc64obj\
 	68020\
 	alpha\
 	4\
