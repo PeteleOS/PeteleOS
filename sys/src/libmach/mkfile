@@ -22,6 +22,7 @@ FILES=\
 	sparc64db\
 	68020db\
 	alphadb\
+	7db\
 	8db\
 	vdb\
 	qdb\
@@ -32,6 +33,7 @@ FILES=\
 	4obj\
 	68020obj\
 	alphaobj\
+	vcodas\
 
 HFILES=/sys/include/mach.h elf.h obj.h
 
