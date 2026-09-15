@@ -29,7 +29,7 @@ extern int	print_remote_header(Biobuf*, char*, char*, char*);
 extern int	parse_header(char*, String*, String*);
 
 /*
- *  routines in aux.c
+ *  routines in 9aux.c (renamed from aux.c: aux is a reserved name on Windows)
  */
 extern String	*abspath(char*, char*, String*);
 extern String	*mboxpath(char*, char*, String*, int);
