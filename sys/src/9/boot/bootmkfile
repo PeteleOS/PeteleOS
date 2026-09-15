@@ -1,9 +1,10 @@
 BOOTDIR=../boot
 BOOTLIB=$BOOTDIR/libboot.a$O
 
+# aux.c renamed to 9aux.c: aux is a reserved name on Windows
 BOOTFILES=\
 	bootauth.$O\
-	9aux.$O\	# aux.c renamed to 9aux.c: aux is a reserved name on Windows
+	9aux.$O\
 	boot.$O\
 	bootcache.$O\
 	bootip.$O\
