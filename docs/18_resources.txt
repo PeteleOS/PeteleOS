@@ -1,0 +1,75 @@
+LEVEL 1-2 -- RESOURCE ANALYSIS
+===============================
+
+1. PURPOSE
+resources/ is the renamed share/ tree, holding system resources: firmware,
+fonts, icons, data files, and other runtime resources. VERIFIED from directory
+listing and resources/xmake.lua header.
+
+2. SOURCE TREE (VERIFIED)
+
+  resources/
+  +-- dict/       dictionaries
+  +-- locale/     locale data (ctype sources)
+  +-- man/        man pages (man1/man2/.../man9)
+  +-- misc/       misc data (pcvtfonts/ legacy console fonts for pcvt driver)
+  +-- mk/         bsd.*.mk -- DELIBERATELY EXCLUDED (build-system internals being
+  |               replaced by xmake; not a runtime resource)
+  +-- snmp/       SNMP MIBs
+  +-- tabset/     tab settings
+  +-- termtypes/  termcap/terminfo
+  +-- tmac/       troff macros
+  +-- zoneinfo/   IANA tzdata (text, compiled via zic)
+  +-- btrace/     btrace scripts
+  +-- Makefile, Makefile.inc, xmake.lua
+
+  NOT present (VERIFIED ABSENCE):
+    firmware/: No firmware blobs vendored. OpenBSD does not ship most firmware
+              in base; fetched via fw_update(8) at runtime.
+    fonts/: No dedicated fonts/ dir. Only pcvtfonts in misc/. X11 fonts are in
+            gui/ (xenocara).
+
+3. BUILD SYSTEM -- resources/xmake.lua (VERIFIED ~70 lines read)
+
+  target os-resources, kind headeronly, set_default(false).
+  Does NOT compile C/C++ (no binary). Data compilation:
+    zic(8) compiles tzdata text -> binary zoneinfo
+    mklocale(1) compiles ctype sources -> binary locale (via find_tool("mklocale"),
+      which triggers host-build of userland/utilities/mklocale if needed)
+  Both skipped gracefully if tool not found on host.
+
+  Installation:
+    Flat categories installed verbatim, preserving internal structure
+    (man keeps man1/man2..., zoneinfo keeps hierarchy).
+    Uses headeronly + after_install copy logic (same model as configs/xmake.lua).
+
+4. RESOURCE HANDLING PER TYPE
+
+  dict, man, misc, snmp, tabset, termtypes, tmac, btrace: copied verbatim.
+  zoneinfo: tzdata text + zic -> binary zoneinfo under share/zoneinfo (if zic found).
+  locale: ctype source + mklocale -> binary locale (if mklocale found).
+  mk: excluded (build internals, not runtime).
+  firmware: nothing to install (gap, future firmware/ dir would wire same way).
+
+5. INSTALL DESTINATIONS
+
+  resources/man/*       -> build/install/share/man/* (or /usr/share/man)
+  resources/zoneinfo/*  -> build/install/share/zoneinfo/* (compiled)
+  etc. Mirrors OpenBSD /usr/share layout.
+
+6. RUNTIME LOADING
+
+  Man: man(1) reads share/man.
+  Zoneinfo: libc localtime reads share/zoneinfo.
+  Locale: libc setlocale reads share/locale.
+  Termtypes: libcurses reads share/termtypes.
+
+7. DEPENDENCIES
+  Build: tools (framework), userland/utilities/mklocale (host tool for locale).
+  Runtime: consumed by kernel (firmload if blobs present), userland (man, locale).
+
+8. REFACTORING NOTES
+  Adding a new resource category: add directory under resources/ and wire in
+  resources/xmake.lua flat copy. Adding firmware would be a new flat category.
+  Data compilation tools (zic, mklocale) are host dependencies; ensure they exist
+  for reproducible builds.

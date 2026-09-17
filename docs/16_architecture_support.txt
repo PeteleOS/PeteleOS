@@ -1,0 +1,113 @@
+LEVEL 1-2 -- ARCHITECTURE SUPPORT ANALYSIS
+===========================================
+
+1. SUPPORTED ARCHITECTURES (VERIFIED FROM tools/helpers.lua)
+
+  Three architectures remain after pruning (OS_SUPPORTED_ARCHS):
+    amd64   -- x86_64 64-bit (Intel/AMD)
+    arm64   -- aarch64 64-bit (ARMv8-A)
+    riscv64 -- RV64GC 64-bit (RISC-V)
+  Pruned archs (alpha, armv7, hppa, i386, landisk, loongson, octeon, powerpc64,
+  sparc64 etc. listed in kernel/Makefile SUBDIR) are NOT present under kernel/arch/
+  and are NOT supported.
+
+  Triple mapping (OS_TARGET_TRIPLES):
+    amd64   -> x86_64-unknown-openbsd
+    arm64   -> aarch64-unknown-openbsd
+    riscv64 -> riscv64-unknown-openbsd
+
+2. PER-ARCHITECTURE FACTS (kernel/xmake.lua, VERIFIED)
+
+  MD_CORE_DIRS = { amd64="amd64", arm64="arm64", riscv64="riscv64" }
+  BUS_GLUE_DIRS = { amd64={"isa","pci"}, arm64={"dev"}, riscv64={"dev"} }
+  LDSCRIPT_NAMES = { amd64="ld.script", arm64="kern.ldscript", riscv64="kern.ldscript" }
+  CMACHFLAGS:
+    amd64: -mcmodel=kernel -mno-red-zone -mno-sse2 -mno-sse -mno-3dnow
+    arm64: -march=armv8-a+nofp+nosimd+rng -moutline-atomics -fno-stack-protector -mbranch-protection=bti
+    riscv64: -march=rv64gc -mcmodel=medany -mno-relax -fno-stack-protector
+  PER_FILE_CFLAGS:
+    amd64: 14 dml/*_fpu.c files forced -msse/-msse2 (DC display manager)
+    arm64/riscv64: empty
+
+3. SOURCE LAYOUT PER ARCH (VERIFIED FROM kernel/arch/ LISTING)
+
+  kernel/arch/amd64/
+    amd64/   -- MD core (~40 sampled: locore.S, pmap.c, machdep.c, trap.c, apic.c,
+              bus_dma.c, vector.S, intr.c, identcpu.c, fpu.c, etc.)
+    include/ -- <machine/...> headers
+    conf/    -- GENERIC, ld.script
+    isa/, pci/ -- bus glue
+    compile/, stand/efiboot/
+
+  kernel/arch/arm64/
+    arm64/, compile/, conf/, dev/, include/, stand/
+
+  kernel/arch/riscv64/
+    riscv64/, compile/, conf/, dev/, include/, stand/
+
+  libraries/core/csu/ per-arch startup:
+    libraries/core/csu/aarch64/, amd64/, riscv64/, plus generic crt0.c
+
+  configs/etc/ per-arch overrides:
+    configs/etc/etc.amd64/, etc.arm64/, etc.riscv64/
+    (disktab, fbtab, login.conf, sysctl.conf, ttys, MAKEDEV.md)
+
+  installer/ per-arch media:
+    installer/amd64/, arm64/, riscv64/
+
+4. BOOTLOADER PER ARCH (kernel/xmake.lua EFI_BOOTLOADERS table, VERIFIED)
+
+  amd64: prog_dir arch/amd64/stand/efiboot/bootx64, prog_name BOOTX64.EFI,
+         ldscript ldscript.amd64, objcopy --target=efi-app-x86_64,
+         defines {EFIBOOT,FWRANDOM,...}, own_srcs includes efiboot.c/efipxe.c/etc.
+         + bootx64 specific start_amd64.S
+  arm64: prog_dir arch/arm64/stand/efiboot, prog_name BOOTAA64.EFI,
+         ldscript ldscript.arm64, objcopy --output-target=binary (peheader),
+         own_srcs includes start.S, efiacpi.c, fdt.c, smbios.c
+  riscv64: prog_dir arch/riscv64/stand/efiboot, prog_name BOOTRISCV64.EFI,
+           ldscript ldscript.riscv64, objcopy binary, own_srcs includes start.S, efiriscv.c
+
+  All built as phony on_build (compile -> link shared -> objcopy). Requires ld.lld.
+
+5. FILE COUNTS PER ARCH (generated_manifest.lua VERIFIED)
+
+  amd64: 2470 files via real config(8) (or 373 fallback without bison/flex)
+  arm64: 1803 (real) / 344 (fallback)
+  riscv64: 951 (real) / 303 (fallback)
+  Counts reflect driver inclusion per files.* and GENERIC.
+
+6. COMMON vs ARCH-SPECIFIC CODE
+
+  Common (MI): kernel/core/kern/*, uvm/*, net/*, fs/*, crypto/*, ddb/*,
+               libraries/core/libc/* (except arch/), include/*.h
+  Arch-specific (MD): kernel/arch/<arch>/*, kernel/core/lib/libkern/arch/<arch>/*,
+                      libraries/core/csu/<arch>/*, libarch/*, per-arch conf,
+                      linker scripts, bootloaders, per-arch CMACHFLAGS.
+  Abstraction boundary: <machine/...> headers via copied alias at
+  build/os-kernel-gen/<arch>/machine/ (copy, not symlink, for Windows portability).
+  Evaluation:
+    - Clean abstraction: sys/param.h via kernel/core/sys/ indirection.
+    - Partial: pmap, bus_dma, intr, autoconf leak MD details into MI callers.
+    - Duplication: libkern arch overrides (ffs.S) vs generic .c.
+    - Inconsistent: BUS_GLUE_DIRS differ per arch without uniform interface.
+
+7. BUILD DIFFERENCES
+
+  Arch selection: xmake f --target_arch=<arch> (get_config("target_arch")).
+  Compiler flags differ (CMACHFLAGS) and per-file flags (dml FPU).
+  Linker script name differs.
+  Bus glue directories differ.
+  EFI bootloader spec differs entirely per arch.
+
+8. RUNTIME DIFFERENCES
+
+  Interrupt handling: APIC/IOAPIC/LAPIC on amd64 vs GIC INFERRED on arm64 vs PLIC/CLINT on riscv64.
+  MMU: amd64 pmap (4-level), arm64 (VMSAv8), riscv (Sv39) -- NOT VERIFIED line-level.
+  Device discovery: amd64 uses ACPI + PCI; arm64/riscv64 use FDT (fdt.c).
+  CPU init: identcpu.c per arch, cacheinfo.c, est.c (amd64 power).
+
+9. REFACTORING BOUNDARIES
+  Adding a new arch requires: new kernel/arch/<arch>/ tree, entry in
+  OS_SUPPORTED_ARCHS, OS_TARGET_TRIPLES, MD_CORE_DIRS, CMACHFLAGS, LDSCRIPT,
+  EFI spec, configs/etc/etc.<arch>/, installer/<arch>/, csu/<arch>/. High risk:
+  pmap and locore.S are the most arch-sensitive and hardest to port.

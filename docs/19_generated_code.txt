@@ -1,0 +1,114 @@
+LEVEL 2-3 -- GENERATED CODE ANALYSIS
+=====================================
+
+1. OVERVIEW
+PeteleOS generates several manifests and per-build artifacts because xmake
+description scope cannot run io/os.execv (verified nil at that scope per
+xmake 3.0.9 testing). Generators run via "xmake lua" (script scope, where
+io/os.execv/import are real) and write committed manifests.
+
+  DO NOT EDIT MANUALLY: kernel/generated_manifest.lua, userland/generated_manifest.lua,
+  libraries/generated_manifest.lua, tests/generated_manifest.lua, gui/generated_manifest.lua
+  are AUTO-GENERATED. Regenerate via xmake lua tools/gen/*.lua.
+
+2. PER-FILE ANALYSIS
+
+  FILE: kernel/generated_manifest.lua
+  GENERATOR: tools/gen/gen_kernel_manifest.lua
+  INPUT: kernel/**/GENERIC (MI + per-arch), kernel/**/files.* lists,
+         userland/system/config (config(8) host-built tool, patched util.c sourcepath)
+         + fallback approximate files/GENERIC parser (when bison/flex missing)
+  OUTPUT: OS_KERNEL_MANIFEST[arch] = { mode="real-config8"|"approximate",
+            selected_files={...}, ioconf_c=<string or nil> } for amd64, arm64, riscv64
+  TRIGGER: whenever kernel Makefiles, GENERIC, files lists, or directory layout change
+  CONSUMERS: kernel/xmake.lua (selected_files -> driver add_files, ioconf_c -> on_load write)
+  SIZE: amd64 2470 files (real), 373 (approximate) -- verified end-to-end with bison/flex.
+  EDITABLE: DO NOT EDIT MANUALLY. Committed like a configure script.
+
+  FILE: userland/generated_manifest.lua
+  GENERATOR: tools/gen/gen_userland_manifest.lua
+  INPUT: userland/**/Makefile (PROG, SRCS, LDADD, MAN, BINOWN, BINMODE, MLINKS)
+         + SUBDIR chains + recursive *.c/*.S/*.cc glob fallback + yacc/lex *.y/*.l
+  OUTPUT: OS_USERLAND_MANIFEST table (565 build units verified)
+  CONSUMERS: userland/xmake.lua (os_program per entry)
+  TRIGGER: whenever userland Makefiles or directory layout change
+  EDITABLE: DO NOT EDIT MANUALLY. Task: os-regen-userland.
+
+  FILE: libraries/generated_manifest.lua
+  GENERATOR: tools/gen/gen_libraries_manifest.lua
+  INPUT: libraries/**/shlib_version files (major/minor)
+  OUTPUT: OS_LIBRARIES_SHLIB_VERSIONS = { ["core/libc"]={major=103,minor=0}, ... }
+  CONSUMERS: libraries/xmake.lua (read_shlib_version via lookup, not io.open at
+             description scope)
+  EDITABLE: DO NOT EDIT MANUALLY. Regenerate after any shlib_version change.
+
+  FILE: tests/generated_manifest.lua
+  GENERATOR: tools/gen/gen_tests_manifest.lua
+  INPUT: tests/**/Makefile, bsd.regress.mk vs custom REGRESS_TARGETS, golden files
+  OUTPUT: OS_TESTS_MANIFEST table
+  CONSUMERS: tests/xmake.lua
+  EDITABLE: DO NOT EDIT MANUALLY.
+
+  FILE: gui/generated_manifest.lua (if present)
+  GENERATOR: tools/gen/gen_gui_manifest.lua
+  INPUT: gui/MODULES, gui/3RDPARTY
+  OUTPUT: module list table
+  CONSUMERS: gui/xmake.lua (phony-wrapper per module)
+
+3. PER-BUILD GENERATED ARTIFACTS (NOT COMMITTED, UNDER build/)
+
+  build/os-kernel-gen/<arch>/machine/  -- copy of kernel/arch/<arch>/include/
+    Generator: kernel/xmake.lua on_load os.cp (not symlink for Windows portability)
+    Input: kernel/arch/<arch>/include/*
+    Output: build/.../machine/*
+    Consumer: <machine/...> includes in kernel sources
+    Trigger: every build (mkdir + copy if missing)
+
+  build/os-kernel-gen/<arch>/config-run/build/ioconf.c
+    Generator: kernel/xmake.lua on_load (writes OS_KERNEL_MANIFEST[arch].ioconf_c)
+    Input: generated_manifest.lua ioconf_c string (from config(8) run)
+    Output: ioconf.c file
+    Consumer: kernel compilation (cfdata)
+    Trigger: every build if manifest mode == real-config8
+
+  build/os-kernel-gen/<arch>/vers.c
+    Generator: kernel/xmake.lua on_load (string.format with version + date)
+    Input: kernel_version "0.1.0", arch, os.date
+    Output: vers.c with char version[] = "PeteleOS 0.1.0 (arch) #0: ..."
+    Consumer: kernel link
+    Trigger: every build
+
+  build/os-kernel-gen/<arch>/assym.h
+    Generator: kernel/xmake.lua on_load via genassym.sh + genassym.cf + CC + CMACHFLAGS + incflags
+    Input: kernel/core/kern/genassym.sh, kernel/arch/<arch>/<arch>/genassym.cf
+    Output: assym.h (assembler symbol offsets)
+    Consumer: locore.S and other .S files
+    Trigger: every build; requires sh + CC; writes stub if tools missing
+
+  build/os-kernel-gen/<arch>/efiboot/BOOT*.EFI
+    Generator: kernel/xmake.lua target os-kernel-efiboot-<arch> on_build
+    Input: EFI bootloader sources per spec
+    Output: BOOT*.EFI
+    Trigger: explicit build of efiboot target (requires ld.lld + objcopy)
+
+  Additional generated: syscallargs.h, sysent.c fragments via makesyscalls.sh (INFERRED;
+  kernel/core/kern/makesyscalls.sh present, output not verified in build/).
+
+4. WHY COMMITTED MANIFESTS
+Description scope (where xmake.lua is evaluated at "xmake f" time) has only a
+small read-only allowlist (os.isfile, os.isdir, os.files, get_config). Even
+pcall, io, import, os.execv, os.iorun are nil there (confirmed via real xmake
+v3.0.9 testing). So regeneration cannot happen at description time; manifests
+must already be correct. They are committed like protobuf code.
+
+5. DEPENDENCY IMPLICATIONS
+Changing kernel files/GENERIC without regenerating kernel manifest yields stale
+selected_files (missing/new drivers silently excluded/included). Changing a
+library shlib_version without regenerating libraries manifest yields wrong
+soname. CI should verify manifests are up-to-date (e.g. run generators and
+diff).
+
+6. REFACTORING NOTES
+Generators are isolated in tools/gen/ and testable standalone. Changing
+generation logic does not affect committed output until regeneration. Do not
+mix hand-edits into generated files; always edit the generator or its inputs.

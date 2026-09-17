@@ -1,0 +1,93 @@
+LEVEL 7 -- RUNTIME FLOWS (CONTROL FLOW)
+========================================
+
+Flows below are VERIFIED from source presence + build files; exact function
+call chains are INFERRED where line-level tracing was not performed.
+
+1. SYSTEM CALL FLOW
+  Entry: userland libc stub (libraries/core/libc/sys/*.S or generated 2-line
+         stub: #include "SYS.h" + RSYSCALL(name))
+    -> trap via syscall instruction (amd64: syscall, arm64: svc, riscv64: ecall)
+    -> kernel trap handler (arch/<arch>/<arch>/trap.c, vector.S)
+    -> dispatch: sysent[code].sy_call (kernel/core/kern/init_sysent.c)
+       e.g. sys_read, sys_write, sys_fork, sys_execve
+    -> implementation in kernel/core/kern/{kern_*.c, sys_*.c, vfs_*.c, uipc_*.c}
+    -> copyin/copyout (uvm_io.c)
+    -> return via trap return path, errno handling in libc stub
+  Example: open(2) -> sys_open -> vn_open -> namei -> VFS lookup -> filedesc alloc.
+
+2. PROCESS CREATION FLOW
+  fork() -> sys_fork -> kern_fork.c: fork1()
+    -> proc allocation (kern_proc.c), vmspace copy (uvm_fork, uvm_glue.c),
+       filedesc copy (kern_descrip.c), signal state copy (kern_sig.c)
+    -> scheduler enqueue (kern_sched.c / sched_bsd.c)
+  execve() -> sys_execve -> kern_exec.c: execve1()
+    -> exec_subr.c, exec_elf.c (ELF) or exec_script.c (#!), uvm unmap old,
+       uvm mmap new segments, stack/auxv setup -> return to new entry (crt0 -> main())
+  kthread_create() -> kern_kthread.c for kernel threads.
+
+3. MEMORY ALLOCATION FLOW (KERNEL)
+  malloc(9) -> kern_malloc.c -> subr_pool.c (pool cache) -> uvm_km.c (kernel virt)
+            -> uvm_page.c (physical)
+  UVM fault -> uvm_fault.c: uvm_fault() -> uvm_map.c lookup -> uvm_anon.c / uvm_aobj.c
+              -> pager (uvm_pager.c) -> vnode or swap (uvm_swap.c)
+  User mmap -> sys_mmap -> uvm_mmap.c: uvm_mmap() -> uvm_map.c
+
+4. FILESYSTEM FLOW
+  User open/read/write -> VFS (vfs_subr.c, vfs_lookup.c, vfs_vnops.c)
+    -> filesystem VFS ops (ffs_vfsops.c, nfs_vfsops.c) -> vnode ops
+    -> buffer cache (vfs_bio.c, vfs_biomem.c) or direct I/O
+    -> device driver (dev/ata, dev/scsi, dev/pci/nvme_pci.c)
+  Path lookup: namei (vfs_lookup.c) -> hash (ufs_dirhash.c) -> inode (ufs_inode.c).
+
+5. DEVICE I/O FLOW
+  autoconf: config_found() -> driver attach -> probe -> configure
+  User I/O: device file (/dev/sd0) -> spec_vnops.c -> driver entry
+            (scsi/sd.c, dev/ata/wd.c) -> bus ops (scsiconf.c, ata.c)
+            -> interrupt waits via spl* / softintr.
+  PCI: pci.c enumerates -> driver matches -> pci_map -> hardware regs
+       -> intr_establish (arch intr.c) -> handler on interrupt.
+
+6. NETWORKING FLOW
+  Ingress: NIC interrupt -> driver (if_em.c, if_iwx.c) -> if_input -> mbuf chain
+           -> net/if.c -> bpf tap -> pf (pf.c) -> route lookup (radix.c/rtable.c)
+           -> protocol input (ip_input.c, tcp_input.c) -> socket buffer -> wakeup
+  Egress: user write -> socket -> protocol output (tcp_output.c, ip_output.c)
+          -> route lookup -> if_output -> driver transmit -> mbuf free
+  Control: ioctl via sys_socket.c / if.c -> SIOCSIFADDR
+
+7. BUILD FLOW (HOST-SIDE)
+  xmake f -> tools/helpers (arch check) -> xmake build ->
+    for each target: on_load (machine copy, ioconf.c, vers.c, assym.h)
+    -> compile (cc) -> archive/link (ld) -> install -> objcopy for EFI.
+  Regeneration: xmake lua tools/gen/gen_*.lua -> writes generated_manifest.lua
+
+8. INSTALLER FLOW
+  Build host: xmake build os-kernel + userland -> installdir
+    -> installer/xmake.lua: for each set (base etc.): cat mi+md.<arch>,
+       sort, lib-first reorder, pax/tar -> baseXX.tgz
+    -> special/ tools built statically via same-name search
+    -> iso/image: vnconfig/fdisk/disklabel/newfs (requires OpenBSD host)
+  Runtime: boot miniroot -> installer script -> disk partitioning -> newfs
+           -> extract sets -> install configs -> make bootable.
+
+9. GUI FLOW
+  X server startup: xserver hw-dependent init -> drm open -> modesetting
+  Client: libX11 (gui/lib/libX11) -> socket to X server -> request/reply
+  No Wayland compositor flow exists (VERIFIED ABSENCE).
+
+10. TEST FLOW
+  xmake build tests -> each test + add_tests()
+  harness: run-regress-* or cmp golden output
+  Golden-file: run command -> capture .res -> cmp .out -> pass/fail by exit code.
+
+11. SECURITY FLOWS
+  pledge: kern_pledge.c checks syscall vs promise set; violation -> SIGABRT/kill.
+  unveil: kern_unveil.c restricts filesystem visibility per path prefix.
+  crypto: userland libcrypto <-> kernel crypto.c via cryptodev.h ioctl.
+
+12. ERROR PATHS
+  Syscall error -> errno set in stub, -1 return.
+  Kernel panic -> ddb or reboot (subr_prf.c).
+  Build error: xmake check.auto_ignore_flags catches silent flag drops.
+  Install error: installer falls back tar if pax missing; skips iso if tools absent.

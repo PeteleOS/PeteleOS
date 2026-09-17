@@ -1,0 +1,116 @@
+LEVEL 6 -- DEPENDENCY MODEL
+============================
+
+1. SUBSYSTEM DEPENDENCY MATRIX (VERIFIED FROM ROOT xmake.lua AND PER-MODULE FILES)
+
+Subsystem       Direct Depends On              Reason
+-----------    ------------------------------   ----------------------------------------
+tools          (none)                         Project-global build framework; loaded first.
+include        tools                          Uses os.base rule; declares os-headers target.
+libraries      tools, include (os-headers)    Needs headers; syscall stubs need <sys/...>.
+kernel         tools, include (os-headers)    Needs shared headers + machine copy + ldscript.
+resources      tools                          Data compilation via find_tool; file install only.
+userland       tools, include, libraries      Links -lxxx via add_deps(lib<xxx>-shared); needs headers.
+gui            tools, include, libraries      X libs/tools link against system libs; cross sysroot.
+installer      tools, kernel, userland,       Sets pipeline consumes installed kernel+userland+etc;
+               configs, resources             miniroot needs RAMDISK kernel (gap).
+tests          tools, include, libraries,     Regress tests exercise each layer.
+               userland, kernel (sys hdrs)
+configs        tools                          File install only; no compilation.
+docs           (none)                         Documentation only.
+
+2. BUILD-TIME DEPENDENCIES (DETAILED)
+
+  Root xmake.lua:
+    modules = {tools, include, libraries, kernel, resources, userland,
+               gui, installer, tests, configs, docs}
+    Each includes(mod) only if os.isfile(<mod>/xmake.lua). Fixed order verified.
+
+  tools/xmake.lua internal order:
+    helpers.lua -> options.lua -> compiler.lua -> rules.lua -> toolchains.lua -> tasks.lua
+    Wrong order = broken has_config() / OS_* globals. VERIFIED from comments.
+
+  include -> kernel (reverse, install-time):
+    include/xmake.lua after_install copies kernel/core/sys/, kernel/dev/,
+    kernel/net/, kernel/uvm/ etc. into installdir/include.
+    So include install depends on kernel source layout (verified: kernel_root path).
+
+  libraries -> include: add_deps("os-headers") inheriting public add_includedirs.
+
+  kernel -> include: add_deps("os-headers"); add_includedirs(include/, kernel/core/,
+    kernel/fs/, kernel/net/, kernel/arch/<arch>/include, build/os-kernel-gen/<arch>/).
+
+  userland -> libraries: LDADD parsing "-lxxx" -> add_deps("lib<xxx>-shared").
+
+  gui -> libraries/tools: autotools wrapper passes cross sysroot from os-clang triple.
+
+3. FILE-LEVEL DEPENDENCIES (EXAMPLES)
+
+  kernel/core/kern/init_main.c
+    -> <sys/param.h> -> kernel/core/sys/param.h
+    -> <uvm/uvm_extern.h> -> kernel/uvm/uvm_extern.h
+    -> "stoeplitz.h" (generated), "mpath.h" etc.
+    Build deps: assym.h (via genassym.sh + genassym.cf) and vers.c (generated).
+
+  kernel/arch/amd64/amd64/locore.S
+    -> assym.h at build/os-kernel-gen/amd64/assym.h
+    -> <machine/...> headers (copied to build/os-kernel-gen/amd64/machine/)
+
+  kernel ioconf.c
+    -> kernel/generated_manifest.lua OS_KERNEL_MANIFEST[arch].ioconf_c
+    -> tools/gen/gen_kernel_manifest.lua -> userland/system/config (config(8))
+    -> kernel/core/conf/GENERIC + kernel/arch/<arch>/conf/GENERIC + files.* lists
+
+  libraries/core/libc/sys/ stubs
+    -> libraries/core/libc/sys/Makefile.inc (ASM/PSEUDO lists)
+    -> tools/gen/gen_libraries_manifest.lua (shlib_version)
+
+4. OPTIONAL / ARCHITECTURE-SPECIFIC DEPENDENCIES
+
+  PER_FILE_CFLAGS (kernel/xmake.lua):
+    amd64 has 14 dml/*_fpu.c forced -msse/-msse2; arm64/riscv64 empty.
+  LDSCRIPT: amd64 ld.script, arm64/riscv64 kern.ldscript.
+  BUS_GLUE_DIRS: amd64 isa+pci; arm64/riscv64 dev.
+  gui build_gl/build_dri options -> xserver + xf86-video-intel configure flags.
+
+5. GENERATED-FILE DEPENDENCIES
+
+  Generator                           Input                               Output                      Consumer
+  ---------                           -----                               ------                      --------
+  gen_kernel_manifest.lua            GENERIC, files.*, config(8) host   kernel/generated_manifest.lua kernel/xmake.lua
+  gen_userland_manifest.lua          userland/**/Makefile (PROG/SRCS)   userland/generated_manifest.lua userland/xmake.lua
+  gen_libraries_manifest.lua         libraries/**/shlib_version        libraries/generated_manifest.lua libraries/xmake.lua
+  gen_tests_manifest.lua             tests/**/Makefile                 tests/generated_manifest.lua  tests/xmake.lua
+  gen_gui_manifest.lua               gui/MODULES, 3RDPARTY            gui/generated_manifest.lua    gui/xmake.lua
+  genassym.sh (on_load)              genassym.cf + CC + CMACHFLAGS    build/.../assym.h            locore.S
+  vers.c generation (on_load)        version + date                   build/.../vers.c             kernel link
+  machine copy (on_load)             kernel/arch/<arch>/include/      build/.../machine/           <machine/...> includes
+
+All generated manifests are COMMITTED because description scope cannot run
+io/os.execv (verified nil at that scope per xmake 3.0.9 testing).
+
+6. RUNTIME DEPENDENCIES
+
+  Bootloader (BOOT*.EFI) -> kernel bsd (loaded via EFI)
+  Kernel -> firmload(9) -> resources/misc/firmware (currently NONE, VERIFIED ABSENCE)
+  Userland dyn-linked binaries -> shared libs at /usr/lib
+  GUI X server -> kernel DRM drivers via /dev/drm*
+  Installer sets -> installed filesystem (base.tgz contains paths from resources/configs/userland)
+
+7. PROBLEMATIC / CIRCULAR DEPENDENCIES
+
+  include <-> kernel (circular at install time): include copies kernel headers
+  but kernel depends on include for compilation. Resolved by ordering:
+  legacy "make build" does share/mk -> make includes -> lib -> kernel;
+  xmake loads include before kernel; actual copy happens at after_install.
+  RISK: MEDIUM (build-order sensitive, shimmed).
+
+  Legacy Makefiles reference stale paths (../../../bin/cat) while xmake
+  generators use new layout -> dual-maintainer risk.
+
+8. SUMMARY
+Every include/library dependency provides ABI headers/symbols across the
+kernel/user boundary. Every kernel/arch dependency abstracts MI/MD. Every
+installer dependency exists because distribution artifacts are assembled from
+compiled outputs. No gratuitous dependency observed; uncertain cases marked
+NOT VERIFIED.

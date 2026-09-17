@@ -1,0 +1,40 @@
+SUBSYSTEM: configs
+===================
+
+1. PURPOSE
+System configuration and default settings (renamed /etc). Thematic structure
+replacing flat OpenBSD /etc.
+
+2. SOURCE LOCATIONS
+
+  configs/xmake.lua, configs/Makefile (stale), configs/Makefile.inc
+  configs/etc/{etc.amd64,etc.arm64,etc.riscv64}/
+  configs/{system,security,network,filesystem,logging,mail,templates}/
+
+3. COMPONENTS
+
+  Component: per-arch overrides
+    configs/etc/etc.<arch>/ (disktab, fbtab, login.conf, sysctl.conf, ttys, MAKEDEV.md)
+    Confirms login.conf/sysctl.conf are per-arch here.
+
+  Component: system
+    configs/system/{rc, rc.conf, master.passwd(600), group, motd, daily, etc., rc.d/}
+
+  Component: mail
+    configs/mail/{aliases, smtpd.conf} -> ${DESTDIR}/etc/mail/ (only Makefile with
+    correct destinations, verified).
+
+  Component: other thematic dirs
+    security, network, filesystem, logging, templates (INFERRED per listing).
+
+4. BUILD INTEGRATION
+
+  headeronly, after_install flat copy preserving structure; excludes Makefile.
+  Only master.passwd gets 600; rest 644 root:wheel. Top-level configs/Makefile
+  stale (flat MUTABLE= list, old kernel path).
+
+5. DEPENDENCIES
+  Depends on: tools. Consumed by: installer (into /etc), userland/kernel runtime.
+
+6. FILE ANALYSIS
+  Master.passwd -> 600 (hashes). All others 644. Build artifacts Makefile not installed.

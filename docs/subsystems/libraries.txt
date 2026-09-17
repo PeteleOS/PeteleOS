@@ -1,0 +1,91 @@
+SUBSYSTEM: libraries
+====================
+
+1. PURPOSE
+libraries/ provides system libraries that link userland programs against the
+kernel ABI and add higher-level functionality (crypto, math, threading, etc.).
+Each library builds as -static + -shared pair. VERIFIED from libraries/xmake.lua.
+
+2. SOURCE LOCATIONS
+
+  libraries/xmake.lua, libraries/Makefile, libraries/generated_manifest.lua
+  libraries/core/{csu, libarch, libc, libcrypto, libssl, libtls, libm,
+                  libpthread, libutil, libz, libevent, libelf, libexpat, libedit}
+  libraries/extra/{libagentx, libcbor, libcurses, libfido2, libform, libfuse,
+                   libkvm, libmenu, libossaudio, libpanel, libpcap, libradius,
+                   librpcsvc, librthread, libskey, ... 19 total}
+
+3. COMPONENTS
+
+  Component: csu (C startup)
+    Location: libraries/core/csu/ (crt0.c, crtbegin.c, crtbeginS.c, crtend.c, boot.h)
+              + arch subdirs: aarch64, amd64, riscv64
+    Responsibility: _start entry, init/fini, ELF note. Every userland process depends.
+    Build: os_bsd_library? No, csu is special; compiled with freestanding.
+
+  Component: libc (C standard library)
+    Location: libraries/core/libc/ (~20 subdirs: sys/, gen, stdio, string, net, regex,
+             thread, locale, etc.; sys/ has 195 files VERIFIED)
+    Key mechanism: syscall stubs via libraries/core/libc/sys/Makefile.inc ASM lists
+                   (ASM, ASM_NOERR, PSEUDO, PSEUDO_NOERR, HIDDEN) -> 2-line stub
+                   (#include "SYS.h" + RSYSCALL) materialized in gendir via add_files.
+                   Hand-written .S (Ovfork.S, brk.S, sigprocmask.S) via glob.
+    Headers: include/*.h, kernel/core/sys/*.h via os-headers.
+    Responsibility: POSIX API, syscall binding, stdio, string, etc.
+    Build: version from OS_LIBRARIES_SHLIB_VERSIONS["core/libc"]=103.0.
+
+  Component: arch support
+    libraries/core/libarch/ (arch-specific libc helpers, Makefile.inc)
+
+  Component: crypto stack
+    libcrypto, libssl, libtls (OpenSSL/LibreSSL fork). Files in libcrypto/{aes, bn, bio, ...}
+    Dependencies: kernel crypto headers? INFERRED.
+
+  Component: threading
+    libpthread (and librthread in extra as alternative). Implements pthread_* over
+    kernel rthreads.
+
+  Component: math and utilities
+    libm (arch subdirs), libutil, libz (adler32, inflate), libedit, libelf, libevent, libexpat
+
+  Component: extra libs (19)
+    Examples needing special handling (verified in xmake.lua):
+      libkvm: arch-specific kvm_<arch>.c
+      libossaudio: sources shared with libsndio
+      libpcap: yacc/lex with custom symbol prefix, plus one file from kernel/net/
+      librpcsvc: every source rpcgen-generated from .x spec (VERIFIED)
+    Others reuse os_bsd_library() unchanged. Symbol visibility (Symbols.map) NOT
+    implemented (explicit deferral; affects export only, not link).
+
+4. BUILD INTEGRATION
+
+  libraries/xmake.lua:
+    os_bsd_library() helper creates -static + -shared pair per lib.
+    Parses libc/sys/Makefile.inc 5 lists -> 2-line stubs in gendir (instead of piping
+    to compiler stdin like original BSD Make, adapted for add_files model).
+    Versions via OS_LIBRARIES_SHLIB_VERSIONS (from gen_libraries_manifest.lua), not
+    direct io.open at description scope (which is nil).
+    Handles yacc/lex generation (rpcgen deferred via verify-rpcgen-output.sh).
+    Link: userland LDADD -lxxx -> add_deps("lib<xxx>-shared").
+
+5. DEPENDENCIES
+  Depends on: tools, include (os-headers). Consumed by: userland (every program),
+  gui (X libs), tests (regress). Generated: shlib versions, syscall stubs.
+
+6. FILE ANALYSIS (EXAMPLE)
+
+  FILE: libraries/core/libc/sys/Makefile.inc
+  PURPOSE: lists syscall stub names for 5 categories (ASM etc.)
+  PARSED BY: libraries/xmake.lua (small constrained parse, not general Makefile parser)
+  OUTPUT: 2-line .S files in gendir per stub.
+  RISK: changing list without regen is silent missing syscall.
+
+  FILE: libraries/core/csu/crt0.c
+  PURPOSE: process entry _start, calls main, handles init/fini
+  CALLEE: main(), exit(). RISK: HIGH (every process).
+
+7. REFACTORING NOTES
+  Dual stub mechanisms (generated 2-line vs hand-written .S) -- keep both.
+  Adding a lib: add directory under libraries/{core,extra}/ with Makefile,
+  shlib_version, then regen libraries manifest. Changing in-kernel syscall
+  requires updating both kernel sysent and libc stubs (coordinated).

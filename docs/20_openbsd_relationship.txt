@@ -1,0 +1,108 @@
+LEVEL 0-1 -- OPENBSD 7.9 RELATIONSHIP ANALYSIS
+================================================
+
+1. SUMMARY
+PeteleOS is "developed based on OpenBSD 7.9" (README.md:1). The repository is
+a restructured, xmake-driven fork of OpenBSD's src tree. No evidence was found
+of a full OpenBSD 7.9 import commit diff in this analysis (git log not inspected);
+classification below is from path, header, and build-file evidence alone.
+
+2. CLASSIFICATION SCHEME
+  UPSTREAM-DERIVED    -- file appears verbatim or near-verbatim from OpenBSD 7.9
+  MODIFIED / ADAPTED  -- OpenBSD-derived but reorganized or patched for PeteleOS
+  PETELEOS-SPECIFIC   -- new file or logic with no OpenBSD counterpart
+  UNKNOWN / NOT VERIFIED -- insufficient evidence to classify
+
+3. EVIDENCE OF OPENBSD DERIVATION (VERIFIED)
+
+  - README explicitly states OpenBSD 7.9 base.
+  - Legacy Makefiles preserve OpenBSD CVS headers:
+      Makefile:      $OpenBSD: Makefile,v 1.136 2020/04/05 ...
+      kernel/Makefile: $OpenBSD: Makefile,v 1.53 2021/05/01 ...
+      kernel/core/conf/GENERIC: $OpenBSD: GENERIC,v 1.304 2025/10/08 ...
+      kernel/core/kern/init_main.c: $OpenBSD: init_main.c,v 1.331 ...
+      kernel/core/kern/init_sysent.c: $OpenBSD: init_sysent.c,v 1.289 ...
+  - Kernel source copyright: "Copyright (c) 1982-1993 Regents of UC" plus
+    "Copyright (c) 1995-2026 OpenBSD" banner in init_main.c.
+  - Directory names: sys, uvm, net, dev, arch, stand, lib/kern mirror OpenBSD's
+    /usr/src/sys layout.
+  - Userland layout (bin, sbin, usr.bin, usr.sbin, libexec, regress) mirrors
+    OpenBSD's top-level SUBDIR in root Makefile (lib include bin libexec sbin
+    usr.bin usr.sbin share games gnu sys).
+
+4. PER-SUBSYSTEM CLASSIFICATION
+
+  kernel/ -- MODIFIED / ADAPTED (with UPSTREAM-DERIVED core)
+    MI code (core/kern, uvm, net, fs, crypto, ddb, dev/ic) is UPSTREAM-DERIVED;
+    restructuring moves sys -> core/sys, kern -> core/kern, etc. are ADAPTED
+    (paths changed but file contents largely preserved). New wrapper:
+    kernel/xmake.lua, kernel/generated_manifest.lua are PETELEOS-SPECIFIC.
+    ioconf.c generation is still config(8) (UPSTREAM logic) but invoked via
+    xmake + patched sourcepath (PETELEOS glue).
+
+  include/ -- MODIFIED / ADAPTED
+    Headers are UPSTREAM-DERIVED (OpenBSD public headers), but include/xmake.lua
+    (headeronly + after_install copies) is PETELEOS-SPECIFIC; old include/Makefile
+    is preserved as legacy UPSTREAM.
+
+  libraries/ -- MODIFIED / ADAPTED
+    Core libraries (libc, libm, libcrypto, etc.) are UPSTREAM-DERIVED;
+    extra libs similarly. Restructuring core/ prefix and xmake.lua + syscall stub
+    generation from Makefile.inc ASMs are PETELEOS-SPECIFIC/ADAPTED.
+
+  userland/ -- MODIFIED / ADAPTED
+    Programs (cat, ksh, tmux, doas, openssl, config) are UPSTREAM-DERIVED;
+    categorization into essential/system/utilities etc. plus xmake.lua +
+    generated_manifest is PETELEOS-SPECIFIC. Individual program sources
+    unchanged.
+
+  gui/ -- UPSTREAM-DERIVED (vendored X.Org 7.7 via Xenocara)
+    gui/README.md is upstream Xenocara notes. MODULES/3RDPARTY lists are upstream.
+    gui/xmake.lua wrapper is PETELEOS-SPECIFIC.
+
+  installer/ -- MODIFIED / ADAPTED
+    Sets/special/miniroot logic mirrors OpenBSD's distrib/sets; xmake.lua
+    reimplements maketars. Legacy installer/Makefile preserved.
+
+  configs/ -- MODIFIED / ADAPTED
+    Config files (rc, master.passwd, login.conf) are UPSTREAM-DERIVED but
+    reorganized from flat /etc into thematic configs/{system,security,...}.
+    Per-arch etc.<arch>/ overlays are OpenBSD pattern preserved.
+
+  resources/ -- MODIFIED / ADAPTED
+    Content (man, zoneinfo, locale, termtypes) is UPSTREAM-DERIVED;
+    restructuring share -> resources and xmake.lua are PETELEOS-SPECIFIC.
+
+  tests/ -- UPSTREAM-DERIVED (regress/ renamed)
+    Test sources are upstream; xmake.lua wrapper is PETELEOS-SPECIFIC.
+
+  tools/ -- PETELEOS-SPECIFIC
+    Entire xmake build framework (helpers, options, rules, toolchains, generators)
+    is new. No OpenBSD counterpart (OpenBSD uses BSD Make + bsd.*.mk in share/mk/).
+    resources/mk/ preserves original BSD Make infrastructure as reference.
+
+  docs/ -- PETELEOS-SPECIFIC
+    This knowledge base is new; original OpenBSD docs are man pages and
+    release notes, not this hierarchical txt set.
+
+  Root build files:
+    Makefile -- UPSTREAM-DERIVED (OpenBSD top-level Makefile preserved verbatim
+              except possibly PeteleOS edits NOT VERIFIED).
+    xmake.lua -- PETELEOS-SPECIFIC (new root orchestration).
+
+5. ABSTRACTION CHANGES
+PeteleOS adds an explicit MI/MD path redirection layer (kernel/core/ prefix,
+PREFIXES {"","core/","dev/","fs/"} fallback in kernel/xmake.lua) to accommodate
+restructuring while keeping OpenBSD's original "conf/swapgeneric.c" style paths
+working via retry prefixes. This is ADAPTED glue.
+
+6. WHAT IS NOT VERIFIED
+Exact diff of any file against OpenBSD 7.9 tag (no git diff against upstream
+performed). Version drift: GENERIC header shows 2025/10/08, indicating PeteleOS
+may have pulled forward past 7.9 for some files. Specific per-file provenance
+requires diffing against OpenBSD CVS tag OPENBSD_7_9.
+
+7. RECOMMENDATION FOR MAINTAINERS
+Keep upstream-derived files as close to upstream as possible to ease merges.
+Isolate PeteleOS-specific glue in xmake.lua and tools/ so upstream updates
+can be imported by copying kernel/core/** etc. without touching build wrappers.

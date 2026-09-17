@@ -1,0 +1,117 @@
+LEVEL 1-7 -- REFACTORING MAP (RISK CLASSIFICATION)
+===================================================
+
+Purpose: guide safe vs high-risk changes. Risk levels:
+  LOW      -- isolated, reversible, narrow blast radius
+  MEDIUM   -- touches multiple files, requires generator rerun or cross-arch check
+  HIGH     -- cross-cutting, affects kernel ABI or build ordering
+  CRITICAL -- touches boot, VM, or distribution pipeline; failure may brick or unbootable
+
+1. WHERE IS COUPLING HIGHEST?
+
+  - Kernel MI/MD boundary (pmap, intr, bus_dma, locore.S): HIGH/CRITICAL
+    MI code calls pmap and bus primitives pervasively; abstraction via uvm_pmap.h
+    and bus_space is leaky. Changing pmap API requires touching all drivers.
+
+  - Autoconf + ioconf.c + GENERIC/files.*: HIGH
+    Generated cfdata ties config(8) output to every driver. Changing files list
+    without regenerating manifest yields silent build drift.
+
+  - UVM + process (vmspace): HIGH
+    Process creation (fork/exec) shares vmspace between proc and VM; lifetime
+    coupling.
+
+  - PF + network stack: HIGH
+    pf.c touches packet path, ioctl, tables, and driver tap.
+
+2. WHICH MODULES ARE OVERSIZED?
+
+  - kernel/xmake.lua (739 lines): MEDIUM (complex but well-commented, single file;
+    splitting EFI spec into per-arch includes would help).
+  - kernel/core/kern/* (60 files, includes init_main.c, many kern_*.c): LARGE
+    but appropriately modular per file; not a single-file monolith.
+  - dev/pci/drm/* ( ~1328 entries sampled in generated_manifest): VERY LARGE
+    vendor driver bulk; isolated (LOW risk to touch a single drm driver,
+    HIGH to change drm core).
+  - userland (565 programs): LARGE but discovery is generative; risk is LOW per
+    program, MEDIUM for generator.
+
+3. WHICH INTERFACES ARE UNCLEAR?
+
+  - Legacy Makefile vs xmake.lua dual maintenance: CRITICAL gap
+    Stale paths (../../../bin/cat) in installer/special vs new layout, and
+    flat MUTABLE= lists in configs/Makefile vs thematic split. Easy to edit
+    wrong file. Mark stale Makefiles as reference only.
+
+  - include <-> kernel circular copy dependency: MEDIUM
+    Documented in 03; resolved by after_install timing but fragile.
+
+  - GUI autotools wrapper: MEDIUM
+    ~60 modules have untranscribed CONFIGURE_ARGS (WANTLIB etc.); behavior
+    difference only discovered at configure time.
+
+4. WHICH DEPENDENCIES ARE PROBLEMATIC?
+
+  - Generated manifests committed: MEDIUM
+    Forgetting to regenerate after GENERIC/files change is silent error.
+    Mitigation: CI diff of "xmake lua tools/gen/gen_*; git diff --exit-code".
+
+  - EFI bootloader requires ld.lld + objcopy: MEDIUM (host-specific)
+    Alternative linkers silently skipped (warn + skip, not fail).
+
+  - RAMDISK kernel config not parameterized: HIGH (blocks installer boot image builds).
+
+  - Resources zic/mklocale host tool dependency: LOW (graceful skip, but zoneinfo
+    may be stale without tools).
+
+5. WHICH BOUNDARIES ARE WEAK?
+
+  - Kernel <-> Arch pmap abstraction: CRITICAL (see coupling)
+  - Libraries syscall stub generation vs hand-written .S: MEDIUM (two mechanisms
+    for same ABI; one via Makefile.inc ASMs gendir, one via glob).
+  - Userland vs library interface: LOW (clean LDADD).
+
+6. DUPLICATED RESPONSIBILITIES
+
+  - Build description in both BSD Make and xmake.lua: MAJOR duplication (two
+    build systems, xmake is primary). Risk: drift. Recommendation: treat Makefiles
+    as read-only reference; all new work in xmake.lua.
+
+  - Per-arch CMACHFLAGS duplicated between tools/helpers.lua OS_ARCH_CFLAGS and
+    kernel/xmake.lua CMACHFLAGS (values differ slightly: e.g. tools has -march=armv8-a
+    vs kernel has armv8-a+nofp+nosimd+rng). INCONSISTENT, MEDIUM risk.
+
+7. EXTRACTABLE COMPONENTS
+
+  LOW risk to extract:
+    - Single drm driver under dev/pci/drm/{i915,radeon,amdgpu}
+    - Single userland utility (add via generator)
+    - Single resource category (add dir + xmake flat copy)
+
+  HIGH risk to extract:
+    - UVM subsystem (pervasive)
+    - autoconf/ioconf (generated, many consumers)
+    - syscall table (kernel + libc stubs must stay in sync)
+
+8. DO NOT REFACTOR CASUALLY
+
+  CRITICAL:
+    - locore.S + pmap.c per arch (boot/MMU)
+    - init_main.c main() order (many subsystems)
+    - linker scripts (ld.script/kern.ldscript)
+    - EFI bootloader link/objcopy flags (LLD-only --pack-dyn-relocs)
+
+  HIGH:
+    - Subsystem initialization order (autoconf -> devices -> VFS -> net)
+    - VFS vnode/buffer cache (wide coupling)
+    - PF firewall
+
+9. COORDINATED MODIFICATIONS REQUIRED
+
+  - Add driver: files.*, GENERIC, kernel/arch/conf, then regen kernel manifest.
+  - Add syscall: syscalls.master, makesyscalls.sh, kern/syscallargs.h,
+    kern/init_sysent.c, libc/sys Makefile.inc ASMs, regen manifests.
+  - Add library: libraries/**/Makefile, shlib_version, then regen libraries manifest.
+  - Add userland program: userland/<category>/<prog>/Makefile (PROG/SRCS/LDADD),
+    then regen userland manifest.
+  - Add resource: resources/<category>/ files, then update resources/xmake.lua.

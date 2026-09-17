@@ -1,0 +1,112 @@
+LEVEL 0 -- REPOSITORY OVERVIEW (PeteleOS)
+============================================
+
+1. WHAT IS PETELEOS
+PeteleOS is an operating system derived from OpenBSD 7.9 (README.md:1).
+Stated goal: "simple and stable operating system for personal" use.
+License: file LICENSE at repository root (VERIFIED to exist; content not
+inspected here); xmake.lua headers declare Apache-2.0 for build files.
+Overall licensing mix is INFERRED to be BSD/MIT/ISC inherited from OpenBSD
+plus Apache-2.0 for new PeteleOS build orchestration.
+
+Relationship to OpenBSD 7.9: PeteleOS reuses OpenBSD kernel, userland,
+libraries and tooling structure, reorganized under explicit top-level
+directories and rebuilt with xmake as primary orchestrator.
+See 20_openbsd_relationship.txt for classification.
+
+2. SOURCE TREE ORGANIZATION (VERIFIED FACT)
+
+  PeteleOS/  (project root, xmake.lua set_project("PeteleOS") version 0.1.0)
+  |
+  +-- kernel/        OS kernel source (produces bsd + BOOT*.EFI)
+  +-- include/       Shared public headers (*.h, arpa/, protocols/, rpc/, rpcsvc/)
+  +-- libraries/     System libraries (core/ + extra/)
+  +-- userland/      User-space programs (essential, system, utilities, ...)
+  +-- gui/           Graphical stack (Xenocara / X.Org 7.7)
+  +-- installer/     Install image, sets, miniroot, syspatch
+  +-- configs/       System configuration tree (renamed /etc)
+  +-- resources/     Runtime resources (renamed /share)
+  +-- tools/         Build framework (compiler, options, rules, toolchains, generators)
+  +-- tests/         Regression / validation (renamed regress/)
+  +-- docs/          This documentation
+  +-- build/         Generated artifacts (builddir = $(projectdir)/build)
+  +-- xmake.lua      Root orchestration (includes submodules in fixed order)
+  +-- Makefile       Legacy BSD Make top-level (OpenBSD Makefile v1.136, preserved)
+  +-- .xmake/        xmake cache (generated)
+
+No literal src/ subdirectory exists. Root xmake.lua comment explicitly notes
+OpenBSD convention "/usr/src" is logical only; actual subdirs live at root.
+
+3. KERNEL / USERLAND SEPARATION
+Kernel space: kernel/ (core/kern, uvm/, net/, fs/, dev/, crypto/, ddb/, arch/*).
+User space: userland/, libraries/, gui/.
+Shared interface: include/ and kernel/core/sys/ exported via include/xmake.lua.
+Libraries provides the user/kernel ABI boundary (libc syscall stubs).
+System call switch: kernel/core/kern/init_sysent.c (generated from syscalls.master,
+contains sysent[]). Reviewed up to entry 5 (sys_exit, sys_fork, sys_read, etc.).
+
+4. BUILD ARCHITECTURE (VERIFIED FROM xmake.lua)
+Primary: xmake 3.0.9 (set_xmakever("3.0.9") in root xmake.lua).
+Legacy: BSD Make (Makefile, Makefile.inc, bsd.*.mk in resources/mk/) preserved.
+
+Global policies (root xmake.lua):
+  check.auto_ignore_flags = false
+  build.warning = true
+  build.ccache = true
+  Modes: debug, release, releasedbg, minsizerel
+
+Module load order (root xmake.lua FIXED, do not reorder):
+  tools -> include -> libraries -> kernel -> resources -> userland
+       -> gui -> installer -> tests -> configs -> docs
+Each module included only if its own xmake.lua exists.
+
+Toolchain defaults (tools/compiler.lua, tools/toolchains.lua):
+  Default os-clang (Clang/LLVM), alternative os-gcc.
+  Triples: amd64->x86_64-unknown-openbsd,
+           arm64->aarch64-unknown-openbsd,
+           riscv64->riscv64-unknown-openbsd
+  Clang retargeted via -target <triple>; GCC uses cross-prefix.
+
+5. SUPPORTED CPU ARCHITECTURES
+Three architectures remain after pruning (OS_SUPPORTED_ARCHS in tools/helpers.lua):
+  - amd64
+  - arm64
+  - riscv64
+Verified per-arch dirs: kernel/arch/{amd64,arm64,riscv64}/,
+libraries/core/csu/{aarch64,amd64,riscv64}/, installer/{amd64,arm64,riscv64}/,
+configs/etc/etc.{amd64,arm64,riscv64}/.
+Stale references to pruned archs (alpha, hppa, i386, etc.) remain in
+kernel/Makefile SUBDIR but are NOT present under kernel/arch/.
+
+6. SUBSYSTEM BOUNDARIES (VERIFIED)
+
+  Build Layer:        tools/ (+ root xmake.lua, resources/mk/)
+  Shared Interface:   include/ + kernel/core/sys/ exported headers
+  Kernel Layer:       kernel/ (bsd + BOOT*.EFI)
+  Library Layer:      libraries/ (libc, libm, libcrypto, ... ~15 core + 19 extra)
+  User Space Layer:   userland/ (565 build units per generator note)
+  GUI Layer:          gui/ (~27k files, ~200 X.Org modules)
+  System Integration: configs/ + resources/ (file-install only)
+  Validation Layer:   tests/ (regress mirror)
+  Distribution Layer: installer/ (sets, miniroot, iso/image)
+
+7. REPOSITORY SCALE (VERIFIED ESTIMATES)
+  kernel amd64: 2470 files via real config(8) (373 fallback) per generated_manifest.lua
+  libraries: ~34 libraries total
+  userland: 565 programs
+  gui: ~27,000 files across ~200 modules
+  tests: ~20,000 files historically
+
+8. CROSS-CUTTING CONCERNS
+  Cross-compilation: Clang -target primary; installer image creation requires
+  OpenBSD host tools (vnconfig/fdisk/disklabel/newfs) and is host-limited.
+  Generated code: manifests, ioconf.c, assym.h, vers.c (see 19_generated_code.txt).
+  Configuration: configs/ replaces /etc; per-arch overrides in configs/etc/etc.<arch>/.
+
+9. WHAT IS NOT PRESENT (VERIFIED ABSENCE)
+  No compositor/desktop-environment/Wayland compositor in gui/ (only optional
+  Wayland backend inside libva). No firmware blobs in resources/. No src/ dir.
+
+10. READING STRATEGY
+For kernel memory change: 00 -> 01 -> 02 -> 04 -> 05 -> 08 -> 16 -> subsystems/kernel.txt
+For userland utility:   00 -> 02 -> 04 -> 12 -> subsystems/userland.txt -> 22

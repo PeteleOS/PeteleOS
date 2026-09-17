@@ -1,0 +1,39 @@
+SUBSYSTEM: tests
+=================
+
+1. PURPOSE
+Unit tests, integration tests, benchmarks, validation tools. Mirrors OpenBSD
+regress/ (renamed). ~20k files arbitrarily nested.
+
+2. SOURCE LOCATIONS
+
+  tests/xmake.lua, tests/Makefile (legacy regress Makefile), tests/generated_manifest.lua
+  tests/{bin,etc,gnu,include,lib,libexec,misc,sbin,sys,usr.bin,usr.sbin,usr.sben,...} (11 verified)
+
+3. COMPONENTS
+
+  Component: discovery
+    Walks tree via os.files/os.dirs (portable). Two shapes:
+      (a) PROG/PROGS -> auto run-regress-<prog> via bsd.regress.mk -> add_tests()
+      (b) hand-written REGRESS_TARGETS with custom shell recipes (majority, verified via
+          tests/usr.bin/apply example: six cmp variations).
+
+  Component: Makefile parsing
+    Handles =, +=, ?=, :=, !=; ${VAR} expansion; .if MACHINE checks; .include
+    <bsd.regress.mk>/<bsd.subdir.mk> recognized.
+
+  Component: golden-file translation
+    Extracts "command > .res; cmp -s .out .res" idiom and wires as non-compiled test.
+    Most custom recipes not translated (honest gap).
+
+  Component: non-compiled tests
+    Tests that just run installed program against golden files, no local compilation.
+
+4. BUILD INTEGRATION
+  phony + add_tests(); portable discovery; golden-file partial translation.
+
+5. DEPENDENCIES
+  Depends on: tools, include, libraries, userland, kernel headers. Generates manifest.
+
+6. REFACTORING NOTES
+  Follow translatable idiom for new golden-file tests. Coverage gaps: UVM, GUI, installer.

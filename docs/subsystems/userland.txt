@@ -1,0 +1,72 @@
+SUBSYSTEM: userland
+====================
+
+1. PURPOSE
+userland/ contains all user-space applications, daemons, utilities, and services
+(565 build units verified). Each is a BSD Make-style program with Makefile
+declaring PROG/SRCS etc., discovered via generator.
+
+2. SOURCE LOCATIONS
+
+  userland/xmake.lua, userland/generated_manifest.lua (AUTO-GENERATED)
+  userland/essential/{bin,sbin}, userland/system, userland/development (20 dirs),
+  userland/utilities, userland/network, userland/security (5 dirs: acme-client,
+  doas, ocspcheck, openssl, signify), userland/libexec, userland/multimedia,
+  userland/games, userland/package
+
+3. COMPONENTS
+
+  Component: essential (core OS commands)
+    essential/bin (cat, cp, ls, ksh, chmod, etc.)
+    essential/sbin (init, mount, fsck, ifconfig, route, etc.)
+    Critical for boot and install; many are setuid or static.
+
+  Component: system (system tools)
+    Includes userland/system/config (config(8) -- host tool for kernel ioconf.c)
+    Other system daemons and config tools.
+
+  Component: development (toolchain)
+    awk, bc, cpp, ctags, diff, gprof, lex, m4, make, mkdep, nm, patch, rpcgen,
+    sed, unifdef, vi, vis -- ~20 dirs verified.
+
+  Component: utilities (general utilities)
+    Large collection (tmux, top, tr, xargs, yacc, etc.)
+
+  Component: network, security, libexec, multimedia, games, package
+    Grouped by role; each subdirectory is a program with its own Makefile.
+
+4. BUILD INTEGRATION (userland/xmake.lua, VERIFIED ~80 lines read)
+
+  Discovery moved to tools/gen/gen_userland_manifest.lua (was inlined but nil
+  at description scope). Generator parses each Makefile for:
+    PROG, SRCS (or recursive glob fallback), LDADD -> add_deps("lib<xxx>-shared"),
+    MAN -> share/man/manN, BINOWN/BINMODE (setuid flagged loudly, e.g. doas 4555),
+    MLINKS (no real usage found).
+  Generated sources: *.y (53 files) + *.l (8 files) + RPC .x (committed output,
+  verify via tools/verify-rpcgen-output.sh only when invoked).
+  Host-build: config(8) + mklocale built twice (target + host toolchain).
+
+  os_program() per entry:
+    target(PROG) set_kind(binary) add_rules(os.base, os.userland, os.strip_release)
+    add_files(SRCS) add_deps(libs) add_installfiles(MAN) after_install BINMODE.
+
+5. DEPENDENCIES
+  Depends on: tools, include (os-headers), libraries (link). Consumed by:
+  installer (sets), tests (regress runs /usr/bin/apply etc.), resources
+  (needs mklocale host tool). Generated: program table manifest.
+
+6. FILE ANALYSIS (EXAMPLES)
+
+  FILE: userland/system/config/Makefile (INFERRED)
+  PURPOSE: builds config(8) host tool
+  HOST-BUILD: yes (target + host)
+  CONSUMER: kernel ioconf.c generation.
+
+  FILE: userland/security/doas/doas.c + parse.y
+  PURPOSE: doas(1) privilege escalation (setuid 4555)
+  BUILD: yacc generation for parse.c, BINMODE 4555 flagged.
+
+7. REFACTORING NOTES
+  Dual Makefile/xmake.lua risk (edit xmake only via generator). Adding program:
+  create dir with Makefile then regen manifest. Bulk changes via generator not hand.
+  Host tools must be buildable with host toolchain (no -target).

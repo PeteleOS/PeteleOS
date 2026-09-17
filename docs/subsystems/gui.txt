@@ -1,0 +1,41 @@
+SUBSYSTEM: gui
+===============
+
+1. PURPOSE
+Graphical stack, window systems, graphical libraries, desktop components for
+PeteleOS. Based on Xenocara (X.Org 7.7 + OpenBSD local modifications).
+
+2. SOURCE LOCATIONS
+
+  gui/xmake.lua, gui/Makefile, gui/README.md, gui/generated_manifest.lua
+  gui/{app, driver, font, lib, proto, util, xserver, data, doc, dist, distrib, etc, share}
+  Top lists: gui/MODULES, gui/3RDPARTY
+
+3. COMPONENTS
+
+  Component: lib (graphical libraries)
+    gui/lib/ (libX11, libXext, libdrm wrappers, libva with optional Wayland backend, etc.)
+  Component: proto (X protocol headers)
+  Component: app (X applications)
+  Component: driver (input/video drivers)
+  Component: font (fonts)
+  Component: xserver (X servers, includes composite extension under composite/)
+  Component: util, data, doc, dist (3rd-party: fontconfig, xcb, xkeyboard-config)
+
+4. BUILD INTEGRATION
+
+  Phony-wrapper per module shelling to upstream configure/make/make-install.
+  Generic wrapper + MODULE_CONFIGURE_OVERRIDES for xserver (build_gl/build_dri
+  -> --enable/--disable) and xf86-video-intel. ~60 other overrides deferred.
+
+5. WHAT DOES NOT EXIST (VERIFIED ABSENCE)
+  No standalone compositor, no DE/WM vendored, no mobile UI, no Wayland compositor
+  (only optional libva Wayland backend).
+
+6. DEPENDENCIES
+  Depends on: tools, include, libraries. Tightly coupled only to kernel DRM
+  via /dev/drm* and wscons. Optional build (can be disabled).
+
+7. REFACTORING NOTES
+  Adding module: add to MODULES and wrapper picks up. Replacing display stack
+  would replace xserver entirely. Isolated, LOW coupling.

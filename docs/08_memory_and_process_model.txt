@@ -1,0 +1,102 @@
+LEVEL 2-3 -- MEMORY AND PROCESS MODEL
+=======================================
+
+1. VIRTUAL MEMORY (UVM) -- kernel/uvm/
+
+  UVM is the OpenBSD/BSD virtual memory system. VERIFIED from file list:
+  uvm.h, uvm_extern.h, uvm_addr.c, uvm_amap.c, uvm_anon.c, uvm_aobj.c,
+  uvm_device.c, uvm_fault.c, uvm_glue.c, uvm_init.c, uvm_io.c, uvm_km.c,
+  uvm_map.c, uvm_meter.c, uvm_mmap.c, uvm_object.c, uvm_page.c, uvm_pager.c,
+  uvm_pdaemon.c, uvm_pmemrange.c, uvm_swap.c, uvm_swap_encrypt.c, uvm_unix.c,
+  uvm_vnode.c, uvm_param.h, uvm_pmap.h, uvm_percpu.h.
+
+  Key structures (from headers, sampled):
+    struct vm_map, vm_map_entry, vm_page, vm_anon, vm_amap, vm_object, uvmexp
+  Initialization: uvm_init() (uvm_init.c) called from init_main.c.
+  Page management: uvm_page.c bootstraps; uvm_pdaemon.c page daemon reclaims.
+  Fault handling: uvm_fault.c: uvm_fault() is the central fault resolver.
+  Mapping: uvm_map.c manages kernel and user maps; uvm_addr.c allocates addresses.
+  Anonymous memory: uvm_anon.c + uvm_amap.c + uvm_aobj.c (swap-backed).
+  File-backed: uvm_vnode.c + uvm_object.c.
+  Kernel allocation: uvm_km.c (km_alloc); uvm_device.c for device mappings.
+  Swap: uvm_swap.c + uvm_swap_encrypt.c (encrypted swap, option UVM_SWAP_ENCRYPT).
+  Per-CPU: uvm_percpu.h.
+
+2. MACHINE-DEPENDENT MEMORY (pmap)
+
+  Per-arch pmap: kernel/arch/amd64/amd64/pmap.c,
+                 kernel/arch/arm64/arm64/pmap.c (INFERRED path),
+                 kernel/arch/riscv64/riscv64/pmap.c
+  Responsibilities: pagetable creation, TLB shootdown, cache coherency, phys->virt.
+  amd64 flags: -mcmodel=kernel -mno-red-zone -mno-sse* (kernel/xmake.lua CMACHFLAGS).
+  arm64 flags: -march=armv8-a+nofp+nosimd, -moutline-atomics, branch-protection=bti.
+  riscv64 flags: -march=rv64gc -mcmodel=medany -mno-relax.
+
+3. KERNEL MEMORY ALLOCATOR
+
+  kern_malloc.c: malloc(9)/free(9) via pool cache (subr_pool.c).
+  subr_pool.c: pool allocator with per-CPU caches (subr_percpu.c).
+  dma_alloc.c: DMA-safe allocation via bus_dma.
+  Extent: subr_extent.c for resource allocation (I/O ports, memory ranges).
+  Poisson: subr_poison.c debug.
+  Statistics: KMEMSTATS option in GENERIC.
+
+4. PROCESS MODEL -- kernel/core/kern/
+
+  Structures (from sys/proc.h, sys/resourcevar.h -- VERIFIED existence):
+    struct proc (per-thread), struct process (per-process group),
+    struct pgrp, struct session, struct plimit, struct vmspace, struct sigacts
+  Globals in init_main.c: session0, pgrp0, proc0, process0, vmspace0, sigacts0, limit0.
+
+  Files:
+    kern_fork.c: fork1(), fork implementation
+    kern_exec.c, exec_elf.c, exec_script.c, exec_subr.c, exec_conf.c
+    kern_exit.c: exit, wait
+    kern_proc.c: proc management
+    kern_sig.c: signals
+    kern_sched.c, sched_bsd.c: scheduler (BSD scheduler)
+    kern_synch.c: sleep/wakeup
+    kern_resource.c: rlimits
+    kern_prot.c: credentials, setuid
+    kern_descrip.c: file descriptors
+    kern_xcall.c: cross-CPU calls
+    kern_smr.c, kern_srp.c: safe memory reclamation, shared reference pointer
+    kern_lock.c, kern_rwlock.c: locks
+    kern_event.c: kqueue
+    kern_task.c: task queues
+    kern_timeout.c: timeouts
+    kern_malloc.c: memory
+    kern_ktrace.c: ktrace
+
+  System calls (init_sysent.c):
+    2 fork, 1 exit, 5 open, 3 read, 4 write, 59 execve, etc. (500+ entries).
+
+5. THREAD MODEL
+
+  kern_kthread.c: kernel threads.
+  kern_synch.c: tsleep, wakeup.
+  kern_sched.c: run queues, priority, time-sharing.
+  libpthread (libraries/core/libpthread) is userland threading (1:1 or M:N INFERRED;
+  NOT VERIFIED without reading pthread impl). Kernel sees threads as procs sharing vmspace.
+
+6. IPC
+
+  uipc_domain.c, uipc_socket.c, uipc_mbuf.c, uipc_syscalls.c, uipc_proto.c
+  sys_pipe.c, sysv_ipc.c, sysv_msg.c, sysv_sem.c, sysv_shm.c, sys_futex.c
+  mbuf.h: packet buffers.
+
+7. INITIALIZATION ORDER (memory/process)
+  pmap bootstrap (locore.S -> machdep) -> uvm_init -> vmspace0 for proc0
+  -> proc0/process0 creation -> scheduler init -> filedesc/signal/resource init
+  -> initproc creation (PID 1, from /sbin/init).
+
+8. ARCHITECTURE DEPENDENCIES
+  Thread context switch: MD (pmap, cpu, switch.S INFERRED).
+  Interrupt context: MD (vector.S, spl.S on amd64).
+  FPU: amd64/fpu.c, per-file FPU flags for dml/*_fpu.c.
+  Locking: atomic.h MD, witness.h for lock ordering.
+
+9. REFACTORING NOTES
+  UVM is tightly coupled to pmap (MD) -- abstraction is via uvm_pmap.h but
+  call sites are pervasive. Changing VM policy requires touching both MI and MD.
+  Process and VM share vmspace -- lifetime coupling.

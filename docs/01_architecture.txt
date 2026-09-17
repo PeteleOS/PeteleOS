@@ -1,0 +1,129 @@
+LEVEL 0/1 -- SYSTEM ARCHITECTURE
+==============================
+
+1. ARCHITECTURAL STYLE
+Monolithic kernel + userland inherited from OpenBSD/4.4BSD. No microkernel.
+Security via pledge(2)/unveil(2) (kernel/core/kern/kern_pledge.c,
+kern_unveil.c) and crypto framework.
+
+2. LAYER DIAGRAM (VERIFIED FROM BUILD ORDER AND INCLUDE PATHS)
+
+                 +-------------------+
+                 |   Build Layer     |  tools/, xmake.lua, resources/mk/
+                 +---------+---------+
+                           |
+                 +---------v---------+
+                 | Shared Interface  |  include/ + kernel/core/sys/
+                 +---------+---------+
+                           |
+          +----------------+----------------+
+          |                |                |
+   +------v------+  +------v------+  +-----v-----+
+   |   Kernel    |  |  Libraries  |  | Resources |
+   |   kernel/   |<-| libraries/  |  | resources/|
+   +------+------+  +------+------+  +-----+-----+
+          |                |                |
+          |         +------v------+         |
+          |         |  Userland   |<--------+
+          |         |  userland/  |
+          |         +------+------+
+          |                |
+          |         +------v------+
+          |         |    GUI      |  gui/ Xenocara
+          |         +------+------+
+          |                |
+          +----------------+------------------+
+                           |
+                    +------v------+
+                    |  Installer  |  installer/
+                    |  Configs    |  configs/
+                    +------------------+
+                           |
+                    +------v------+
+                    |   Tests     |  tests/
+                    +-------------+
+
+Build order: tools -> include -> libraries -> kernel -> resources -> userland
+            -> gui -> installer -> tests -> configs -> docs
+Runtime order: Bootloader (EFI) -> Kernel (bsd) -> Devices/FS/Net -> init(8) -> libs -> userland -> gui
+
+3. KERNEL ARCHITECTURE (see subsystems/kernel.txt)
+Type: monolithic, statically linked single image "bsd" + EFI bootloader
+per arch (BOOTX64.EFI, BOOTAA64.EFI, BOOTRISCV64.EFI).
+
+Subsystems inside kernel/:
+  core/kern  : process, scheduling, syscalls, IPC, VFS, TTY, etc.
+  core/sys   : 146 public headers (param.h, proc.h, etc.)
+  core/conf  : GENERIC, files, param.c, swapgeneric.c
+  core/lib   : libkern, libsa, libz
+  core/stand : bootloader components
+  arch/*     : MD code (pmap, trap, locore.S, bus_dma, intr)
+  uvm/       : virtual memory (UVM)
+  fs/        : ufs/ffs/ext2fs/mfs, nfs, msdosfs, ntfs, isofs, tmpfs
+  net/       : net, netinet, netinet6, net80211, netmpls, bpf, pf
+  dev/       : pci, usb, ata, scsi, wscons, vmm, mii, etc.
+  crypto/    : in-kernel crypto
+  ddb/       : kernel debugger
+Dependencies: arch depends on sys headers; MI subsystems depend on uvm/kern;
+drivers depend on autoconf bus framework.
+
+4. LIBRARY ARCHITECTURE
+Every library builds as -static + -shared pair via os_bsd_library().
+  core: libc, libm, libcrypto, libssl, libtls, libpthread, libutil, libz,
+        libevent, libelf, libexpat, libedit, csu, libarch
+  extra: 19 libs (libkvm, libpcap, libfido2, libcurses, librpcsvc, ...)
+csu/ (crt0.c, crtbegin*.c) is process entry glue.
+LDADD=-lxxx -> add_deps("lib<xxx>-shared").
+
+5. USERLAND ARCHITECTURE
+565 programs organized by role:
+  essential/{bin,sbin}, system, utilities, development, network, security,
+  libexec, multimedia, games, package, plus yacc/lex/rpc generation.
+Each: PROG/SRCS/LDADD/MAN/BINOWN/BINMODE/MLINKS parsed from Makefile.
+Two host-build tools (config(8), mklocale) built twice (host + target).
+
+6. GUI ARCHITECTURE (see 13_gui.txt)
+Xenocara (X.Org 7.7). Modules: app/, driver/, font/, lib/, proto/, util/,
+xserver/, plus dist/. Build is phony-wrapper autotools (not native xmake).
+No compositor/DE/Wayland compositor vendored (VERIFIED ABSENCE; only optional
+Wayland backend inside libva).
+
+7. CONFIGURATION ARCHITECTURE (see 15_configuration.txt)
+configs/ replaces /etc:
+  configs/{etc, filesystem, logging, mail, network, security, system, templates}/
+Per-arch: configs/etc/etc.{amd64,arm64,riscv64}/ (disktab, fbtab, login.conf,
+sysctl.conf, ttys, MAKEDEV.md). Only master.passwd mode 600; rest 644.
+Legacy top-level configs/Makefile is stale (flat MUTABLE= list, old kernel path).
+
+8. INSTALLER ARCHITECTURE (see 14_installer.txt)
+installer/{amd64,arm64,riscv64,miniroot,sets,special,notes,syspatch}/.
+Sets: mi + md.<arch> -> sort -> lib-first reorder -> pax/tar -> .tgz.
+Special: 72 miniroot tools via same-name search (legacy .PATH stale).
+Boot/iso requires privileged OpenBSD tools (vnconfig/fdisk/newfs) host-limited.
+
+9. RESOURCE ARCHITECTURE (see 18_resources.txt)
+resources/ is renamed share/: dict, locale, man, misc, snmp, tabset,
+termtypes, tmac, zoneinfo, btrace. mk/ excluded (build-system internals).
+Data compilation via zic(8) + mklocale(1) when tools present.
+
+10. TESTING ARCHITECTURE (see 17_testing.txt)
+tests/ mirrors regress/ (bin, sbin, usr.bin, lib, sys, misc...).
+Two shapes: (a) PROG auto -> run-regress-<prog>, (b) hand-written REGRESS_TARGETS
+with golden-file cmp (majority). Discovery via os.files/os.dirs.
+
+11. BOUNDARIES AND INTERFACES
+  Kernel <-> Userland: syscall interface (sysent[], syscallargs.h), traps
+  Kernel <-> Libraries: headers via os-headers, syscall stubs in libc/sys/
+  Libraries <-> Userland: link-time (shared/static), csu startup
+  Kernel <-> Arch: MI/MD split via <machine/...> alias (copied not symlinked,
+    for Windows portability), per-arch CMACHFLAGS, ld.script vs kern.ldscript
+  GUI <-> Userland: X libs in gui/lib/, apps in gui/app/
+  Installer <-> Build: consumes kernel+userland install artifacts for sets
+  Configs <-> Runtime: /etc files installed verbatim
+  Build <-> Source: generators produce committed manifests
+
+12. COUPLING NOTES
+Kernel MI/MD boundary is partially abstracted; tight coupling remains in
+autoconf, bus_dma, intr, pmap. Libraries loosely coupled via explicit LDADD.
+GUI most isolated. Manifests create commit-time coupling: changing
+files/GENERIC without regenerating manifests yields stale builds.

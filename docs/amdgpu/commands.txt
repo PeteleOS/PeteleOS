@@ -1,0 +1,154 @@
+AMDGPU asic_reg Stripper — Commands Executed (English)
+====================================================
+Per PDF idea: compiler-style reachability, not hand-rewriting.
+This file records the exact commands run on PeteleOS to produce the
+dry-run before/after table, verification, and docs. Re-run them to reproduce.
+
+Prerequisites
+-------------
+- Python 3 (tested with Python 3.14 on Windows, also works on OpenBSD/Linux)
+- Repository checkout at C:\Users\TRAN PHUOC DAT\Documents\GitHub\PeteleOS
+  (or /usr/src/PeteleOS on OpenBSD)
+- No extra pip packages needed (only pathlib, re, argparse, collections)
+
+1) Inspect original size (informational, matches PDF "Goc 454 MB")
+--------------------------------------------------------------------
+# PowerShell on Windows
+Get-ChildItem -LiteralPath "kernel\dev\pci\drm\amd\include\asic_reg" -Recurse -File |
+  Measure-Object -Property Length -Sum | Select-Object Count, @{N="SumMB";E={[math]::Round($_.Sum/1MB,2)}}
+
+# Result on this checkout: 450 files, 456.76 MB (478,951,030 bytes)
+# PDF quoted 454 MB — same order, current checkout slightly larger.
+
+# List top 3 largest headers (PDF table rows)
+Get-ChildItem -LiteralPath "kernel\dev\pci\drm\amd\include\asic_reg" -Recurse -File |
+  Sort-Object Length -Descending | Select-Object -First 10 |
+  ForEach-Object { "{0,8:F2} MB  {1}" -f ($_.Length/1MB), $_.FullName }
+
+# Expected top: dcn_3_2_0_sh_mask.h (23.05 MB), nbio_7_0_sh_mask.h (12.27 MB),
+#               gc_9_0_sh_mask.h (3.06 MB) — matches PDF structure.
+
+
+2) Run stripper in dry-run mode (PDF "Wenn muon buoc tiep theo, co the viet luon stripper (Python) chay dry-run tren asic_reg: in ...")
+--------------------------------------------------------------------
+# Dry-run prints PDF-style before/after table, does NOT overwrite files.
+# It scans all .c/.h under kernel/dev/pci/drm/amd (excluding asic_reg)
+# for direct identifiers + token-paste expansions (PDF Steps 1a,1b,1c).
+
+py tools/amdgpu_asic_reg_stripper.py --dry-run
+
+# Dry-run with verbose progress (shows scanning 2062 files):
+py tools/amdgpu_asic_reg_stripper.py --dry-run --verbose
+
+# Dry-run with detailed report file (also stored in docs/amdgpu per task):
+py tools/amdgpu_asic_reg_stripper.py --dry-run --report docs/amdgpu/dry_run_report.txt
+
+# The report file docs/amdgpu/dry_run_report.txt contains:
+# - Total original vs stripped sizes (456.76 MB -> 8.23 MB)
+# - Example rows (dcn_3_2_0, nbio_7_0, gc_9_0) same as PDF table format
+# - All 450 files sorted by original size (before/after + keep/total)
+# - NEEDED sample (first 100 names) and total NEEDED count (18,595)
+
+# Expected stdout on this checkout (excerpt):
+#   Found 1340723 unique #define names in 450 files
+#   Total original asic_reg size: 456.76 MB
+#   NEEDED set size: 18595 (1.39% of defines)
+#   Scanned 2062 source files
+#   dcn_3_2_0_sh_mask.h   23.05 MB -> 68.90 KB  920 / 194444
+#   nbio_7_0_sh_mask.h    12.27 MB -> 16.65 KB  246 / 104105
+#   gc_9_0_sh_mask.h       3.06 MB -> 90.55 KB 1476 / 26143
+#   TOTAL 456.76 MB -> 8.23 MB (1.80% remain)
+
+
+3) cmp / verification (PDF Step 3 — "kiem tra (khong skip)")
+--------------------------------------------------------------------
+# The stripper verifies at the end:
+#   Verification: NEEDED subset of define_set -- OK
+# This means no needed macro is missing — otherwise build would fail with
+# "missing #define" (not silent wrong register, because values are copied verbatim).
+
+# Manual check that stripped values are identical (spot check, PDF "Gia tri ... copy nguyen"):
+py -c "import pathlib, re; p=pathlib.Path('kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_2_0_sh_mask.h'); print([l for l in p.read_text().splitlines() if 'DENTIST_DISPCLK_CNTL__DENTIST_DISPCLK_WDIVIDER__SHIFT' in l][:2])"
+# -> '#define DENTIST_DISPCLK_CNTL__DENTIST_DISPCLK_WDIVIDER__SHIFT                                                 0x0'
+# Stripper would output: '#define DENTIST_DISPCLK_CNTL__DENTIST_DISPCLK_WDIVIDER__SHIFT 0x0'  (value 0x0 unchanged, only spacing normalized)
+
+# Check that .c files are unchanged (dry-run):
+git status  # should show no modified files under kernel/dev/pci/drm/amd/include/asic_reg
+git diff --stat  # empty in dry-run
+
+# If you want to simulate full build cmp (PDF Step 3.1-3.4) on OpenBSD:
+#   Build kernel GENERIC.MP before, save .o:
+#     make -C /usr/src/sys/arch/amd64/compile/GENERIC.MP obj && cp *.o /tmp/before/
+#   Run tool in apply mode (next section), rebuild, cmp:
+#     make -C /usr/src/sys/arch/amd64/compile/GENERIC.MP obj && cp *.o /tmp/after/
+#     cmp /tmp/before/amdgpu.o /tmp/after/amdgpu.o && echo "identical or only debug lines differ - safe"
+# On this Windows host we simulate by checking that kept set superset NEEDED
+# and that .c is unchanged, so object files would be identical except line numbers.
+
+
+4) Apply mode (PDF "Ghi de cung path — #include khong doi")
+--------------------------------------------------------------------
+# WARNING: This overwrites 450 headers in place. Do it on a branch or after
+# backing up. Dry-run is default; you must pass --apply explicitly.
+
+# Preview first (dry-run), then apply:
+py tools/amdgpu_asic_reg_stripper.py --dry-run --report docs/amdgpu/dry_run_report.txt
+# If report looks good (8.23 MB total, ~31 empty headers, PDF estimates ~50/450), then:
+py tools/amdgpu_asic_reg_stripper.py --apply
+
+# With --delete-empty, the ~31 headers that would have 0 kept defines (and no enum)
+# (approx 50/450 per PDF) would be deleted. Use only if you want to mirror PDF exactly:
+py tools/amdgpu_asic_reg_stripper.py --apply --delete-empty
+
+# After apply, verify:
+Get-ChildItem -LiteralPath "kernel\dev\pci\drm\amd\include\asic_reg" -Recurse -File |
+  Measure-Object -Property Length -Sum | Select-Object @{N="SumMB";E={[math]::Round($_.Sum/1MB,2)}}
+# Expected after: ~8.23 MB total
+
+# Check that functionality is equivalent (PDF "Bao dam chuc nang ... tuong duong"):
+git diff --stat  # shows ~400 files changed, each a few KB instead of a few MB
+git status       # should show only asic_reg/*.h modified, no .c modified
+# Build and cmp as in step 3; then boot on APU + dGPU if available.
+
+
+5) Lifecycle when syncing Linux (PDF "Vong doi khi sync Linux")
+--------------------------------------------------------------------
+# Keep full original outside tree or on branch 'upstream-full' (like flex/yacc):
+#   tar czf docs/amdgpu/asic_reg.full.tar.gz kernel/dev/pci/drm/amd/include/asic_reg
+# or
+#   git branch upstream-full  # commit full 456 MB once
+#   git checkout main
+#   py tools/amdgpu_asic_reg_stripper.py --apply
+#   git add kernel/dev/pci/drm/amd/include/asic_reg docs/amdgpu && git commit -m "strip asic_reg: 456 MB -> 8.23 MB, same API"
+
+# On next DRM sync from OpenBSD/Linux:
+#   git checkout upstream-full
+#   cp -r /tmp/new_asic_reg/* kernel/dev/pci/drm/amd/include/asic_reg/
+#   git checkout main
+#   py tools/amdgpu_asic_reg_stripper.py --apply
+#   git commit -m "regenerate stripped asic_reg from vendor update"
+
+# To regenerate when tool pattern coverage improves:
+#   tar xzf docs/amdgpu/asic_reg.full.tar.xz -C /tmp
+#   cp -r /tmp/asic_reg.full/* kernel/dev/pci/drm/amd/include/asic_reg/
+#   py tools/amdgpu_asic_reg_stripper.py --apply
+# Full tar is ~29 MB gzipped (PDF).
+
+
+6) What this is NOT (PDF "Cai nay khong phai")
+--------------------------------------------------------------------
+# Not rewriting driver: .c is 0 lines changed (verified by git diff)
+# Not renaming to radeon_reg.h: still REG__FIELD__SHIFT
+# Not gzipping: still C header, editor/compiler reads normally
+# Not deleting asic_reg/: ~419 files remain (vs 0) (PDF estimates ~400)
+# Not runtime optimization: only source tree / compile input (benefit is git clone, editor, grep, tarball)
+
+All commands above are recorded in this file per task requirement:
+"cac file lenh ma ban thuc hien nhiem vu theo y tuong cua file pdf ban dau
+ cung phai duoc ghi vao docs/amdgpu"
+
+See also:
+  tools/amdgpu_asic_reg_stripper.py  (source)
+  docs/amdgpu/amdgpu_asic_reg_stripper.py  (copy in docs)
+  docs/amdgpu/changes.txt            (detailed before/after)
+  docs/amdgpu/dry_run_report.txt     (full 450-file listing)

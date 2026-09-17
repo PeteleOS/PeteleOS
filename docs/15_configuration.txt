@@ -1,0 +1,76 @@
+LEVEL 1-2 -- CONFIGURATION ANALYSIS
+====================================
+
+1. HIERARCHY
+
+  configs/ is the renamed /etc, reorganized thematically (VERIFIED from directory listing
+  and configs/xmake.lua comments):
+
+    configs/
+    +-- etc/           -- per-arch /etc fragments
+    |   +-- etc.amd64/   (disktab, fbtab, login.conf, sysctl.conf, ttys, MAKEDEV.md)
+    |   +-- etc.arm64/   (same set per arch)
+    |   +-- etc.riscv64/
+    +-- system/        -- core system config (rc, rc.conf, master.passwd, group, motd, etc.)
+    |   +-- rc.d/      (rc scripts)
+    +-- security/      -- security configs (INFERRED)
+    +-- network/       -- network configs (INFERRED)
+    +-- filesystem/    -- filesystem configs (INFERRED, e.g. fstab)
+    +-- logging/       -- logging configs (INFERRED)
+    +-- mail/          -- mail configs (aliases, smtpd.conf verified via mail/Makefile)
+    +-- templates/     -- templates (INFERRED)
+    +-- Makefile       -- legacy (stale)
+    +-- Makefile.inc   -- legacy
+    +-- xmake.lua      -- install logic
+
+2. CONFIGURATION TYPES
+
+  Default: configs/system/*, configs/etc/etc.<arch>/* shipped as installed /etc.
+  Architecture-specific: configs/etc/etc.<arch>/ overrides for disktab, fbtab, sysctl.conf, etc.
+  Build-time: kernel/core/conf/GENERIC options (DDB, FFS, NFS, CRYPTO, etc.) compiled in via
+              config(8) -> opt_*.h headers.
+  Install-time: installer/sets/makeetcset merges /etc for upgrades (not reimplemented).
+  Runtime: sysctl (kern_sysctl.c), login.conf (login_cap.h), ttys, rc.conf, etc.
+
+3. BUILD INTEGRATION -- configs/xmake.lua (VERIFIED ~70 lines read)
+
+  Does NOT compile anything; pure file installation (headeronly target + after_install copy).
+  Logic:
+    - copy_dir_flat for each thematic subdir preserving internal structure.
+    - EXCLUDE: Makefile, Makefile.inc (build-system internals, not runtime).
+    - Permissions: only system/master.passwd at 600 (hashes); rest 644 root:wheel.
+      (Smaller than userland BINMODE handling; no per-file BINMODE metadata here because
+       top-level configs/Makefile is stale and not used.)
+    - mail/Makefile is the only Makefile with explicit install destinations still correct
+      (aliases/smtpd.conf -> ${DESTDIR}/etc/mail/ mode 644).
+
+  Legacy top-level configs/Makefile is stale: references flat MUTABLE= list
+  ("group", "gettytab", etc.) and old kernel path ../sys/arch/${MACHINE}/compile.
+
+4. INSTALLATION DESTINATIONS (VERIFIED FROM xmake.lua)
+
+  configs/system/rc              -> /etc/rc
+  configs/system/master.passwd   -> /etc/master.passwd (600)
+  configs/system/group           -> /etc/group
+  configs/etc/etc.<arch>/sysctl.conf -> /etc/sysctl.conf (arch-specific)
+  configs/mail/aliases           -> /etc/mail/aliases (644)
+  etc. (flat copy; subdir structure preserved for rc.d etc.)
+
+5. RUNTIME CONSUMERS
+
+  Kernel: sysctl MIB via kern_sysctl.c; GENERIC options compiled in.
+  Userland: init reads rc/rc.conf, login reads login.conf, getty reads ttys,
+            cron reads crontab, etc.
+  Installer: copies configs into installed system's /etc during installation.
+
+6. CONFIGURATION FLOW
+
+  Build-time: GENERIC -> config(8) -> opt_*.h -> kernel compile.
+  Install-time: configs/* -> installdir/etc (via configs/xmake.lua after_install).
+  Runtime: /etc files -> daemons and kernel sysctl.
+
+7. REFACTORING NOTES
+  Thematic split (system vs security vs network) is PeteleOS-specific; upstream
+  OpenBSD uses flat /etc. Changing hierarchy requires updating configs/xmake.lua
+  copy logic. Per-arch overrides are correctly isolated; adding a new arch
+  requires new etc.<arch>/ directory.

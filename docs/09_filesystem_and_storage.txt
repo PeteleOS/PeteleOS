@@ -1,0 +1,78 @@
+LEVEL 2-3 -- FILESYSTEM AND STORAGE
+====================================
+
+1. VFS LAYER -- kernel/core/kern/vfs_*.c
+
+  Central abstraction: struct mount, struct vnode, struct vfsops, struct vnops.
+  Files (VERIFIED):
+    vfs_init.c: filesystem registration
+    vfs_subr.c, vfs_lookup.c, vfs_cache.c, vfs_vnops.c, vfs_vops.c
+    vfs_bio.c, vfs_biomem.c: buffer cache
+    vfs_sync.c: syncer
+    vfs_syscalls.c: mount/unmount/open-by-fh syscalls
+    vfs_lockf.c: file locking
+    vfs_getcwd.c, spec_vnops.c
+    miscfs/deadfs/dead_vnops.c, miscfs/fifofs/fifo_vnops.c
+    miscfs/fuse/{fuse_device.c, fuse_file.c, ...}: FUSE
+
+2. FILESYSTEM IMPLEMENTATIONS -- kernel/fs/
+
+  FFS/UFS: fs/ufs/ (ufs/ufs_*.c, ffs/ffs_*.c, mfs/mfs_*.c, ext2fs/ext2fs_*.c)
+    ffs_alloc.c, ffs_balloc.c, ffs_inode.c, ffs_vfsops.c, ffs_vnops.c
+    ufs_bmap.c, ufs_dirhash.c, ufs_ihash.c, ufs_lookup.c, ufs_quota.c
+    ext2fs: 8 files (alloc, balloc, bmap, inode, lookup, vfsops, vnops, etc.)
+    mfs: memory filesystem (2 files)
+
+  NFS: fs/nfs/ (nfs_bio.c, nfs_node.c, nfs_vfsops.c, nfs_vnops.c, nfs_socket.c,
+       krpc_subr.c, nfs_serv.c, nfs_subs.c, etc.) Both client and server
+       (options NFSCLIENT/NFSSERVER in GENERIC).
+
+  CD9660/UDF: fs/isofs/ (isofs/cd9660/*.c, isofs/udf/*.c) -- ISO + Rock Ridge.
+
+  MSDOSFS: fs/msdosfs/ (msdosfs_conv.c, denode.c, fat.c, lookup, vfsops, vnops)
+
+  NTFS: fs/ntfs/ (ntfs_compr.c, conv.c, ihash.c, subr.c, vfsops, vnops)
+
+  TMPFS: fs/tmpfs/ (INFERRED -- directory exists)
+
+  Options in GENERIC (VERIFIED from GENERIC head): FFS, FFS2, UFS_DIRHASH, QUOTA,
+  EXT2FS, MFS, NFSCLIENT, NFSSERVER, CD9660, UDF, MSDOSFS.
+
+3. BUFFER CACHE AND I/O
+
+  vfs_bio.c: bread, bwrite, bdwrite, bawrite; buffer hash.
+  vfs_biomem.c: buffer memory.
+  kern_physio.c: raw I/O (physio).
+  subr_disk.c, subr_blist.c: disk helpers.
+
+4. STORAGE STACK -- kernel/dev/ + kernel/arch/
+
+  Disk abstraction:
+    dev/vnd.c: vnode disk
+    dev/bio.c, dev/hotplug.c, dev/diskmap.c, dev/softraid.c (raid 0/1/5/6/crypto)
+    scsi/{sd.c, cd.c, st.c, scsi_base.c, scsiconf.c, mpath.c, safte.c}
+    dev/ata/{wd.c, ata.c, atascsi.c}, dev/atapiscsi/atapiscsi.c
+    dev/ic/{ahci.c, nvme.c, mfi.c, ami.c, mpi.c, siop.c, wd.c, ...}
+    dev/pci/{ahci_pci.c, nvme_pci.c, mfi_pci.c, siop_pci.c, ...}
+
+  Architecture-specific disk:
+    arch/amd64/amd64/disksubr.c (partition parsing), dkcsum.c
+
+5. BOOTSTRAP FILESYSTEM
+
+  bootloader libsa: ufs.c, ufs2.c, cd9660.c, loadfile.c, dev.c, disklabel.c,
+  softraid.c -- reads kernel "bsd" from disk.
+
+6. CONFIGURATION
+
+  Mount options: compiled via GENERIC; runtime via mount(2)/fstab (configs/system/fstab INFERRED).
+  NFS boot: nfs/nfs_boot.c.
+
+7. DATA FLOW (see 07)
+  Path -> namei (vfs_lookup) -> vnode -> buffer cache -> driver DMA -> disk.
+
+8. REFACTORING NOTES
+  VFS vnode ops are a function-pointer table (vnops) -- adding a filesystem
+  requires implementing vfsops + vnops. Buffer cache is shared; changing it
+  impacts all filesystems. Disk layer couples to bus (scsi/ata/pci) -- storage
+  changes often cross fs/ and dev/.

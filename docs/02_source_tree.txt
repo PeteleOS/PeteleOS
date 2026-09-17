@@ -1,0 +1,127 @@
+LEVEL 0-3 -- SOURCE TREE INVENTORY (VERIFIED)
+============================================
+
+Repository root: PeteleOS/
+  File: xmake.lua            Root orchestration, set_project("PeteleOS") 0.1.0,
+                             set_xmakever("3.0.9"), builddir=build/,
+                             add_includedirs(include/), modules order fixed.
+  File: Makefile             Legacy BSD Make top-level (OpenBSD v1.136, SUBDIR+=
+                             lib include bin ... sys ... etc distrib regress).
+  File: LICENSE              Exists (content NOT VERIFIED).
+  Dir:  .xmake/              xmake cache (generated).
+  Dir:  build/               All generated artifacts.
+
+--- kernel/ -----------------------------------------------
+  kernel/xmake.lua               739 lines, manages MI dirs, drivers, ldscript, bsd, EFI.
+  kernel/Makefile                Legacy, SUBDIR=dev/microcode arch/* (stale, lists pruned archs).
+  kernel/generated_manifest.lua  AUTO-GENERATED, OS_KERNEL_MANIFEST[arch] for 3 archs.
+  kernel/arch/
+    amd64/  (amd64/, compile/, conf/, include/, isa/, pci/, stand/)
+      amd64/*.c, *.S  locore.S, pmap.c, machdep.c, trap.c, apic.c, bus_dma.c,
+                      vector.S, identcpu.c, fpu.c, intr.c, etc.
+      include/  <machine/...> headers
+      conf/     GENERIC per-arch, ld.script
+      stand/efiboot/  BOOTX64.EFI sources, ldscript.amd64
+    arm64/  (arm64/, compile/, conf/, dev/, include/, stand/)
+    riscv64/(riscv64/, compile/, conf/, dev/, include/, stand/)
+  kernel/core/
+    conf/  files, GENERIC (MI options), makegap.sh, newvers.sh, param.c, swapgeneric.c
+    kern/  ~60 files: init_main.c, init_sysent.c, kern_*.c, subr_*.c,
+           exec_*.c, vfs_*.c, uipc_*.c, sys_*.c, tty*.c, sched_bsd.c,
+           genassym.sh, makesyscalls.sh, Makefile
+    sys/   146 headers: param.h, proc.h, systm.h, mount.h, vnode.h, etc.
+    lib/   libkern/, libsa/, libz/
+    miscfs/ deadfs, fifofs, fuse, etc.
+    stand/ efi/, boot/
+  kernel/uvm/   ~40 files: uvm_*.c/h (uvm_map.c, uvm_fault.c, uvm_page.c, uvm_init.c, ...)
+  kernel/fs/    ufs/{ffs,mfs,ufs,ext2fs}, nfs, msdosfs, isofs/cd9660, ntfs, tmpfs
+  kernel/net/   net/{if.c,bpf.c,route.c}, netinet, netinet6, net80211, netmpls
+  kernel/dev/   acpi, ata, dt, efi, fdt, gpio, hid, i2c, ic, isa, microcode,
+                mii, ofw, pci, scsi, usb, wscons, vmm, + audio.c, bio.c, rnd.c
+  kernel/crypto/ ~30 files: aes.c, arc4.c, blf.c, chachapoly.c, crypto.c, ...
+  kernel/ddb/   ~25 files: db_command.c, db_trap.c, db_elf.c, ...
+
+--- include/ ------------------------------------------------
+  include/xmake.lua          headeronly, add_headerfiles(*.h + arpa/protocols/rpc/rpcsvc),
+                             public add_includedirs, after_install copies machine/sys/...
+  include/*.h               ~100 flat headers: stdio.h, stdlib.h, pthread.h, etc.
+  include/arpa/, protocols/, rpc/, rpcsvc/
+  include/Makefile           Legacy, FILES=/DIRS= listing (stale vs new layout).
+
+--- libraries/ ----------------------------------------------
+  libraries/xmake.lua        Builds every lib as -static + -shared via os_bsd_library();
+                             parses libc/sys/Makefile.inc ASM lists for syscall stubs;
+                             handles 19 extra libs; version from manifest.
+  libraries/Makefile         Legacy wrapper.
+  libraries/generated_manifest.lua  OS_LIBRARIES_SHLIB_VERSIONS.
+  libraries/core/
+    csu/      crt0.c, crtbegin.c, crtbeginS.c, aarch64/amd64/riscv64/
+    libarch/  arch-specific helpers
+    libc/     ~20 subdirs: sys/, gen, stdio, string, net, regex, ... 195 files in sys/
+    libcrypto/, libssl/, libtls, libm, libpthread, libutil, libz,
+    libevent, libelf, libexpat, libedit
+  libraries/extra/  19 libs: libkvm, libpcap, libfido2, libcurses, libfuse, librpcsvc, ...
+
+--- userland/ -----------------------------------------------
+  userland/xmake.lua         Discovers 565 programs via generated_manifest.lua;
+                             os_program() per program (PROG/SRCS/LDADD/MAN/BINOWN/BINMODE).
+  userland/generated_manifest.lua  AUTO-GENERATED program table.
+  userland/essential/        bin/ (cat, cp, ksh, ls, ...), sbin/ (init, mount, ifconfig)
+  userland/system/           config(8) (host tool for kernel ioconf.c)
+  userland/development/      awk, make, lex, yacc, cpp, vi, ...
+  userland/utilities/        tmux, top, tr, xargs, yacc, ...
+  userland/network/, security/ (doas, openssl, signify), libexec/, multimedia/, games/, package/
+
+--- gui/ ----------------------------------------------------
+  gui/xmake.lua              Phony-wrapper per-module autotools build; ~27k files, ~200 modules.
+  gui/Makefile               Legacy Xenocara wrapper.
+  gui/README.md              Xenocara notes (X.Org 7.7).
+  gui/generated_manifest.lua module list (if present)
+  gui/app/, driver/, font/, lib/, proto/, util/, xserver/, data/, doc/, dist/, etc.
+
+--- installer/ ----------------------------------------------
+  installer/xmake.lua        Sets pipeline, special/ search, iso host-limited.
+  installer/Makefile         Legacy release Makefile.
+  installer/{amd64,arm64,riscv64}/  arch install media
+  installer/miniroot/        Ramdisk contents
+  installer/sets/            lists/<name>/{mi,md.<arch>}, maketars logic
+  installer/special/         72 program dirs (thin Makefiles with .PATH)
+  installer/notes/, syspatch/
+
+--- configs/ ------------------------------------------------
+  configs/xmake.lua          headeronly, flat copy, exclude Makefile, 600 for master.passwd.
+  configs/Makefile           Legacy (stale, flat MUTABLE= list, old kernel path).
+  configs/etc/               etc.amd64/, etc.arm64/, etc.riscv64/ (disktab, fbtab, login.conf, sysctl.conf)
+  configs/{system,security,network,filesystem,logging,mail,templates}/
+    system/{rc,rc.conf,master.passwd(600), group, ...}
+    mail/{aliases,smtpd.conf}
+
+--- resources/ ----------------------------------------------
+  resources/xmake.lua        headeronly, flat-category verbatim install; zic + mklocale.
+  resources/Makefile         Legacy share/Makefile.
+  resources/{dict,locale,man,misc,mk,snmp,tabset,termtypes,tmac,zoneinfo,btrace}/
+  resources/mk/              bsd.*.mk -- EXCLUDED from runtime (build internals)
+
+--- tools/ --------------------------------------------------
+  tools/xmake.lua            Framework loader (helpers->options->compiler->rules->toolchains->tasks)
+  tools/helpers.lua          OS_TARGET_TRIPLES, OS_SUPPORTED_ARCHS, OS_CROSS_PREFIXES, OS_ARCH_CFLAGS
+  tools/options.lua          option(target_arch, os_toolchain, sysroot, lto, asan, ubsan, werror, build_gl/dri)
+  tools/compiler.lua         set_config toolchain/cc/cxx/ld/ar/as defaults
+  tools/rules.lua            rule os.base, os.kernel, os.userland, os.library, os.asm, ...
+  tools/toolchains.lua       toolchain os-clang (retarget via -target), os-gcc
+  tools/tasks.lua            tasks os-regen-*
+  tools/verify-rpcgen-output.sh
+  tools/modules/os/helpers.lua script-scope twin
+  tools/gen/                 gen_kernel_manifest.lua, gen_userland_manifest.lua,
+                             gen_libraries_manifest.lua, gen_gui_manifest.lua, gen_tests_manifest.lua
+  tools/{check,compiler,cross,debug,gen,lib,modules,release,scripts,toolchain}/
+
+--- tests/ --------------------------------------------------
+  tests/xmake.lua            Walk regress tree via os.files/os.dirs; handle PROG vs REGRESS_TARGETS.
+  tests/Makefile             Legacy regress/Makefile.
+  tests/generated_manifest.lua
+  tests/{bin,etc,gnu,include,lib,libexec,misc,sbin,sys,usr.bin,usr.sbin,...}/
+
+--- docs/ ---------------------------------------------------
+  docs/*.txt                 This knowledge base.
+  docs/subsystems/*.txt      Per-subsystem deep dives.

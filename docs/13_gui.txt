@@ -1,0 +1,81 @@
+LEVEL 1-2 -- GUI ANALYSIS
+========================
+
+1. PURPOSE
+gui/ provides the graphical user interface stack, window system, display server,
+graphical libraries, fonts, and X11 applications. Based on Xenocara, which is
+X.Org 7.7 plus OpenBSD local modifications (VERIFIED from gui/README.md).
+
+2. SOURCE TREE (VERIFIED FROM README + xmake.lua)
+
+  gui/xmake.lua        Phony-wrapper build for ~200 X.Org modules (~27k files)
+  gui/Makefile         Legacy Xenocara wrapper (bsd.xorg.mk)
+  gui/README.md        Xenocara notes (upstream X.Org structure)
+  gui/generated_manifest.lua  (module list, if present)
+  Layout (X.Org convention, VERIFIED):
+    app/    X applications and utilities
+    data/   keyboard mappings, bitmaps
+    doc/    documentation
+    driver/ input and video drivers
+    font/   fonts
+    lib/    libraries (libX11, libva with optional Wayland backend, etc.)
+    proto/  X protocol headers
+    util/   utilities
+    xserver/ X servers (including composite extension)
+    dist/   3rd-party sources (fontconfig, xcb, xkeyboard-config)
+    distrib/ binary distribution tools
+    etc/    default config files
+    share/  make(1) configuration
+  Top-level lists: MODULES (X.Org components), 3RDPARTY (dependencies)
+
+3. BUILD SYSTEM (VERIFIED FROM gui/xmake.lua, ~120 lines read)
+
+  Does NOT use native xmake compilation (add_files/binary). Instead:
+    One phony utility target per module that shells out to that module's own
+    configure + make + make-install (autotools/libtool).
+  Reason: every module is independently-versioned upstream X.Org project with
+  configure.ac/Makefile.am; re-implementing autotools detection in xmake is
+  not realistic. Verified mechanism: OpenBSD bsd.xorg.mk wraps configure/make.
+
+  Generic wrapper + override table:
+    Most modules use default configure flags.
+    Overrides exist for modules needing non-default flags:
+      xserver: GLX/DRI gated by build_gl/build_dri options (tools/options.lua)
+               -> --enable/--disable flags matching real Makefile.bsd-wrapper
+               (XENOCARA_BUILD_GL/DRI). Implemented as functions receiving booleans.
+      xf86-video-intel: same build_dri toggle (second verified example).
+    Other ~60 modules with real Makefile.bsd-wrapper overrides (mostly WANTLIB
+    library hints, one-off CONFIGURE_ARGS) intentionally NOT transcribed -- explicit
+    honest deferral, same as libraries/xmake.lua note on 19 libs.
+
+  Cross-compilation: passes os-clang triple via sysroot to configure.
+
+4. WHAT DOES NOT EXIST (VERIFIED ABSENCE, gui/xmake.lua notes)
+
+  - No standalone compositor (Xorg composite extension exists inside xserver/
+    as "composite/" but not a Wayland-style compositor).
+  - No desktop environment or window manager vendored (traditional OpenBSD ships
+    bare X11; cwm is userland/ports, not gui/).
+  - No mobile UI code.
+  - No Wayland compositor/protocol implementation. Only hits are optional
+    Wayland backend inside gui/lib/libva/va/wayland/ (dependency feature flag).
+
+5. RUNTIME INTEGRATION
+
+  X server (xserver/) -> kernel DRM drivers (dev/pci/drm/*) via /dev/drm*,
+                         wscons/wsfont for console, input via wscons/hid.
+  X clients -> X server via Unix socket (libX11 encode/decode).
+  No kernel/GUI tight coupling beyond DRM and wscons.
+
+6. DEPENDENCIES
+
+  Build: tools, include (headers), libraries (libz, libexpat, etc.)
+  Runtime: kernel DRM, userland (for launch via xdm/startx).
+  No dependency on installer/configs beyond installed paths.
+
+7. REFACTORING NOTES
+  Adding a new X.Org module: add to MODULES list and ensure autotools wrapper
+  picks it up; no native xmake target needed. Changing display stack would
+  require replacing xserver/ entirely. Wayland adoption would be a new top-level
+  effort, not an incremental gui/ change. Isolated, LOW coupling to rest of OS
+  (GUI is optional per build spec).

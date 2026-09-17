@@ -1,0 +1,56 @@
+LEVEL 2-3 -- NETWORKING
+========================
+
+1. STACK LOCATION
+kernel/net/ (net/, netinet/, netinet6/, net80211/, netmpls/)
+
+2. LAYERS
+
+  Link: net/if.c, ifq.c, if_media.c, net/if_*.c (vlan, bridge, trunk, etc.)
+        netinet/if_ether.c, net80211/ieee80211*.c
+  Network: net/route.c, radix.c, rtable.c, netinet/ip_input.c, ip_output.c,
+           netinet6/ip6_input.c, ip6_output.c, mpls
+  Transport: netinet/tcp_input.c, tcp_output.c, tcp_subr.c, udp_usrreq.c,
+             netinet6/udp6_output.c
+  Socket: kern/uipc_socket.c, uipc_socket2.c, uipc_syscalls.c, uipc_mbuf.c,
+          uipc_domain.c, uipc_proto.c, sys_socket.c
+  Packet filter: net/pf.c, pf_*.c (ruleset, table, if, ioctl, etc.)
+  BPF: net/bpf.c, bpf_filter.c
+  Other: net/if_bridge.c, if_vlan.c, if_tun.c, if_gif.c, if_gre.c, art.c, toeplitz.c
+
+3. KEY DATA STRUCTURES
+  struct ifnet, ifqueue, mbuf, mbuf chain, route, rtentry, socket, sockbuf,
+  pf_rule, bpf_d, ieee80211com.
+  Mbuf: m_get, m_free, m_copy, m_pullup (uipc_mbuf.c).
+
+4. PROTOCOLS IMPLEMENTED (VERIFIED FROM FILE LIST + GENERIC OPTIONS)
+  IPv4, IPv6, TCP, UDP, ICMP, IGMP, ARP, 802.11 (with crypto ccmp/tkip/wep),
+  MPLS, Bridging, VLAN, PF, IPsec (ah, esp, ipcomp, ip_ipsp), CARP, GRE,
+  PPP, SLIP, Encapsulated.
+
+5. DRIVERS (kernel/dev/ + net/ glue)
+  dev/pci/if_*.c (em, ix, iwx, bge, re, etc.), dev/ic/*, dev/mii/*,
+  dev/usb/*, dev/pv/if_vio.c, bridge via net/if_bridge.c.
+  Enumerated via 2470 driver list in generated_manifest.lua.
+
+6. INITIALIZATION
+  domaininit() -> domains (inet, inet6) -> ifinit() -> route init -> pf/bpf init.
+  Called from init_main.c (INFERRED order).
+
+7. DATA FLOW
+  Ingress: NIC ISR -> driver if_input -> mbuf -> if.c -> bpf -> pf -> route
+           -> protocol input -> socket wakeup. Egress: socket -> protocol output
+           -> route -> if_output -> driver.
+
+8. USERLAND INTERFACE
+  socket(2), bind, connect, send, recv, ioctl SIOCSIFADDR etc. via sys_socket.c.
+  pfctl(8) via pf_ioctl.c; ifconfig(8) via if.c ioctls; tcpdump via bpf.
+
+9. ARCHITECTURE DEPENDENCIES
+  Checksum offload: netinet/in_cksum.c (MD variations), stoeplitz for hashing.
+  Byte order: sys/endian.h.
+
+10. REFACTORING NOTES
+  Protocol switch tables (domain, protosw) are global arrays; adding a protocol
+  touches multiple tables. PF is large and cross-cutting (packet path, ioctl,
+  table). mbuf handling is pervasive and error-prone.

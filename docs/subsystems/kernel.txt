@@ -1,0 +1,119 @@
+SUBSYSTEM: kernel
+==================
+
+1. PURPOSE
+The kernel is the monolithic, privileged core of PeteleOS. It manages hardware,
+memory, processes, filesystems, networking, and provides the syscall interface to
+userland. Built as a single statically-linked ELF image "bsd" plus per-arch EFI
+bootloader (BOOTX64.EFI, BOOTAA64.EFI, BOOTRISCV64.EFI). VERIFIED from kernel/xmake.lua.
+
+2. SOURCE LOCATIONS
+
+  kernel/xmake.lua, kernel/Makefile, kernel/generated_manifest.lua
+  kernel/arch/{amd64,arm64,riscv64}/  (MD)
+  kernel/core/{conf,kern,sys,lib,miscfs,stand}/
+  kernel/uvm/, kernel/fs/, kernel/net/, kernel/dev/, kernel/crypto/, kernel/ddb/
+
+3. COMPONENTS (VERIFIED)
+
+  Component: arch (machine-dependent)
+    Location: kernel/arch/<arch>/<arch>/ + include/ + conf/ + bus glue
+    Files sampled amd64: locore.S, pmap.c, machdep.c, trap.c, apic.c, ioapic.c,
+    bus_dma.c, bus_space.c, intr.c, vector.S, spl.S, copy.S, identcpu.c, fpu.c,
+    gdt.c, bios.c, mainbus.c, cpu.c, lapic.c, etc.
+    Responsibility: boot entry, MMU, interrupts, CPU init, bus glue.
+    Build: MD_CORE_DIRS, BUS_GLUE_DIRS, LDSCRIPT_NAMES, CMACHFLAGS in kernel/xmake.lua.
+    Init: locore.S -> machdep -> autoconf -> main().
+
+  Component: core/kern (core kernel services)
+    Location: kernel/core/kern/
+    Files: ~60: init_main.c (main, proc0 globals), init_sysent.c (sysent[] 500+),
+    kern_*.c (fork, exec, exit, proc, sig, sched, synch, malloc, pledge, unveil,
+    task, timeout, etc.), subr_*.c (autoconf, disk, extent, pool, percpu),
+    exec_*.c, vfs_*.c, uipc_*.c, sys_*.c, tty*.c, sched_bsd.c, genassym.sh, makesyscalls.sh.
+    Responsibility: process lifecycle, scheduling, syscalls, VFS, IPC, TTY.
+    Key symbols: main(), sysent[], fork1(), execve1(), uvm_init, config_rootfound.
+    Dependencies: uvm/, net/, fs/, dev/, crypto/, ddb/, arch/.
+
+  Component: core/sys (public kernel headers)
+    Location: kernel/core/sys/ (146 headers VERIFIED)
+    Examples: param.h, proc.h, systm.h, mount.h, vnode.h, conf.h, device.h, etc.
+    Consumer: every kernel .c plus libraries via os-headers.
+    Build: copied to install via include/xmake.lua after_install.
+
+  Component: uvm (virtual memory)
+    Location: kernel/uvm/ (~40 files)
+    Files: uvm_map.c, uvm_fault.c, uvm_page.c, uvm_init.c, uvm_km.c, uvm_anon.c,
+    uvm_amap.c, uvm_aobj.c, uvm_pager.c, uvm_swap.c, uvm_pmemrange.c, etc.
+    Headers: uvm.h, uvm_extern.h, uvm_param.h, uvm_pmap.h.
+    Responsibility: VM maps, fault handling, page allocation, swap, per-CPU.
+    Init: uvm_init() from init_main.c; pmap bootstrap from locore.
+
+  Component: fs (filesystems)
+    Location: kernel/fs/ (ufs/{ffs,mfs,ufs,ext2fs}, nfs, msdosfs, isofs, ntfs, tmpfs)
+    Files: ffs_alloc.c, ufs_lookup.c, nfs_vfsops.c, cd9660_vfsops.c, etc.
+    Responsibility: VFS implementations; registered via vfs_init().
+    Options: FFS, FFS2, UFS_DIRHASH, QUOTA, EXT2FS, MFS, NFSCLIENT, etc. in GENERIC.
+
+  Component: net (networking)
+    Location: kernel/net/{net,netinet,netinet6,net80211,netmpls}/
+    Files: if.c, bpf.c, route.c, tcp_input.c, ip_input.c, pf.c, etc.
+    Responsibility: protocol stacks, routing, filtering, BPF, socket layer.
+
+  Component: dev (device drivers and buses)
+    Location: kernel/dev/{acpi,ata,dt,efi,fdt,gpio,hid,i2c,ic,isa,microcode,mii,
+    ofw,pci,scsi,sdmmc,spi,usb,wscons,vmm, ...} + arch bus glue
+    Files: 2470 entries in generated_manifest (amd64 real config); includes
+    dev/pci/drm/* (i915/radeon/amdgpu dml), dev/pci/if_*.c, scsi/sd.c, etc.
+    Responsibility: buses, drivers, wscons, vmm, firmware load.
+
+  Component: crypto (kernel crypto framework)
+    Location: kernel/crypto/ (~30 files: aes.c, arc4.c, chachapoly.c, crypto.c, etc.)
+    Responsibility: in-kernel crypto, cryptosoft, hardware offload.
+
+  Component: ddb (kernel debugger)
+    Location: kernel/ddb/ (~25 files: db_command.c, db_trap.c, db_elf.c, etc.)
+    Responsibility: in-kernel debugging, enabled via DDB option.
+
+4. BUILD INTEGRATION
+
+  kernel/xmake.lua (739 lines) is the most complex file:
+    Reads OS_KERNEL_MANIFEST[arch].selected_files + ioconf_c.
+    KERNEL_MI_DIRS enumerated; adds MI via glob.
+    Adds param.c/swapgeneric.c, per-file PER_FILE_CFLAGS, selected_files via
+    PREFIXES retry, ioconf.c (on_load write), MD *.c/*.S, bus glue, add_includedirs,
+    ldscript, add_deps os-headers, on_load: machine copy, vers.c, assym.h via genassym.sh.
+  EFI bootloader: per-arch spec in EFI_BOOTLOADERS table -> phony on_build
+  (compile -> link shared via ld.lld -> objcopy -> BOOT*.EFI).
+
+5. INITIALIZATION ORDER
+  locore.S -> pmap bootstrap -> main() (init_main.c) -> uvm_init -> autoconf
+  -> scheduler -> clock -> devices -> VFS -> net -> crypto -> proc0 -> root mount -> initproc.
+
+6. DEPENDENCIES
+  Depends on: tools, include (os-headers). Consumed by: libraries (headers),
+  userland (syscalls), installer (bsd image), include copy (after_install).
+  Generated: ioconf.c (config(8)), assym.h (genassym.sh), vers.c, machine/ copy.
+
+7. FILE ANALYSIS (EXAMPLES)
+
+  FILE: kernel/core/kern/init_main.c
+  LAYER: kernel, COMPONENT: core/kern, PURPOSE: kernel main entry and proc0 globals,
+  LANGUAGE: C, BUILD: part of KERNEL_MI_DIRS, DEPENDENCIES: <sys/param.h>, <uvm/uvm_extern.h>,
+  PUBLIC SYMBOLS: main(), proc0, process0, initprocess, reaperproc,
+  IMPORTANT DATA: session0, pgrp0, vmspace0, sigacts0, copyright[],
+  CONTROL FLOW: main() -> subsystem inits -> mount root -> create initproc.
+  RISK: CRITICAL (changing main order affects boot).
+
+  FILE: kernel/core/kern/init_sysent.c
+  LAYER: kernel, PURPOSE: syscall dispatch table sysent[] (generated),
+  GENERATED: via makesyscalls.sh from syscalls.master, DO NOT EDIT MANUALLY,
+  SYMBOLS: sysent[] entries for fork, read, write, execve, etc.
+
+  FILE: kernel/uvm/uvm_fault.c
+  PURPOSE: VM fault resolver uvm_fault(), LANGUAGE: C, DEPENDENCIES: uvm_map, uvm_page,
+  CALLED BY: trap handler, CALLEES: uvm_map lookup, pager, pmap.
+
+8. REFACTORING BOUNDARIES
+  CRITICAL: locore.S, pmap.c, ld.script (boot/MMU). HIGH: ioconf.c/config, UVM,
+  syscall table. MEDIUM: individual drivers (isolated via cfdata).

@@ -1,0 +1,117 @@
+LEVEL 0-7 -- AI CODE NAVIGATION GUIDE
+======================================
+
+Purpose: instruct AI coding agents (and humans) how to explore PeteleOS before
+making any edit.
+
+WORKFLOW (SEQUENTIAL, DO NOT SKIP)
+
+1. Read repository overview
+   docs/00_repository_overview.txt and docs/01_architecture.txt
+   -> understand subsystem map, build order, arch support.
+
+2. Identify relevant subsystem
+   Use docs/02_source_tree.txt and docs/01_architecture.txt layer diagram.
+   Mapping:
+     memory/page fault   -> kernel/uvm/
+     process/fork/exec   -> kernel/core/kern/
+     driver/device       -> kernel/dev/ + kernel/arch/<arch>/
+     filesystem          -> kernel/fs/
+     network             -> kernel/net/
+     crypto              -> kernel/crypto/ + libraries/core/libcrypto
+     library change      -> libraries/core/ or libraries/extra/
+     user program        -> userland/<category>/<prog>/
+     GUI/X               -> gui/
+     config file         -> configs/
+     resource            -> resources/
+     build/toolchain     -> tools/
+     test                -> tests/
+
+3. Identify component and module
+   Inside subsystem, narrow via directory listing.
+   Example: "memory allocation" -> kernel/uvm/ vs kernel/core/kern/kern_malloc.c
+   Read the subsystem file in docs/subsystems/<name>.txt for purpose/responsibilities.
+
+4. Inspect build configuration
+   Read root xmake.lua + subsystem xmake.lua + tools/helpers.lua + tools/options.lua
+   Check: is file selected via generated_manifest.lua? via generic glob? via PER_FILE_CFLAGS?
+   If generated_manifest.lua governs it, you must rerun the generator after changes.
+
+5. Inspect public interfaces
+   Headers: include/*.h, kernel/core/sys/*.h, kernel/uvm/uvm_extern.h, etc.
+   Check <machine/...> is alias to kernel/arch/<arch>/include/ (via build copy).
+
+6. Inspect implementation
+   Read the .c/.S file; note MI vs MD split (kernel/core/* vs kernel/arch/*).
+   For syscall: read kernel/core/kern/init_sysent.c + kernel/core/kern/kern_*.c
+   For driver: read dev/pci/* + dev/ic/* + arch bus glue.
+
+7. Trace callers
+   Search via grep for symbol name.
+   Example: find who calls uvm_fault: grep -rn "uvm_fault" kernel/
+   For syscall: grep sys_<name> across kernel/.
+
+8. Trace callees
+   Read function body; follow helpers (subr_pool, uvm_map, bus_space).
+
+9. Trace dependencies
+   Check docs/03_dependency_model.txt for subsystem deps.
+   Check per-file #include list and add_deps/add_includedirs in xmake.lua.
+
+10. Inspect architecture-specific variants
+   Always check all three archs: kernel/arch/{amd64,arm64,riscv64}/
+   Check CMACHFLAGS, BUS_GLUE_DIRS, EFI spec differences.
+   Do not assume amd64 path applies to arm64/riscv64.
+
+11. Inspect configuration dependencies
+   For kernel: kernel/core/conf/GENERIC (MI options) + kernel/arch/<arch>/conf/GENERIC
+   For system: configs/{system,etc.<arch>}/ files.
+   For build: tools/options.lua options (target_arch, lto, asan, build_gl, etc.).
+
+12. Inspect tests
+   Check tests/ for regress coverage of the area (tests/<category>/).
+   Note golden-file vs PROG shape (see 17_testing.txt).
+
+13. Inspect generated files when relevant
+   Check if your change touches a generator input (GENERIC, files.*, Makefile,
+   shlib_version). If so, plan to run xmake lua tools/gen/gen_*.lua and commit
+   the regenerated manifest.
+
+14. Determine modification boundary
+   Classify risk via docs/21_refactoring_map.txt.
+   Ask:
+     - Is this MI or MD? (if MD, check other archs)
+     - Is this a generated file? (DO NOT EDIT MANUALLY)
+     - Does this affect ABI (syscall, lib version, linker script)? (HIGH/CRITICAL)
+     - Does this affect boot (locore, pmap, EFI)? (CRITICAL)
+     - Is this dual-maintained (Makefile + xmake.lua)? (edit xmake only, leave Makefile as reference)
+
+15. Only then modify source
+   Edit the minimal file(s) inside the identified module.
+   Preserve source-relative paths; do not rename directories.
+   After editing, verify via build (xmake build) and tests when feasible.
+
+NAVIGATION TIPS
+
+ - Use repository-relative paths: kernel/core/kern/init_main.c not absolute.
+ - Source identifiers are preserved verbatim; do not translate.
+ - Verification discipline: mark statements as VERIFIED FACT vs INFERRED vs UNKNOWN.
+ - When uncertain about a flow, state NOT VERIFIED rather than guessing.
+ - Prefer xmake build on a configured project; legacy "make build" requires OpenBSD host.
+ - Host tools (config(8), mklocale) are built via host toolchain; test separately.
+ - Generated manifests are committed; do not expect description scope to regenerate them.
+
+EXAMPLE NAVIGATIONS
+
+ "Where is memory fault handling?"
+  -> 00 -> 08 -> kernel/uvm/uvm_fault.c: uvm_fault(), callers via grep, callees uvm_map/pager.
+
+ "How to add a new driver?"
+  -> 02 -> subsystems/kernel.txt -> 10 -> kernel/dev/ + kernel/arch/conf files.*
+     -> run: xmake lua tools/gen/gen_kernel_manifest.lua.
+
+ "Which code is architecture-specific?"
+  -> 16_architecture_support.txt -> kernel/arch/<arch>/ + csu/<arch>/ + configs/etc/etc.<arch>/.
+
+ "Where are high-risk refactoring areas?"
+  -> 21_refactoring_map.txt (CRITICAL: locore, pmap, linker scripts, ioconf).

@@ -1,0 +1,105 @@
+LEVEL 7 -- BOOT AND INITIALIZATION FLOWS
+==========================================
+
+1. FIRMWARE -> BOOTLOADER FLOW (VERIFIED FROM kernel/xmake.lua EFI SECTION)
+
+  Firmware (UEFI)
+    |
+    +-- loads BOOTX64.EFI  (amd64, build/os-kernel-gen/amd64/efiboot/)
+        or BOOTAA64.EFI  (arm64)
+        or BOOTRISCV64.EFI (riscv64)
+        Built by target os-kernel-efiboot-<arch> (phony on_build):
+          compile each src in spec (own_srcs + bootprog_srcs + boot_srcs +
+          libsa + libz + libkern + arch_libsa) with -ffreestanding -fPIC etc.
+          -> link shared with -nostdlib -T<ldscript> -Bsymbolic -shared
+             -Wl,--pack-dyn-relocs=none via ld.lld
+          -> objcopy to EFI:
+               amd64: --target=efi-app-x86_64
+               arm64/riscv64: .peheader+.text+.sdata+.data+... -> binary
+
+  Sources per arch (transcribed from real Makefiles, VERIFIED):
+    amd64: self_reloc.c, efiboot.c, efidev.c, efipxe.c, ... + start_amd64.S
+    arm64: start.S, efiboot.c, efiacpi.c, fdt.c, smbios.c, ...
+    riscv64: start.S, efiboot.c, efiriscv.c, fdt.c, ...
+
+  Bootloader (libsa) responsibilities:
+    - EFI boot services: memory map, device enumeration, RNG (efirng.c)
+    - Filesystem: ufs, cd9660 (iso), tftp via efipxe.c
+    - Crypto: softraid (aes_xts, bcrypt, rijndael, sha1/sha2)
+    - Load kernel file "bsd" via loadfile.c + elf32/elf64.c
+    - Pass boot args (boot.c, bootarg.c, cmd.c, vars.c)
+
+2. KERNEL ENTRY (VERIFIED FROM KERNEL SOURCE)
+
+  Entry point: arch/<arch>/<arch>/locore.S  (MD, per-arch)
+    - Sets up stack, GOT, BSS, page tables (pmap bootstrap)
+    - Calls machdep init: kernel/arch/<arch>/<arch>/machdep.c, autoconf.c, intr.c
+    - Jumps to MI main: kernel/core/kern/init_main.c: main()
+
+  Per-arch files (VERIFIED):
+    amd64: gdt.c, apic.c, ioapic.c, lapic.c, cpu.c, identcpu.c, pmap.c,
+           vector.S, spl.S, copy.S, mds.S, bios.c, mpbios.c
+    arm64: fdt.c, smbios.c, plus generic arm64/ drivers
+    riscv64: efiriscv.c, fdt.c, etc.
+
+3. KERNEL INITIALIZATION (kernel/core/kern/init_main.c, VERIFIED HEADER)
+
+  main() in init_main.c:
+    - Copyright banner, globals: session0, pgrp0, proc0, process0, vmspace0, etc.
+    - Includes: sys/param.h, uvm/uvm_extern.h, crypto/cryptodev.h, etc.
+    - Conditional inits: stoeplitz_init() if NSTOEPLITZ>0, nfs_init() if NFS,
+      kubsan_init() if KUBSAN.
+    - INFERRED order (NOT VERIFIED line-by-line without full read):
+        uvm_init() -> autoconf -> scheduler -> clock -> device config
+        -> buffer cache -> networking -> crypto -> ddb -> proc0 init
+        -> root mount -> spawn initproc (PID 1) via fork/exec of /sbin/init
+
+  Other init files:
+    kernel/core/kern/init_sysent.c -- syscall table sysent[] (generated, 500+ entries)
+    kernel/core/conf/param.c -- tunable parameters
+    kernel/core/conf/swapgeneric.c -- generic swap config
+
+4. UVM INITIALIZATION (see 08)
+  uvm_init() -> uvm_page.c, uvm_map.c, uvm_km.c, uvm_pager.c, uvm_swap.c
+  uvm_page.c bootstraps physical pages; uvm_map.c creates kernel map;
+  uvm_km.c allocates kernel virtual space; uvm_pmemrange.c tracks ranges.
+
+5. DEVICE INITIALIZATION (kernel/core/kern/subr_autoconf.c)
+  config_init() -> config_rootfound("mainbus", ...)
+  Each bus (pci, usb, scsi) attaches drivers via cfdata (ioconf.c generated
+  by config(8) from GENERIC). ioconf.c contains cfdriver/vectors.
+  Order: mainbus -> cpu -> apic/ioapic -> pci -> drivers (drm, net, storage...)
+
+6. FILESYSTEM INITIALIZATION
+  vfs_init() (vfs_init.c) registers: ffs, ext2fs, mfs, nfs, cd9660, udf,
+  msdosfs, ntfs, tmpfs, deadfs, fifofs.
+  Root mount via boot args (bios/efi), calls mountroot.
+
+7. NETWORK INITIALIZATION
+  domaininit() (uipc_domain.c) -> inet, inet6, mpls, 80211
+  ifinit, route init, pf init, bpf init.
+
+8. USERLAND STARTUP
+  Kernel spawns /sbin/init (userland/essential/sbin/init).
+  init reads /etc/rc (configs/system/rc), /etc/rc.conf, /etc/ttys and starts
+  daemons, getty, login shell. csu/crt0.c is per-process entry before main().
+
+9. GUI STARTUP (if installed)
+  X server (gui/xserver/) started via xdm or manual startx; depends on
+  kernel DRM (/dev/drm*) and wscons/wsfont.
+
+10. INSTALLER / MINIROOT BOOT
+  RAMDISK / RAMDISK_CD kernels (kernel/arch/<arch>/conf/RAMDISK) NOT yet
+  parameterized in kernel/xmake.lua (honest gap noted in installer/xmake.lua).
+  Miniroot image contains installer/special/ tools.
+
+11. FAILURE BEHAVIOR
+  Bootloader failure: EFI boot manager fallback.
+  Kernel panic: ddb entry if DDB enabled (GENERIC option DDB).
+  Init failure: panic "init died".
+  Device probe failure: driver skipped, boot continues if non-essential.
+
+12. NOT VERIFIED
+  Exact call order inside main() beyond includes -- requires full read of
+  init_main.c control flow (marked NOT VERIFIED for line-level ordering).
+  Per-arch locore.S entry sequence details (INFERRED).

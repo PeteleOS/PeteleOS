@@ -1,0 +1,588 @@
+AMDGPU asic_reg stripper dry-run report
+==============================================================================
+asic_reg root: kernel\dev\pci\drm\amd\include\asic_reg
+source roots: kernel\dev\pci\drm\amd
+total original size: 456.76 MB (478951030 bytes)
+total stripped size: 8.23 MB (8633882 bytes)
+total defines: 4119218, kept: 102034, discarded: 4017184
+would_delete (empty): 31 files
+
+Example files (PDF-style):
+  kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_2_0_sh_mask.h: 23.05 MB -> 68.90 KB  keep 920/194444
+  kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_7_0_sh_mask.h: 12.27 MB -> 16.65 KB  keep 246/104105
+  kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_9_0_sh_mask.h: 3.06 MB -> 90.55 KB  keep 1476/26143
+
+Top 15 largest:
+  dcn_3_2_0_sh_mask.h: 23.05 MB -> 68.90 KB  keep 920/194444
+  nbio_7_7_0_sh_mask.h: 16.10 MB -> 14.29 KB  keep 188/137501
+  nbio_7_2_0_sh_mask.h: 15.80 MB -> 14.82 KB  keep 202/134339
+  dcn_4_1_0_sh_mask.h: 15.05 MB -> 74.97 KB  keep 1008/127519
+  dpcs_4_2_3_sh_mask.h: 13.84 MB -> 3.90 KB  keep 46/116530
+  nbio_6_1_sh_mask.h: 13.62 MB -> 17.53 KB  keep 256/111547
+  nbio_2_3_sh_mask.h: 12.36 MB -> 19.51 KB  keep 286/104175
+  nbio_7_0_sh_mask.h: 12.27 MB -> 16.65 KB  keep 246/104105
+  dpcs_4_2_2_sh_mask.h: 10.97 MB -> 2.89 KB  keep 46/92243
+  dpcs_4_2_0_sh_mask.h: 10.94 MB -> 3.88 KB  keep 46/92017
+  nbio_4_3_0_sh_mask.h: 8.40 MB -> 25.01 KB  keep 351/70912
+  dcn_3_0_0_sh_mask.h: 7.29 MB -> 63.46 KB  keep 838/61342
+  dcn_2_0_0_sh_mask.h: 6.94 MB -> 55.38 KB  keep 740/58255
+  dce_12_0_sh_mask.h: 6.58 MB -> 33.47 KB  keep 472/54923
+  dcn_3_1_6_sh_mask.h: 6.43 MB -> 69.46 KB  keep 914/53959
+
+All files (sorted by original size):
+File                                                   Original     Stripped Keep/Total
+------------------------------------------------------------------------------------------
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_2_0_sh_mask.h     24172734        70555    920/194444
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_7_7_0_sh_mask.h     16885003        14633    188/137501
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_7_2_0_sh_mask.h     16566486        15174    202/134339
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_4_1_0_sh_mask.h     15784894        76774   1008/127519
+kernel/dev/pci/drm/amd/include/asic_reg/dpcs/dpcs_4_2_3_sh_mask.h     14510057         3990     46/116530
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_6_1_sh_mask.h     14285616        17948    256/111547
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_2_3_sh_mask.h     12959827        19979    286/104175
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_7_0_sh_mask.h     12867321        17054    246/104105
+kernel/dev/pci/drm/amd/include/asic_reg/dpcs/dpcs_4_2_2_sh_mask.h     11498124         2961     46/92243 
+kernel/dev/pci/drm/amd/include/asic_reg/dpcs/dpcs_4_2_0_sh_mask.h     11471445         3974     46/92017 
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_4_3_0_sh_mask.h      8806521        25611    351/70912 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_0_0_sh_mask.h      7639243        64987    838/61342 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_2_0_0_sh_mask.h      7273897        56710    740/58255 
+kernel/dev/pci/drm/amd/include/asic_reg/dce/dce_12_0_sh_mask.h      6896082        34278    472/54923 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_1_6_sh_mask.h      6739912        71126    914/53959 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_0_2_sh_mask.h      6711076        64745    820/53849 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_6_0_sh_mask.h      6666084        77725   1026/53367 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_1_4_sh_mask.h      6647676        74573    974/53309 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_1_5_sh_mask.h      6573449        67883    876/52486 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_1_2_sh_mask.h      6536147        69301    892/52393 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_5_0_sh_mask.h      6351116        71892   1034/53205 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_5_1_sh_mask.h      6350010        70805   1034/53205 
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_7_11_0_sh_mask.h      6223349        13452    165/50202 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_2_1_0_sh_mask.h      6097741        59118    752/48953 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_2_1_sh_mask.h      6071719        70691    920/48497 
+kernel/dev/pci/drm/amd/include/asic_reg/dpcs/dpcs_3_1_4_sh_mask.h      5986743         4024     46/48461 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_1_0_sh_mask.h      5805687        35393    448/46355 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_0_1_sh_mask.h      5728229        62869    786/45881 
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_7_4_sh_mask.h      5228238        17714    258/41979 
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_10_3_0_sh_mask.h      5187410        94802   1514/42035 
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_9_4_1_sh_mask.h      5020981        13066    156/41135 
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_11_0_3_sh_mask.h      4727812        62764    996/38363 
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_10_1_0_sh_mask.h      4689685        96412   1544/38097 
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_11_0_0_sh_mask.h      4386885        62874    996/35543 
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_12_0_0_sh_mask.h      4286640        59132    934/34747 
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_7_9_0_sh_mask.h      4144706        14901    184/33169 
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_11_5_0_sh_mask.h      3860396        62264    988/31313 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_0_3_sh_mask.h      3816831        54332    686/30524 
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_1_7_sh_mask.h      3597232        20686    270/29575 
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_9_4_2_sh_mask.h      3542835        92794   1468/28887 
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_7_2_0_offset.h      3506904         7166    102/31334 
+kernel/dev/pci/drm/amd/include/asic_reg/nbif/nbif_6_3_1_sh_mask.h      3462066        13990    168/27623 
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_9_4_3_sh_mask.h      3410160        61956    976/27841 
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_9_2_1_sh_mask.h      3337293        89102   1412/27199 
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_9_1_sh_mask.h      3334423        90485   1440/27177 
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_7_7_0_offset.h      3248049         7480    108/29061 
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_9_0_sh_mask.h      3208029        92727   1476/26143 
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_1_8_0_sh_mask.h      2538273        19658    254/20911 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_2_0_1_sh_mask.h      2353936        19333    232/18824 
+kernel/dev/pci/drm/amd/include/asic_reg/bif/bif_5_1_sh_mask.h      2136181         9229    154/33053 
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_6_1_default.h      2076969         1196      0/21939 
+kernel/dev/pci/drm/amd/include/asic_reg/dce/dce_12_0_offset.h      1890310        20177    418/17206 
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_4_3_0_offset.h      1855318         8450    126/16352 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_0_0_offset.h      1842711        36152    778/16729 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_2_0_0_offset.h      1785993        24057    482/16190 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_4_1_0_offset.h      1708970        33069    688/15355 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_0_2_offset.h      1661011        36820    766/15062 
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_2_3_default.h      1646549         1196      0/17241 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_1_6_offset.h      1605320        35381    724/14414 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_6_0_offset.h      1584185        33283    694/14229 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_5_0_offset.h      1561312        34956    708/14012 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_5_1_offset.h      1560206        33870    708/14012 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_1_4_offset.h      1559767        35612    730/14003 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_1_5_offset.h      1554903        35094    718/13958 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_1_2_offset.h      1545105        34996    716/13873 
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_2_3_offset.h      1541191         5732    101/13235 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_2_0_offset.h      1507656        33860    690/13539 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_2_1_offset.h      1495931        33860    690/13440 
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_10_3_0_offset.h      1448660        75566   1838/13278 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_1_0_offset.h      1422459        23611    400/12840 
+kernel/dev/pci/drm/amd/include/asic_reg/sdma/sdma_4_4_0_sh_mask.h      1412512         7482    106/11293 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_2_1_0_offset.h      1408339        23695    472/12750 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_0_1_offset.h      1349919        35023    728/12226 
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_7_0_default.h      1348740         1196      0/14209 
+kernel/dev/pci/drm/amd/include/asic_reg/dpcs/dpcs_4_2_0_offset.h      1316856         1560      6/11851 
+kernel/dev/pci/drm/amd/include/asic_reg/dpcs/dpcs_4_2_3_offset.h      1315552         1576      6/11839 
+kernel/dev/pci/drm/amd/include/asic_reg/dpcs/dpcs_4_2_2_offset.h      1315468          547      6/11849 
+kernel/dev/pci/drm/amd/include/asic_reg/dce/dce_11_2_sh_mask.h      1303985        75529   1224/18668 
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_11_0_3_offset.h      1287943        51561   1166/11694 
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_11_0_0_offset.h      1248110        51466   1164/11338 
+kernel/dev/pci/drm/amd/include/asic_reg/dce/dce_11_0_sh_mask.h      1226655        74554   1212/17540 
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_10_1_0_offset.h      1211033        80868   1974/11103 
+kernel/dev/pci/drm/amd/include/asic_reg/gca/gfx_8_1_sh_mask.h      1191501        44720    844/21341 
+kernel/dev/pci/drm/amd/include/asic_reg/vcn/vcn_4_0_3_sh_mask.h      1189680        25385    462/9689  
+kernel/dev/pci/drm/amd/include/asic_reg/nbif/nbif_6_3_1_offset.h      1179954         7825    112/10597 
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_12_0_0_offset.h      1175064        48631   1071/10650 
+kernel/dev/pci/drm/amd/include/asic_reg/dce/dce_10_0_sh_mask.h      1168024        72430   1180/16626 
+kernel/dev/pci/drm/amd/include/asic_reg/umc/umc_6_7_0_sh_mask.h      1160508         3304     32/9441  
+kernel/dev/pci/drm/amd/include/asic_reg/gca/gfx_8_0_sh_mask.h      1157806        48587    902/20789 
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_9_3_0_sh_mask.h      1130535        18568    236/9243  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_1_0_sh_mask.h      1129398        18607    236/9231  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_2_3_0_sh_mask.h      1121706        15677    198/9079  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_9_1_sh_mask.h      1073026        17611    220/8763  
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_11_5_0_offset.h      1061827        48708   1102/9635  
+kernel/dev/pci/drm/amd/include/asic_reg/gca/gfx_7_2_sh_mask.h      1024716        38146    714/18417 
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_7_11_0_offset.h      1004994         7617    106/9068  
+kernel/dev/pci/drm/amd/include/asic_reg/nbif/nbif_6_1_sh_mask.h       995324         6205     77/7823  
+kernel/dev/pci/drm/amd/include/asic_reg/vcn/vcn_4_0_0_sh_mask.h       964481        27909    509/7872  
+kernel/dev/pci/drm/amd/include/asic_reg/vcn/vcn_4_0_5_sh_mask.h       921550        28062    512/7515  
+kernel/dev/pci/drm/amd/include/asic_reg/dce/dce_8_0_sh_mask.h       887279        68001   1108/13100 
+kernel/dev/pci/drm/amd/include/asic_reg/dce/dce_11_2_d.h       884731        25594    631/10057 
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_7_9_0_offset.h       871004         8626    130/9553  
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_3_0_3_offset.h       852609        30727    652/7700  
+kernel/dev/pci/drm/amd/include/asic_reg/gmc/gmc_8_1_sh_mask.h       842481        18190    276/15655 
+kernel/dev/pci/drm/amd/include/asic_reg/vcn/vcn_5_0_0_sh_mask.h       828203        23219    422/6765  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_9_4_1_offset.h       827607        10640    178/7589  
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_9_4_2_offset.h       823268        37008    854/7477  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_3_0_0_sh_mask.h       820124        12915    154/6681  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_2_0_0_sh_mask.h       818326        15065    190/6643  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_3_0_1_sh_mask.h       811867        13185    158/6565  
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_9_4_3_offset.h       797482        38954    901/7245  
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_9_2_1_offset.h       797036        59605   1482/7303  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_3_0_2_sh_mask.h       796146        12687    150/6491  
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_9_1_offset.h       794555        60267   1505/7279  
+kernel/dev/pci/drm/amd/include/asic_reg/dpcs/dpcs_3_1_4_offset.h       790190         1682      6/7107  
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_9_0_offset.h       773429        62654   1567/7085  
+kernel/dev/pci/drm/amd/include/asic_reg/gca/gfx_6_0_sh_mask.h       773257        22975    378/12795 
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_4_1_0_sh_mask.h       766230        12706    150/6252  
+kernel/dev/pci/drm/amd/include/asic_reg/gmc/gmc_7_1_sh_mask.h       765428        12375    194/14389 
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_3_3_0_sh_mask.h       736532        13185    158/5991  
+kernel/dev/pci/drm/amd/include/asic_reg/bif/bif_5_0_sh_mask.h       707562        11255    192/11469 
+kernel/dev/pci/drm/amd/include/asic_reg/dce/dce_6_0_sh_mask.h       703357        69494   1026/9898  
+kernel/dev/pci/drm/amd/include/asic_reg/gmc/gmc_6_0_sh_mask.h       696982        12580    180/11873 
+kernel/dev/pci/drm/amd/include/asic_reg/dce/dce_11_0_d.h       671259        26230    648/7631  
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_10_3_0_default.h       656770         1650      7/7021  
+kernel/dev/pci/drm/amd/include/asic_reg/dce/dce_10_0_d.h       644890        23970    592/7331  
+kernel/dev/pci/drm/amd/include/asic_reg/bif/bif_4_1_sh_mask.h       641012        11320    188/10225 
+kernel/dev/pci/drm/amd/include/asic_reg/dcn/dcn_2_0_1_offset.h       639081        10480    176/5811  
+kernel/dev/pci/drm/amd/include/asic_reg/vcn/vcn_3_0_0_sh_mask.h       581215        23645    432/4699  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma/sdma_4_4_0_offset.h       570094         3435     54/5179  
+kernel/dev/pci/drm/amd/include/asic_reg/bif/bif_3_0_sh_mask.h       566520        11089    162/8101  
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_11_0_0_default.h       552932         2432     22/5842  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_1_7_offset.h       548775        10368    186/4983  
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_10_1_0_default.h       544348         1649      7/5818  
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_7_0_offset.h       500425         6565    123/4205  
+kernel/dev/pci/drm/amd/include/asic_reg/dce/dce_8_0_d.h       500225        20439    499/5685  
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_7_4_offset.h       475100         6747    127/4217  
+kernel/dev/pci/drm/amd/include/asic_reg/pcie/pcie_6_1_0_sh_mask.h       474761         8409    112/3917  
+kernel/dev/pci/drm/amd/include/asic_reg/vcn/vcn_2_6_0_sh_mask.h       469527        21761    392/3777  
+kernel/dev/pci/drm/amd/include/asic_reg/vpe/vpe_6_1_0_sh_mask.h       449356         2712     26/3589  
+kernel/dev/pci/drm/amd/include/asic_reg/dpcs/dpcs_2_0_0_sh_mask.h       434910         1984     10/3559  
+kernel/dev/pci/drm/amd/include/asic_reg/gmc/gmc_8_2_sh_mask.h       428596        17505    260/7823  
+kernel/dev/pci/drm/amd/include/asic_reg/dpcs/dpcs_3_0_0_sh_mask.h       397768          187      0/3263  
+kernel/dev/pci/drm/amd/include/asic_reg/vcn/vcn_2_0_0_sh_mask.h       395834        20755    378/3193  
+kernel/dev/pci/drm/amd/include/asic_reg/gca/gfx_8_0_enum.h       383434       340214   1435/1448  
+kernel/dev/pci/drm/amd/include/asic_reg/dpcs/dpcs_2_1_0_sh_mask.h       381457         1984     10/3121  
+kernel/dev/pci/drm/amd/include/asic_reg/gca/gfx_8_1_enum.h       380349       337103   1439/1452  
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_6_1_offset.h       378279         6874    117/3352  
+kernel/dev/pci/drm/amd/include/asic_reg/dce/dce_11_2_enum.h       377556       370742      0/1     
+kernel/dev/pci/drm/amd/include/asic_reg/vcn/vcn_2_5_sh_mask.h       376121        21688    389/3034  
+kernel/dev/pci/drm/amd/include/asic_reg/smu/smu_7_1_3_sh_mask.h       357197         8914    150/6061  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_1_8_0_offset.h       356979        11188    196/3231  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_9_4_1_default.h       354426         1340      2/3778  
+kernel/dev/pci/drm/amd/include/asic_reg/gca/gfx_7_2_enum.h       349347       307165   1125/1269  
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_9_0_default.h       348087         1519      5/3715  
+kernel/dev/pci/drm/amd/include/asic_reg/smu/smu_7_1_2_sh_mask.h       347931         8914    150/5811  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma/sdma_4_4_2_sh_mask.h       339731         6226     84/2731  
+kernel/dev/pci/drm/amd/include/asic_reg/dce/dce_11_0_enum.h       339252       333122      0/1     
+kernel/dev/pci/drm/amd/include/asic_reg/smu/smu_7_1_0_sh_mask.h       334991         8507    142/5621  
+kernel/dev/pci/drm/amd/include/asic_reg/gmc/gmc_7_0_sh_mask.h       327411        11689    178/6089  
+kernel/dev/pci/drm/amd/include/asic_reg/smu/smu_7_0_1_sh_mask.h       326316         8721    146/5435  
+kernel/dev/pci/drm/amd/include/asic_reg/bif/bif_5_1_d.h       319743         3093     55/3550  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma0/sdma0_4_2_2_sh_mask.h       307732         7599    108/2465  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma0/sdma0_4_2_sh_mask.h       306726         7599    108/2457  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma1/sdma1_4_2_2_sh_mask.h       302650         1202      0/2423  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma2/sdma2_4_2_2_sh_mask.h       302650         1202      0/2423  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma3/sdma3_4_2_2_sh_mask.h       302650         1202      0/2423  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma4/sdma4_4_2_2_sh_mask.h       302650         1202      0/2423  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma5/sdma5_4_2_2_sh_mask.h       302650         1202      0/2423  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma6/sdma6_4_2_2_sh_mask.h       302650         1202      0/2423  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma7/sdma7_4_2_2_sh_mask.h       302650         1202      0/2423  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma1/sdma1_4_2_sh_mask.h       301882         1202      0/2417  
+kernel/dev/pci/drm/amd/include/asic_reg/smu/smu_7_1_1_sh_mask.h       290495         8814    148/4839  
+kernel/dev/pci/drm/amd/include/asic_reg/umc/umc_6_7_0_offset.h       275275         2063     16/2467  
+kernel/dev/pci/drm/amd/include/asic_reg/athub/athub_2_1_0_sh_mask.h       257003         1670      8/2097  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_2_3_0_offset.h       255216         7430    114/2327  
+kernel/dev/pci/drm/amd/include/asic_reg/gca/gfx_8_0_d.h       247273        23531    639/2801  
+kernel/dev/pci/drm/amd/include/asic_reg/vcn/vcn_4_0_3_offset.h       246115        17036    336/2215  
+kernel/dev/pci/drm/amd/include/asic_reg/athub/athub_2_0_0_sh_mask.h       244555         1672      8/1993  
+kernel/dev/pci/drm/amd/include/asic_reg/gca/gfx_8_1_d.h       244015        23192    629/2764  
+kernel/dev/pci/drm/amd/include/asic_reg/gca/gfx_7_2_d.h       223461        20368    553/2530  
+kernel/dev/pci/drm/amd/include/asic_reg/gca/gfx_7_0_d.h       221261        20414    554/2505  
+kernel/dev/pci/drm/amd/include/asic_reg/smu/smu_7_0_0_sh_mask.h       220778         7057    112/3815  
+kernel/dev/pci/drm/amd/include/asic_reg/vcn/vcn_4_0_0_offset.h       214922        13275    288/1943  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_1_0_offset.h       209682         8987    154/1913  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_9_1_offset.h       209213         8168    134/1907  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_9_3_0_offset.h       208712         7383    124/1903  
+kernel/dev/pci/drm/amd/include/asic_reg/oss/oss_3_0_sh_mask.h       196127        10453    188/3633  
+kernel/dev/pci/drm/amd/include/asic_reg/athub/athub_1_8_0_sh_mask.h       194701         1686      8/1587  
+kernel/dev/pci/drm/amd/include/asic_reg/oss/oss_3_0_1_sh_mask.h       193923        10357    186/3531  
+kernel/dev/pci/drm/amd/include/asic_reg/dce/dce_6_0_d.h       192827        19289    468/4510  
+kernel/dev/pci/drm/amd/include/asic_reg/vcn/vcn_4_0_5_offset.h       189239        12632    270/1709  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_2_0_0_offset.h       187930         7225    112/1711  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_3_0_1_offset.h       183985         8639    132/1655  
+kernel/dev/pci/drm/amd/include/asic_reg/nbif/nbif_6_1_offset.h       183380         7149    123/1542  
+kernel/dev/pci/drm/amd/include/asic_reg/vcn/vcn_5_0_0_offset.h       176694        13079    276/1591  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma0/sdma0_4_1_sh_mask.h       175234         6670     94/1417  
+kernel/dev/pci/drm/amd/include/asic_reg/smu/smu_8_0_sh_mask.h       171609         3488     40/2937  
+kernel/dev/pci/drm/amd/include/asic_reg/vpe/vpe_6_1_0_offset.h       162595         3442     54/1463  
+kernel/dev/pci/drm/amd/include/asic_reg/vcn/vcn_3_0_0_offset.h       160369        20117    454/1458  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_3_0_0_offset.h       158070         7576    116/1419  
+kernel/dev/pci/drm/amd/include/asic_reg/vcn/vcn_2_6_0_offset.h       152694         9806    202/1375  
+kernel/dev/pci/drm/amd/include/asic_reg/lsdma/lsdma_6_0_0_sh_mask.h       152423         2379     20/1231  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_3_0_2_offset.h       149575         7433    114/1347  
+kernel/dev/pci/drm/amd/include/asic_reg/lsdma/lsdma_7_0_0_sh_mask.h       149201         2379     20/1205  
+kernel/dev/pci/drm/amd/include/asic_reg/gmc/gmc_8_1_d.h       147326         8130    187/1681  
+kernel/dev/pci/drm/amd/include/asic_reg/athub/athub_4_1_0_sh_mask.h       145811         1445      4/1191  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_3_3_0_offset.h       143032         8639    132/1281  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_4_1_0_offset.h       141840         7448    114/1279  
+kernel/dev/pci/drm/amd/include/asic_reg/vcn/vcn_1_0_sh_mask.h       141302        18617    338/1145  
+kernel/dev/pci/drm/amd/include/asic_reg/oss/osssys_4_2_0_sh_mask.h       138490         5976     80/1125  
+kernel/dev/pci/drm/amd/include/asic_reg/thm/thm_9_0_sh_mask.h       138444         5156     68/1121  
+kernel/dev/pci/drm/amd/include/asic_reg/oss/osssys_5_0_0_sh_mask.h       137610         5684     76/1117  
+kernel/dev/pci/drm/amd/include/asic_reg/thm/thm_13_0_2_sh_mask.h       136954         3993     46/1111  
+kernel/dev/pci/drm/amd/include/asic_reg/oss/oss_2_4_sh_mask.h       135130         9837    176/2517  
+kernel/dev/pci/drm/amd/include/asic_reg/athub/athub_3_0_0_sh_mask.h       134915         1445      4/1103  
+kernel/dev/pci/drm/amd/include/asic_reg/oss/oss_2_0_sh_mask.h       133084         9263    166/2449  
+kernel/dev/pci/drm/amd/include/asic_reg/dpcs/dpcs_3_0_3_sh_mask.h       132508          187      0/1087  
+kernel/dev/pci/drm/amd/include/asic_reg/oss/osssys_4_0_1_sh_mask.h       131718         4868     64/1069  
+kernel/dev/pci/drm/amd/include/asic_reg/oss/osssys_4_0_sh_mask.h       126814         5269     70/1029  
+kernel/dev/pci/drm/amd/include/asic_reg/gmc/gmc_7_1_d.h       125884         6798    154/1437  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma/sdma_4_4_2_offset.h       119796         9143    192/1083  
+kernel/dev/pci/drm/amd/include/asic_reg/smu/smu_7_1_0_d.h       118823         3832     72/1317  
+kernel/dev/pci/drm/amd/include/asic_reg/smu/smu_7_0_1_d.h       116235         3907     74/1289  
+kernel/dev/pci/drm/amd/include/asic_reg/smuio/smuio_13_0_6_sh_mask.h       113978         4176     46/901   
+kernel/dev/pci/drm/amd/include/asic_reg/smu/smu_7_1_2_d.h       112880         4011     77/1251  
+kernel/dev/pci/drm/amd/include/asic_reg/smuio/smuio_13_0_2_sh_mask.h       112745         4706     54/891   
+kernel/dev/pci/drm/amd/include/asic_reg/sdma0/sdma0_4_2_2_offset.h       112176        11307    244/1023  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma0/sdma0_4_2_offset.h       111742        11307    244/1019  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma2/sdma2_4_2_2_offset.h       111309         1658     10/1015  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma3/sdma3_4_2_2_offset.h       111309         1658     10/1015  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma4/sdma4_4_2_2_offset.h       111309         1658     10/1015  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma5/sdma5_4_2_2_offset.h       111309         1658     10/1015  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma6/sdma6_4_2_2_offset.h       111309         1658     10/1015  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma7/sdma7_4_2_2_offset.h       111309         1658     10/1015  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma1/sdma1_4_2_2_offset.h       111308         4349     72/1015  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma1/sdma1_4_2_offset.h       110874         4349     72/1011  
+kernel/dev/pci/drm/amd/include/asic_reg/smu/smu_7_1_3_d.h       110707         4011     77/1225  
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_2_3_0_default.h       110432         1375      3/1164  
+kernel/dev/pci/drm/amd/include/asic_reg/athub/athub_1_0_sh_mask.h       109561         1668      8/1805  
+kernel/dev/pci/drm/amd/include/asic_reg/oss/osssys_7_0_0_sh_mask.h       108269         6609     88/877   
+kernel/dev/pci/drm/amd/include/asic_reg/oss/osssys_6_1_0_sh_mask.h       107075         6480     86/867   
+kernel/dev/pci/drm/amd/include/asic_reg/smuio/smuio_11_0_0_sh_mask.h       105928         4721     54/835   
+kernel/dev/pci/drm/amd/include/asic_reg/smuio/smuio_14_0_2_sh_mask.h       105544         4176     46/833   
+kernel/dev/pci/drm/amd/include/asic_reg/oss/osssys_4_4_2_sh_mask.h       104989         6162     82/851   
+kernel/dev/pci/drm/amd/include/asic_reg/dpcs/dpcs_2_0_3_sh_mask.h       104812         1984     10/851   
+kernel/dev/pci/drm/amd/include/asic_reg/vcn/vcn_2_0_0_offset.h       103373        12377    272/935   
+kernel/dev/pci/drm/amd/include/asic_reg/oss/osssys_6_0_0_sh_mask.h       102888         6609     88/833   
+kernel/dev/pci/drm/amd/include/asic_reg/vcn/vcn_2_5_offset.h       100591        13960    302/909   
+kernel/dev/pci/drm/amd/include/asic_reg/thm/thm_14_0_2_sh_mask.h       100128         5179     68/813   
+kernel/dev/pci/drm/amd/include/asic_reg/smu/smu_7_1_1_d.h        99268         3898     74/1099  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma0/sdma0_4_0_sh_mask.h        99242         7324    104/1567  
+kernel/dev/pci/drm/amd/include/asic_reg/sdma1/sdma1_4_0_sh_mask.h        97063         1198      0/1529  
+kernel/dev/pci/drm/amd/include/asic_reg/dce/dce_10_0_enum.h        95336        93562      0/1     
+kernel/dev/pci/drm/amd/include/asic_reg/bif/bif_5_0_d.h        94219         3690     71/1044  
+kernel/dev/pci/drm/amd/include/asic_reg/thm/thm_10_0_sh_mask.h        92356         2976     28/745   
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_1_0_default.h        89252         1320      2/940   
+kernel/dev/pci/drm/amd/include/asic_reg/uvd/uvd_7_0_sh_mask.h        87348        12941    238/705   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_11_0_sh_mask.h        82674         2736     26/637   
+kernel/dev/pci/drm/amd/include/asic_reg/oss/oss_3_0_enum.h        82609        81111      0/1     
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_9_4_1_sh_mask.h        81706         3718     42/665   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_11_5_0_sh_mask.h        81529         2205     16/617   
+kernel/dev/pci/drm/amd/include/asic_reg/mmhub/mmhub_2_0_0_default.h        81494         1375      3/856   
+kernel/dev/pci/drm/amd/include/asic_reg/bif/bif_4_1_d.h        81247         3388     63/895   
+kernel/dev/pci/drm/amd/include/asic_reg/oss/oss_3_0_1_enum.h        80662        79197      0/1     
+kernel/dev/pci/drm/amd/include/asic_reg/gmc/gmc_8_2_d.h        78175         5745    116/883   
+kernel/dev/pci/drm/amd/include/asic_reg/hdp/hdp_7_0_0_sh_mask.h        76348         3264     32/613   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_10_0_sh_mask.h        75416         2146     16/579   
+kernel/dev/pci/drm/amd/include/asic_reg/oss/oss_2_4_enum.h        73667        72326      0/1     
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_12_0_0_sh_mask.h        73420         2150     16/563   
+kernel/dev/pci/drm/amd/include/asic_reg/hdp/hdp_5_2_1_sh_mask.h        70364         3264     32/563   
+kernel/dev/pci/drm/amd/include/asic_reg/smu/smu_7_1_3_enum.h        70247        66418      1/48    
+kernel/dev/pci/drm/amd/include/asic_reg/smu/smu_7_1_2_enum.h        68114        64156      1/51    
+kernel/dev/pci/drm/amd/include/asic_reg/gca/gfx_6_0_d.h        67825        11208    293/1758  
+kernel/dev/pci/drm/amd/include/asic_reg/hdp/hdp_4_4_2_sh_mask.h        67756         3234     32/541   
+kernel/dev/pci/drm/amd/include/asic_reg/hdp/hdp_5_0_0_sh_mask.h        67519         3222     32/539   
+kernel/dev/pci/drm/amd/include/asic_reg/hdp/hdp_6_0_0_sh_mask.h        66207         3264     32/529   
+kernel/dev/pci/drm/amd/include/asic_reg/pcie/pcie_6_1_0_offset.h        66197         1955     16/588   
+kernel/dev/pci/drm/amd/include/asic_reg/uvd/uvd_5_0_enum.h        66130        64918      0/1     
+kernel/dev/pci/drm/amd/include/asic_reg/smu/smu_7_1_1_enum.h        66004        62099      1/51    
+kernel/dev/pci/drm/amd/include/asic_reg/smu/smu_7_1_0_enum.h        65492        61975      1/44    
+kernel/dev/pci/drm/amd/include/asic_reg/bif/bif_5_0_enum.h        65434        64235      0/1     
+kernel/dev/pci/drm/amd/include/asic_reg/gmc/gmc_8_1_enum.h        65434        64235      0/1     
+kernel/dev/pci/drm/amd/include/asic_reg/smu/smu_7_0_0_d.h        64761         3594     64/714   
+kernel/dev/pci/drm/amd/include/asic_reg/oss/oss_1_0_sh_mask.h        63488         6435     98/1091  
+kernel/dev/pci/drm/amd/include/asic_reg/dpcs/dpcs_2_0_0_offset.h        61898         1356      2/547   
+kernel/dev/pci/drm/amd/include/asic_reg/dce/dce_8_0_enum.h        61260        60142      0/1     
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_13_0_6_sh_mask.h        59597         3254     36/451   
+kernel/dev/pci/drm/amd/include/asic_reg/smu/smu_8_0_d.h        59536         2338     29/644   
+kernel/dev/pci/drm/amd/include/asic_reg/oss/oss_3_0_d.h        59002         5200    109/661   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_14_0_2_sh_mask.h        58724         2349     18/443   
+kernel/dev/pci/drm/amd/include/asic_reg/uvd/uvd_6_0_enum.h        58540        57458      0/1     
+kernel/dev/pci/drm/amd/include/asic_reg/dpcs/dpcs_3_0_0_offset.h        58337          343      2/525   
+kernel/dev/pci/drm/amd/include/asic_reg/smu/smu_8_0_enum.h        58072        56775      0/5     
+kernel/dev/pci/drm/amd/include/asic_reg/bif/bif_5_1_enum.h        57844        56775      0/1     
+kernel/dev/pci/drm/amd/include/asic_reg/gmc/gmc_8_2_enum.h        57844        56775      0/1     
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_13_0_0_sh_mask.h        57598         2311     18/435   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_9_0_sh_mask.h        56817         2255     18/977   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_13_0_5_sh_mask.h        56802         2195     16/429   
+kernel/dev/pci/drm/amd/include/asic_reg/gmc/gmc_7_0_d.h        55981         4380     82/630   
+kernel/dev/pci/drm/amd/include/asic_reg/uvd/uvd_5_0_sh_mask.h        55323        12975    254/1019  
+kernel/dev/pci/drm/amd/include/asic_reg/oss/oss_2_0_d.h        54835         4622     93/615   
+kernel/dev/pci/drm/amd/include/asic_reg/uvd/uvd_6_0_sh_mask.h        54736        12603    246/1007  
+kernel/dev/pci/drm/amd/include/asic_reg/dpcs/dpcs_2_1_0_offset.h        54434         1356      2/481   
+kernel/dev/pci/drm/amd/include/asic_reg/athub/athub_2_1_0_offset.h        54138         1795     12/487   
+kernel/dev/pci/drm/amd/include/asic_reg/smuio/smuio_13_0_2_offset.h        53957         1956     16/481   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_13_0_2_sh_mask.h        53893         2195     16/409   
+kernel/dev/pci/drm/amd/include/asic_reg/athub/athub_2_0_0_offset.h        53268         1795     12/479   
+kernel/dev/pci/drm/amd/include/asic_reg/smuio/smuio_11_0_0_offset.h        52806         3055     44/475   
+kernel/dev/pci/drm/amd/include/asic_reg/smuio/smuio_13_0_6_offset.h        52374         1870     12/463   
+kernel/dev/pci/drm/amd/include/asic_reg/smuio/smuio_14_0_2_offset.h        52077         1870     12/461   
+kernel/dev/pci/drm/amd/include/asic_reg/gmc/gmc_6_0_d.h        51125         6345    139/1248  
+kernel/dev/pci/drm/amd/include/asic_reg/oss/oss_3_0_1_d.h        50809         5105    106/566   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_13_0_8_sh_mask.h        50752         2193     16/383   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_13_0_4_sh_mask.h        50214         2015     14/379   
+kernel/dev/pci/drm/amd/include/asic_reg/smu/smu_6_0_sh_mask.h        48998         8819    138/847   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_14_0_2_offset.h        48417         3071     44/430   
+kernel/dev/pci/drm/amd/include/asic_reg/sdma0/sdma0_4_1_offset.h        47940         8397    178/431   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_13_0_0_offset.h        47265         3085     46/419   
+kernel/dev/pci/drm/amd/include/asic_reg/vce/vce_4_0_sh_mask.h        47173         2164     14/369   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_13_0_6_offset.h        46993         3093     46/417   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_13_0_5_offset.h        46766         3088     46/415   
+kernel/dev/pci/drm/amd/include/asic_reg/uvd/uvd_4_0_sh_mask.h        45703        11323    194/767   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_14_0_0_sh_mask.h        45155         2219     16/339   
+kernel/dev/pci/drm/amd/include/asic_reg/vcn/vcn_1_0_offset.h        42696        11320    254/381   
+kernel/dev/pci/drm/amd/include/asic_reg/athub/athub_1_8_0_offset.h        42171         1547      6/373   
+kernel/dev/pci/drm/amd/include/asic_reg/uvd/uvd_3_1_sh_mask.h        41920        10365    197/776   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_13_0_2_offset.h        41729         3322     52/369   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_13_0_8_offset.h        41729         3087     46/369   
+kernel/dev/pci/drm/amd/include/asic_reg/uvd/uvd_4_2_sh_mask.h        41580        10332    196/773   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_13_0_4_offset.h        41442         3322     52/367   
+kernel/dev/pci/drm/amd/include/asic_reg/smuio/smuio_13_0_3_sh_mask.h        41401         1685      8/323   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_11_5_0_offset.h        41058         3475     58/367   
+kernel/dev/pci/drm/amd/include/asic_reg/lsdma/lsdma_6_0_0_offset.h        40728         2008     18/361   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_11_0_8_sh_mask.h        40497         1893     14/331   
+kernel/dev/pci/drm/amd/include/asic_reg/lsdma/lsdma_7_0_0_offset.h        40397         2008     18/358   
+kernel/dev/pci/drm/amd/include/asic_reg/oss/oss_2_4_d.h        40065         4875    100/444   
+kernel/dev/pci/drm/amd/include/asic_reg/thm/thm_9_0_offset.h        37524         2111     24/335   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_14_0_0_offset.h        37218         1887     16/329   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_11_0_offset.h        36915         3645     61/328   
+kernel/dev/pci/drm/amd/include/asic_reg/oss/osssys_5_0_0_offset.h        36447         3061     52/325   
+kernel/dev/pci/drm/amd/include/asic_reg/oss/osssys_4_2_0_offset.h        36029         3239     56/321   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_11_0_8_offset.h        35850         3475     58/319   
+kernel/dev/pci/drm/amd/include/asic_reg/thm/thm_13_0_2_offset.h        35694         1702     12/315   
+kernel/dev/pci/drm/amd/include/asic_reg/oss/osssys_4_0_1_offset.h        34711         3061     52/309   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_12_0_0_offset.h        34114         3475     58/303   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_10_0_offset.h        34110         3471     58/303   
+kernel/dev/pci/drm/amd/include/asic_reg/oss/osssys_4_0_offset.h        33622         3057     52/299   
+kernel/dev/pci/drm/amd/include/asic_reg/hdp/hdp_4_0_sh_mask.h        31357         2190     16/487   
+kernel/dev/pci/drm/amd/include/asic_reg/athub/athub_4_1_0_offset.h        28957         1341      2/253   
+kernel/dev/pci/drm/amd/include/asic_reg/oss/osssys_6_1_0_offset.h        28465         3195     52/249   
+kernel/dev/pci/drm/amd/include/asic_reg/oss/osssys_7_0_0_offset.h        28465         3195     52/249   
+kernel/dev/pci/drm/amd/include/asic_reg/oss/osssys_6_0_0_offset.h        27151         3195     52/237   
+kernel/dev/pci/drm/amd/include/asic_reg/bif/bif_3_0_d.h        26939         3127     59/635   
+kernel/dev/pci/drm/amd/include/asic_reg/oss/osssys_4_4_2_offset.h        26717         3017     48/233   
+kernel/dev/pci/drm/amd/include/asic_reg/thm/thm_10_0_offset.h        26025         1649     10/229   
+kernel/dev/pci/drm/amd/include/asic_reg/athub/athub_3_0_0_offset.h        25891         1341      2/225   
+kernel/dev/pci/drm/amd/include/asic_reg/gc/gc_9_4_1_offset.h        23877         6282    126/203   
+kernel/dev/pci/drm/amd/include/asic_reg/athub/athub_2_0_0_default.h        23559         1202      0/240   
+kernel/dev/pci/drm/amd/include/asic_reg/sdma0/sdma0_4_0_offset.h        22945        10175    220/519   
+kernel/dev/pci/drm/amd/include/asic_reg/thm/thm_14_0_2_offset.h        22773         1702     12/197   
+kernel/dev/pci/drm/amd/include/asic_reg/sdma1/sdma1_4_0_offset.h        22647         3217     48/511   
+kernel/dev/pci/drm/amd/include/asic_reg/hdp/hdp_4_4_2_offset.h        21887         1549      8/189   
+kernel/dev/pci/drm/amd/include/asic_reg/hdp/hdp_7_0_0_offset.h        21883         1545      8/189   
+kernel/dev/pci/drm/amd/include/asic_reg/smuio/smuio_9_0_sh_mask.h        21867         1752      8/163   
+kernel/dev/pci/drm/amd/include/asic_reg/hdp/hdp_5_0_0_offset.h        21679         1991     20/189   
+kernel/dev/pci/drm/amd/include/asic_reg/hdp/hdp_5_2_1_offset.h        21664         1545      8/187   
+kernel/dev/pci/drm/amd/include/asic_reg/uvd/uvd_7_0_offset.h        21590         7669    164/187   
+kernel/dev/pci/drm/amd/include/asic_reg/sdma0/sdma0_4_1_default.h        21255         1277      1/216   
+kernel/dev/pci/drm/amd/include/asic_reg/hdp/hdp_6_0_0_offset.h        20788         1545      8/179   
+kernel/dev/pci/drm/amd/include/asic_reg/df/df_3_6_sh_mask.h        19312         2869     21/160   
+kernel/dev/pci/drm/amd/include/asic_reg/vce/vce_4_0_offset.h        19116         5406    104/163   
+kernel/dev/pci/drm/amd/include/asic_reg/dpcs/dpcs_3_0_3_offset.h        18875          343      2/169   
+kernel/dev/pci/drm/amd/include/asic_reg/athub/athub_1_0_offset.h        18331         1791     12/417   
+kernel/dev/pci/drm/amd/include/asic_reg/smuio/smuio_9_0_offset.h        17574         1619     10/151   
+kernel/dev/pci/drm/amd/include/asic_reg/thm/thm_9_0_default.h        16790         1194      0/168   
+kernel/dev/pci/drm/amd/include/asic_reg/smuio/smuio_10_0_2_sh_mask.h        16495         2166     14/120   
+kernel/dev/pci/drm/amd/include/asic_reg/smuio/smuio_13_0_3_offset.h        15888         1612      6/131   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_10_0_default.h        15342         1194      0/152   
+kernel/dev/pci/drm/amd/include/asic_reg/sdma0/sdma0_4_0_default.h        14680         1277      1/260   
+kernel/dev/pci/drm/amd/include/asic_reg/sdma1/sdma1_4_0_default.h        14491         1198      0/256   
+kernel/dev/pci/drm/amd/include/asic_reg/mp/mp_9_0_offset.h        14293         3469     58/337   
+kernel/dev/pci/drm/amd/include/asic_reg/dpcs/dpcs_2_0_3_offset.h        13678         1357      2/113   
+kernel/dev/pci/drm/amd/include/asic_reg/df/df_4_3_sh_mask.h        12596         1847      8/129   
+kernel/dev/pci/drm/amd/include/asic_reg/thm/thm_10_0_default.h        11863         1196      0/115   
+kernel/dev/pci/drm/amd/include/asic_reg/uvd/uvd_6_0_d.h        10566         4261     85/107   
+kernel/dev/pci/drm/amd/include/asic_reg/oss/oss_1_0_d.h        10437         2511     40/264   
+kernel/dev/pci/drm/amd/include/asic_reg/umc/umc_8_7_0_sh_mask.h         9927         3249     32/71    
+kernel/dev/pci/drm/amd/include/asic_reg/umc/umc_6_1_2_sh_mask.h         9281         1198      0/63    
+kernel/dev/pci/drm/amd/include/asic_reg/thm/thm_11_0_2_sh_mask.h         8959         3170     34/65    
+kernel/dev/pci/drm/amd/include/asic_reg/umc/umc_6_1_1_sh_mask.h         8951         3107     30/63    
+kernel/dev/pci/drm/amd/include/asic_reg/vce/vce_4_0_default.h         8944         1194      0/82    
+kernel/dev/pci/drm/amd/include/asic_reg/uvd/uvd_5_0_d.h         8894         3699     67/88    
+kernel/dev/pci/drm/amd/include/asic_reg/hdp/hdp_4_0_offset.h         8371         2043     22/181   
+kernel/dev/pci/drm/amd/include/asic_reg/smuio/smuio_10_0_2_offset.h         8303         1947     12/62    
+kernel/dev/pci/drm/amd/include/asic_reg/smu/smu_6_0_d.h         7592         3095     59/161   
+kernel/dev/pci/drm/amd/include/asic_reg/uvd/uvd_3_1_d.h         7401         3230     57/71    
+kernel/dev/pci/drm/amd/include/asic_reg/umc/umc_12_0_0_sh_mask.h         7391         2871     26/67    
+kernel/dev/pci/drm/amd/include/asic_reg/uvd/uvd_4_2_d.h         7225         3169     55/69    
+kernel/dev/pci/drm/amd/include/asic_reg/xgmi/xgmi_6_1_0_sh_mask.h         7207         1215      0/59    
+kernel/dev/pci/drm/amd/include/asic_reg/umc/umc_8_10_0_sh_mask.h         6093         3011     28/68    
+kernel/dev/pci/drm/amd/include/asic_reg/vce/vce_3_0_sh_mask.h         5950         2226     18/93    
+kernel/dev/pci/drm/amd/include/asic_reg/clk/clk_10_0_2_sh_mask.h         5584         1838     10/35    
+kernel/dev/pci/drm/amd/include/asic_reg/clk/clk_11_5_0_sh_mask.h         5421         1500      4/33    
+kernel/dev/pci/drm/amd/include/asic_reg/vce/vce_1_0_sh_mask.h         5312         2176     16/73    
+kernel/dev/pci/drm/amd/include/asic_reg/vce/vce_3_0_d.h         5216         2630     41/46    
+kernel/dev/pci/drm/amd/include/asic_reg/vce/vce_2_0_sh_mask.h         5169         2115     16/77    
+kernel/dev/pci/drm/amd/include/asic_reg/vce/vce_2_0_d.h         4776         2472     36/41    
+kernel/dev/pci/drm/amd/include/asic_reg/wafl/wafl2_4_0_0_sh_mask.h         4691         1217      0/41    
+kernel/dev/pci/drm/amd/include/asic_reg/xgmi/xgmi_4_0_0_sh_mask.h         4545         1215      0/41    
+kernel/dev/pci/drm/amd/include/asic_reg/clk/clk_10_0_2_offset.h         4117         2216     24/27    
+kernel/dev/pci/drm/amd/include/asic_reg/df/df_3_6_offset.h         3863         2670     33/52    
+kernel/dev/pci/drm/amd/include/asic_reg/uvd/uvd_4_0_d.h         3736         3155     56/70    
+kernel/dev/pci/drm/amd/include/asic_reg/clk/clk_11_5_0_offset.h         3679         1198      0/23    
+kernel/dev/pci/drm/amd/include/asic_reg/thm/thm_11_0_2_offset.h         3634         1906     20/23    
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_7_0_smn.h         3053         1679     11/35    
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_7_4_0_smn.h         2966         1991     13/32    
+kernel/dev/pci/drm/amd/include/asic_reg/df/df_1_7_sh_mask.h         2797         2367     16/21    
+kernel/dev/pci/drm/amd/include/asic_reg/nbio/nbio_6_1_smn.h         2732         1618     10/31    
+kernel/dev/pci/drm/amd/include/asic_reg/smuio/smuio_11_0_6_sh_mask.h         2710         1456      4/13    
+kernel/dev/pci/drm/amd/include/asic_reg/vce/vce_1_0_d.h         2513         2380     35/38    
+kernel/dev/pci/drm/amd/include/asic_reg/clk/clk_11_0_0_sh_mask.h         2279         1618      6/9     
+kernel/dev/pci/drm/amd/include/asic_reg/clk/clk_11_0_1_sh_mask.h         2240         1200      0/9     
+kernel/dev/pci/drm/amd/include/asic_reg/umc/umc_6_0_offset.h         2221         1185      0/25    
+kernel/dev/pci/drm/amd/include/asic_reg/umc/umc_6_1_1_offset.h         2091         1539      8/9     
+kernel/dev/pci/drm/amd/include/asic_reg/smuio/smuio_12_0_0_sh_mask.h         1992         1624      6/7     
+kernel/dev/pci/drm/amd/include/asic_reg/umc/umc_8_14_0_sh_mask.h         1974         1575      6/11    
+kernel/dev/pci/drm/amd/include/asic_reg/smuio/smuio_11_0_6_offset.h         1952         1459      6/7     
+kernel/dev/pci/drm/amd/include/asic_reg/umc/umc_12_0_0_offset.h         1909         1543      8/9     
+kernel/dev/pci/drm/amd/include/asic_reg/umc/umc_6_1_2_offset.h         1851         1579      8/9     
+kernel/dev/pci/drm/amd/include/asic_reg/rsmu/rsmu_0_0_2_sh_mask.h         1795         1410      2/7     
+kernel/dev/pci/drm/amd/include/asic_reg/umc/umc_8_7_0_offset.h         1783         1543      8/9     
+kernel/dev/pci/drm/amd/include/asic_reg/umc/umc_8_10_0_offset.h         1770         1553      8/11    
+kernel/dev/pci/drm/amd/include/asic_reg/clk/clk_11_0_0_offset.h         1728         1198      0/5     
+kernel/dev/pci/drm/amd/include/asic_reg/pwr/pwr_10_0_sh_mask.h         1723         1472      4/5     
+kernel/dev/pci/drm/amd/include/asic_reg/df/df_1_7_offset.h         1679         1579      8/9     
+kernel/dev/pci/drm/amd/include/asic_reg/smuio/smuio_12_0_0_offset.h         1665         1361      4/5     
+kernel/dev/pci/drm/amd/include/asic_reg/clk/clk_11_0_1_offset.h         1662         1199      0/5     
+kernel/dev/pci/drm/amd/include/asic_reg/umc/umc_6_0_sh_mask.h         1652         1195      0/9     
+kernel/dev/pci/drm/amd/include/asic_reg/umc/umc_8_14_0_offset.h         1535         1357      4/5     
+kernel/dev/pci/drm/amd/include/asic_reg/df/df_4_3_offset.h         1513         1414      4/5     
+kernel/dev/pci/drm/amd/include/asic_reg/pwr/pwr_10_0_offset.h         1438         1275      2/3     
+kernel/dev/pci/drm/amd/include/asic_reg/df/df_4_15_sh_mask.h         1388         1348      2/3     
+kernel/dev/pci/drm/amd/include/asic_reg/umc/umc_6_0_default.h         1384         1195      0/4     
+kernel/dev/pci/drm/amd/include/asic_reg/rsmu/rsmu_0_0_2_offset.h         1353         1313      2/3     
+kernel/dev/pci/drm/amd/include/asic_reg/df/df_4_15_offset.h         1339         1286      2/3     
+kernel/dev/pci/drm/amd/include/asic_reg/wafl/wafl2_4_0_0_smn.h         1306         1271      1/2     
+kernel/dev/pci/drm/amd/include/asic_reg/xgmi/xgmi_4_0_0_smn.h         1297         1264      1/2     
+kernel/dev/pci/drm/amd/include/asic_reg/df/df_1_7_default.h         1280         1248      1/2     
+kernel/dev/pci/drm/amd/include/asic_reg/df/df_3_6_default.h         1280         1248      1/2     
+
+NEEDED set sample (first 100 sorted):
+  AFMT_60958_0__AFMT_60958_CS_CHANNEL_NUMBER_L_MASK
+  AFMT_60958_0__AFMT_60958_CS_CHANNEL_NUMBER_L__SHIFT
+  AFMT_60958_0__AFMT_60958_CS_CLOCK_ACCURACY_MASK
+  AFMT_60958_0__AFMT_60958_CS_CLOCK_ACCURACY__SHIFT
+  AFMT_60958_1__AFMT_60958_CS_CHANNEL_NUMBER_R_MASK
+  AFMT_60958_1__AFMT_60958_CS_CHANNEL_NUMBER_R__SHIFT
+  AFMT_60958_2__AFMT_60958_CS_CHANNEL_NUMBER_2_MASK
+  AFMT_60958_2__AFMT_60958_CS_CHANNEL_NUMBER_2__SHIFT
+  AFMT_60958_2__AFMT_60958_CS_CHANNEL_NUMBER_3_MASK
+  AFMT_60958_2__AFMT_60958_CS_CHANNEL_NUMBER_3__SHIFT
+  AFMT_60958_2__AFMT_60958_CS_CHANNEL_NUMBER_4_MASK
+  AFMT_60958_2__AFMT_60958_CS_CHANNEL_NUMBER_4__SHIFT
+  AFMT_60958_2__AFMT_60958_CS_CHANNEL_NUMBER_5_MASK
+  AFMT_60958_2__AFMT_60958_CS_CHANNEL_NUMBER_5__SHIFT
+  AFMT_60958_2__AFMT_60958_CS_CHANNEL_NUMBER_6_MASK
+  AFMT_60958_2__AFMT_60958_CS_CHANNEL_NUMBER_6__SHIFT
+  AFMT_60958_2__AFMT_60958_CS_CHANNEL_NUMBER_7_MASK
+  AFMT_60958_2__AFMT_60958_CS_CHANNEL_NUMBER_7__SHIFT
+  AFMT_AUDIO_PACKET_CONTROL2__AFMT_60958_OSF_OVRD_MASK
+  AFMT_AUDIO_PACKET_CONTROL2__AFMT_60958_OSF_OVRD__SHIFT
+  AFMT_AUDIO_PACKET_CONTROL2__AFMT_AUDIO_CHANNEL_ENABLE_MASK
+  AFMT_AUDIO_PACKET_CONTROL2__AFMT_AUDIO_CHANNEL_ENABLE__SHIFT
+  AFMT_AUDIO_PACKET_CONTROL2__AFMT_AUDIO_LAYOUT_OVRD_MASK
+  AFMT_AUDIO_PACKET_CONTROL2__AFMT_AUDIO_LAYOUT_OVRD__SHIFT
+  AFMT_AUDIO_PACKET_CONTROL__AFMT_60958_CS_UPDATE_MASK
+  AFMT_AUDIO_PACKET_CONTROL__AFMT_60958_CS_UPDATE__SHIFT
+  AFMT_AUDIO_PACKET_CONTROL__AFMT_AUDIO_SAMPLE_SEND_MASK
+  AFMT_AUDIO_PACKET_CONTROL__AFMT_AUDIO_SAMPLE_SEND__SHIFT
+  AFMT_AUDIO_PACKET_CONTROL__AFMT_RESET_FIFO_WHEN_AUDIO_DIS_MASK
+  AFMT_AUDIO_PACKET_CONTROL__AFMT_RESET_FIFO_WHEN_AUDIO_DIS__SHIFT
+  AFMT_AUDIO_SRC_CONTROL__AFMT_AUDIO_SRC_SELECT_MASK
+  AFMT_AUDIO_SRC_CONTROL__AFMT_AUDIO_SRC_SELECT__SHIFT
+  AFMT_AVI_INFO3__AFMT_AVI_INFO_VERSION_MASK
+  AFMT_AVI_INFO3__AFMT_AVI_INFO_VERSION__SHIFT
+  AFMT_CNTL__AFMT_AUDIO_CLOCK_EN_MASK
+  AFMT_CNTL__AFMT_AUDIO_CLOCK_EN__SHIFT
+  AFMT_GENERIC_HDR__AFMT_GENERIC_HB0_MASK
+  AFMT_GENERIC_HDR__AFMT_GENERIC_HB0__SHIFT
+  AFMT_GENERIC_HDR__AFMT_GENERIC_HB1_MASK
+  AFMT_GENERIC_HDR__AFMT_GENERIC_HB1__SHIFT
+  AFMT_GENERIC_HDR__AFMT_GENERIC_HB2_MASK
+  AFMT_GENERIC_HDR__AFMT_GENERIC_HB2__SHIFT
+  AFMT_GENERIC_HDR__AFMT_GENERIC_HB3_MASK
+  AFMT_GENERIC_HDR__AFMT_GENERIC_HB3__SHIFT
+  AFMT_INFOFRAME_CONTROL0__AFMT_AUDIO_INFO_UPDATE_MASK
+  AFMT_INFOFRAME_CONTROL0__AFMT_AUDIO_INFO_UPDATE__SHIFT
+  AFMT_VBI_PACKET_CONTROL__AFMT_GENERIC0_UPDATE_MASK
+  AFMT_VBI_PACKET_CONTROL__AFMT_GENERIC0_UPDATE__SHIFT
+  AFMT_VBI_PACKET_CONTROL__AFMT_GENERIC2_UPDATE_MASK
+  AFMT_VBI_PACKET_CONTROL__AFMT_GENERIC2_UPDATE__SHIFT
+  AFMT_VBI_PACKET_CONTROL__AFMT_GENERIC_INDEX_MASK
+  AFMT_VBI_PACKET_CONTROL__AFMT_GENERIC_INDEX__SHIFT
+  ALDEBARAN_DF_CS_UMC_AON0_DramBaseAddress0__IntLvNumChan_MASK
+  ALPHA_CONTROL__CURSOR_ALPHA_BLND_ENA_MASK
+  ALPHA_CONTROL__CURSOR_ALPHA_BLND_ENA__SHIFT
+  ATCL2_0_ATC_L2_MISC_CG__ENABLE_MASK
+  ATCL2_0_ATC_L2_MISC_CG__ENABLE__SHIFT
+  ATCL2_0_ATC_L2_MISC_CG__MEM_LS_ENABLE_MASK
+  ATCL2_0_ATC_L2_MISC_CG__MEM_LS_ENABLE__SHIFT
+  ATC_L2_CACHE_2M_DSM_CNTL__DED_COUNT_MASK
+  ATC_L2_CACHE_2M_DSM_CNTL__DED_COUNT__SHIFT
+  ATC_L2_CACHE_2M_DSM_CNTL__SEC_COUNT_MASK
+  ATC_L2_CACHE_2M_DSM_CNTL__SEC_COUNT__SHIFT
+  ATC_L2_CACHE_2M_DSM_CNTL__WRITE_COUNTERS_MASK
+  ATC_L2_CACHE_2M_DSM_CNTL__WRITE_COUNTERS__SHIFT
+  ATC_L2_CACHE_32K_DSM_CNTL__WRITE_COUNTERS_MASK
+  ATC_L2_CACHE_32K_DSM_CNTL__WRITE_COUNTERS__SHIFT
+  ATC_L2_CACHE_4K_DSM_CNTL__DED_COUNT_MASK
+  ATC_L2_CACHE_4K_DSM_CNTL__DED_COUNT__SHIFT
+  ATC_L2_CACHE_4K_DSM_CNTL__SEC_COUNT_MASK
+  ATC_L2_CACHE_4K_DSM_CNTL__SEC_COUNT__SHIFT
+  ATC_L2_CACHE_4K_DSM_CNTL__WRITE_COUNTERS_MASK
+  ATC_L2_CACHE_4K_DSM_CNTL__WRITE_COUNTERS__SHIFT
+  ATC_L2_MISC_CG__ENABLE_MASK
+  ATC_L2_MISC_CG__ENABLE__SHIFT
+  ATC_L2_MISC_CG__MEM_LS_ENABLE_MASK
+  ATC_L2_MISC_CG__MEM_LS_ENABLE__SHIFT
+  ATC_MISC_CG__ENABLE_MASK
+  ATC_MISC_CG__ENABLE__SHIFT
+  ATC_MISC_CG__MEM_LS_ENABLE_MASK
+  ATC_MISC_CG__MEM_LS_ENABLE__SHIFT
+  ATC_VMID0_PASID_MAPPING__PASID_MASK
+  ATC_VMID0_PASID_MAPPING__PASID__SHIFT
+  ATC_VMID0_PASID_MAPPING__VALID_MASK
+  ATC_VMID0_PASID_MAPPING__VALID__SHIFT
+  ATHUB_MISC_CNTL__CG_ENABLE_MASK
+  ATHUB_MISC_CNTL__CG_ENABLE__SHIFT
+  ATHUB_MISC_CNTL__CG_MEM_LS_ENABLE_MASK
+  ATHUB_MISC_CNTL__CG_MEM_LS_ENABLE__SHIFT
+  AUX_ARB_CONTROL__AUX_SW_DONE_USING_AUX_REG_MASK
+  AUX_ARB_CONTROL__AUX_SW_DONE_USING_AUX_REG__SHIFT
+  AUX_ARB_CONTROL__AUX_SW_USE_AUX_REG_REQ_MASK
+  AUX_ARB_CONTROL__AUX_SW_USE_AUX_REG_REQ__SHIFT
+  AUX_CONTROL__AUX_RESET_DONE_MASK
+  AUX_CONTROL__AUX_RESET_DONE__SHIFT
+  AUX_INTERRUPT_CONTROL__AUX_SW_DONE_ACK_MASK
+  AUX_INTERRUPT_CONTROL__AUX_SW_DONE_ACK__SHIFT
+  AUX_SW_CONTROL__AUX_SW_GO_MASK
+  AUX_SW_CONTROL__AUX_SW_GO__SHIFT
+  AUX_SW_CONTROL__AUX_SW_START_DELAY_MASK
+
+... total NEEDED 18595 names

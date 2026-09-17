@@ -1,0 +1,54 @@
+SUBSYSTEM: include
+===================
+
+1. PURPOSE
+include/ holds shared public headers used by kernel, libraries, and userland.
+Exported via os-headers target (public add_includedirs). VERIFIED from include/xmake.lua.
+
+2. SOURCE LOCATIONS
+
+  include/xmake.lua, include/Makefile (legacy)
+  include/*.h (~100 flat headers: stdio.h, stdlib.h, pthread.h, etc. VERIFIED listing)
+  include/arpa/, protocols/, rpc/, rpcsvc/ (4 subdirs VERIFIED)
+
+3. COMPONENTS
+
+  Component: flat headers
+    Files: *.h single glob (non-recursive) -- assert.h, stdlib.h, pthread.h, etc.
+    Build: add_headerfiles("*.h")
+
+  Component: subdirectory headers
+    arpa/*.h, protocols/*.h, rpc/*.h, rpcsvc/*.h + *.i (preserved though none currently exist)
+    Build: add_headerfiles("(arpa/*.h)", "(arpa/*.i)") preserving subdir in install path.
+
+  Component: exported include path
+    Public: add_includedirs("$(projectdir)/include", {public=true}) so any
+    target with add_deps("os-headers") inherits it. Root's add_includedirs("include")
+    also covers modules not using add_deps; both point same dir, harmless.
+
+  Component: generated + compatibility headers (install-time only)
+    after_install (not on_install, after add_headerfiles):
+      - Copies machine headers: kernel/arch/<arch>/include/ -> installdir/include/machine/
+      - Copies kernel-exported directories: kernel/core/sys/, dev/, net/, uvm/, crypto/, etc.
+        -> installdir/include/sys, dev, etc. (mirrors old include/Makefile "copies" target)
+        Source of truth is current kernel/ tree, not stale include/Makefile which still
+        references ../sys, ../lib, ../gnu.
+      - Compatibility symlinks: endian.h, fcntl.h, syslog.h, termios.h, stdarg.h, etc.
+        -> sys/<name>.h (thin symlinks like old Makefile LFILES/MFILES logic)
+
+4. BUILD INTEGRATION
+
+  target os-headers, kind headeronly, set_default(false) maybe.
+  Does NOT compile anything; pure file operations at install time.
+  Root xmake.lua also does add_includedirs("$(projectdir)/include") globally.
+
+5. DEPENDENCIES
+
+  Depends on: tools. Consumed by: libraries (add_deps), kernel (add_deps),
+  userland, gui. Provides: include search path.
+  Reverse dependency: after_install copies from kernel source tree (kernel_root).
+
+6. REFACTORING NOTES
+  Adding a header: drop into include/ (flat) or subdir; glob picks up automatically
+  (old Makefile hand-listed FILES=; new glob is auto). Adding a new kernel header
+  directory requires updating include/xmake.lua after_install copy list.

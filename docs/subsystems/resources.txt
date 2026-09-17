@@ -1,0 +1,37 @@
+SUBSYSTEM: resources
+====================
+
+1. PURPOSE
+System resources (firmware, fonts, icons, data files) -- renamed share/.
+
+2. SOURCE LOCATIONS
+
+  resources/xmake.lua, resources/Makefile (legacy share/Makefile), resources/Makefile.inc
+  resources/{dict, locale, man, misc, mk, snmp, tabset, termtypes, tmac, zoneinfo, btrace}
+
+3. COMPONENTS
+
+  Component: flat categories (verbatim install)
+    dict, man, misc (pcvtfonts), snmp, tabset, termtypes, tmac, btrace
+    Installed via headeronly + after_install copy preserving structure.
+
+  Component: data compilation
+    zoneinfo (tzdata text + zic -> binary zoneinfo)
+    locale (ctype source + mklocale -> binary locale, find_tool("mklocale") may
+            trigger host-build of userland/utilities/mklocale)
+    Skipped gracefully if tools absent.
+
+  Component: excluded
+    resources/mk/ (bsd.*.mk) -- build-system internals, not runtime, excluded.
+
+  Component: absent
+    firmware/ (none vendored; fw_update workflow), fonts/ (no dedicated dir; X fonts in gui/).
+
+4. BUILD INTEGRATION
+  headeronly, flat copy; zic/mklocale invocations are data compilation not C compilation.
+
+5. DEPENDENCIES
+  Depends on: tools, userland/utilities/mklocale (host). Consumed by: userland/ kernel runtime.
+
+6. REFACTORING NOTES
+  Add category: add dir under resources/ and wire in xmake flat copy. Firmware would be new flat.

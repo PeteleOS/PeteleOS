@@ -1,0 +1,22 @@
+**/obj
+**/tags
+
+# Build outputs & cache
+build/
+.xmake/
+.freebuff/
+*.o
+*.a
+*.so
+*.elf
+*.bin
+*.iso
+*.img
+
+# Editor / OS files
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db

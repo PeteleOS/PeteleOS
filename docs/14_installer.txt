@@ -1,0 +1,76 @@
+LEVEL 1-2 -- INSTALLER ANALYSIS
+==============================
+
+1. PURPOSE
+installer/ builds install media, distribution sets, and manages system installation
+and updates. Source tree: installer/{amd64,arm64,riscv64,miniroot,notes,sets,special,syspatch,Makefile,xmake.lua}
+(8 entries verified).
+
+2. BUILD SYSTEM -- installer/xmake.lua (VERIFIED ~100 lines read)
+
+  Manages: install image, iso, boot image, release image, sets.
+
+  SETS (fully implemented, most tractable piece):
+    Lists: installer/sets/lists/<name>/{mi, md.<arch>} plain text, one "./path" per line.
+           Verified example: base/mi lists "./bin/cat", "./bin/ksh", etc.
+    Pipeline (reimplements real maketars logic):
+      1. concatenate mi + md.<arch> (+ for comp: gcc.<arch>/clang.<arch> if present)
+      2. sort, then reorder so "./usr/lib/lib*" entries come first (required for correct
+         library precedence on extraction)
+      3. pipe list through pax -w -d + gzip into <name><rev>.tgz
+         (implementation: uses pax if found, else falls back to tar -C <destdir> --files-from=-,
+          verified equivalent for plain path lists)
+    etc.tgz NOT built same way: real installer/sets/makeetcset has upgrade-merge-aware
+    behavior not replicated (documented as NOT replicated).
+
+  SPECIAL (miniroot tools):
+    installer/special/ has 72 program dirs, each a thin Makefile reusing a userland/
+    program's source via ".PATH: ${.CURDIR}/../../../X" and rebuilding it statically,
+    size-optimized, without man page, for the install ramdisk.
+    VERIFIED: every .PATH checked (cat, dd, bioctl, chroot) points at STALE
+    pre-restructure location (../../../bin/cat, ../../../sbin/bioctl, ../../../usr.sbin/chroot)
+    -- none exist anymore. This file searches for same-named directory across categories
+    userland/xmake.lua already discovers, reusing ITS sources instead.
+
+  BOOT IMAGE (honest gap, tied to kernel/xmake.lua):
+    Install ramdisk needs RAMDISK / RAMDISK_CD kernels (verified present at
+    kernel/arch/<arch>/conf/{RAMDISK,RAMDISK_CD}), not GENERIC. kernel/xmake.lua is
+    not yet parameterized by config name -- requires extending it to accept a config
+    option and re-running files/GENERIC parser against RAMDISK.
+
+  INSTALL IMAGE / ISO (honest gap, inherent):
+    Real installer/amd64/iso/Makefile builds image using vnconfig(8), fdisk(8),
+    disklabel(8), newfs(8), mount(8) -- privileged OpenBSD vnd(4) operations that
+    cannot run on generic Linux build host, sandboxed or not. This is what
+    release(8) has always required a real OpenBSD host for. Wrapper looks for
+    tools via find_tool() and runs same steps when they exist, warns and skips otherwise.
+
+3. INSTALLATION STAGES (RUNTIME)
+
+  Boot miniroot (RAMDISK kernel + special/ tools)
+    -> disk handling (fdisk/disklabel) -> newfs -> mount target
+    -> fetch/extract sets (base.tgz, comp.tgz, etc. via ftp/http or local)
+    -> configuration deployment (configs/ -> /etc)
+    -> boot media generation (boot blocks, EFI partition)
+    -> reboot into installed system
+
+4. DEPENDENCIES
+
+  Build: tools, kernel (bsd + RAMDISK gap), userland (installed files),
+         configs, resources (for lists).
+  Runtime: kernel, configs, resources, userland (installed system).
+
+5. ARCHITECTURE-SPECIFIC BEHAVIOR
+
+  Per-arch dirs: installer/{amd64,arm64,riscv64}/ contain arch install media logic.
+  Sets lists have md.<arch> per architecture.
+
+6. ERROR HANDLING
+  Set creation: pax fallback to tar; missing tools -> skipped with warning.
+  Install: disk errors abort; set extraction verifies.
+
+7. REFACTORING NOTES
+  Sets pipeline is well-isolated and testable. Boot/iso image creation is
+  host-limited; containerizing or emulating OpenBSD tools would be needed for
+  Linux-host builds. Parameterizing kernel/xmake.lua for RAMDISK configs is
+  a concrete follow-up.

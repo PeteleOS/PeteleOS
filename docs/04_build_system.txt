@@ -1,0 +1,170 @@
+LEVEL 1-2 -- BUILD SYSTEM ANALYSIS
+================================
+
+1. ENTRY POINTS
+
+  Primary (xmake):
+    xmake f --target_arch=<amd64|arm64|riscv64> [--lto=y --asan=y --ubsan=y --werror=y]
+    xmake build        (or xmake build <target>)
+    xmake install      (to build/install = build/install)
+    xmake lua tools/gen/gen_kernel_manifest.lua  (regenerate manifests)
+
+  Legacy (BSD Make):
+    make build         (requires root, /usr/src + /usr/obj, BSDSRCDIR)
+    make -f Makefile.cross TARGET=<target> cross-gcc
+    make obj / make includes / make cleandir
+
+2. ROOT XMAKE.LUA (VERIFIED, 107 lines)
+  set_project("PeteleOS"), set_version("0.1.0"), set_xmakever("3.0.9")
+  Policies: check.auto_ignore_flags=false, build.warning=true, build.ccache=true
+  Modes: mode.debug, mode.release, mode.releasedbg, mode.minsizerel
+  builddir = $(projectdir)/build, installdir = $(projectdir)/build/install
+  add_includedirs($(projectdir)/include)
+  modules[] fixed order (see 03). Each included only if os.isfile(<mod>/xmake.lua).
+
+3. TOOLS FRAMEWORK (tools/)
+
+  tools/xmake.lua:
+    includes helpers.lua, add_moduledirs(modules), includes options.lua,
+    compiler.lua, rules.lua, toolchains.lua, tasks.lua; os_check_arch();
+    target os-framework (phony diagnostic).
+
+  tools/helpers.lua:
+    OS_TARGET_TRIPLES, OS_SUPPORTED_ARCHS, OS_CROSS_PREFIXES, OS_ARCH_CFLAGS
+    + helpers os_get_triple(), os_get_arch_cflags() (description + script-scope twins).
+
+  tools/options.lua:
+    option(target_arch: amd64|arm64|riscv64 default amd64)
+    option(os_toolchain: os-clang|os-gcc default os-clang)
+    option(sysroot), option(lto), option(asan), option(ubsan),
+    option(werror), option(verbose_build), option(build_gl), option(build_dri)
+
+  tools/compiler.lua:
+    set_config toolchain/cc/cxx/ld/ar/as/strip/ranlib from os_toolchain.
+
+  tools/rules.lua:
+    rule os.base    -- defines __EteleOS__, -Wall -Wextra, baseline flags
+    rule os.kernel  -- -ffreestanding, -fno-stack-protector, CMACHFLAGS
+    rule os.userland / os.userland_static -- hardening
+    rule os.library -- shared/static handling
+    rule os.asm, os.strip_release, os.lto, os.asan, os.ubsan
+
+  tools/toolchains.lua:
+    toolchain os-clang (standalone, -target <triple> retargeting)
+    toolchain os-gcc   (standalone, cross-prefix, native fallback)
+    Override: xmake f --cc=/usr/bin/clang-17
+
+  tools/tasks.lua:
+    Tasks os-regen-kernel, os-regen-userland, etc. (xmake lua wrappers).
+
+4. PER-SUBSYSTEM XMAKE.LUA SUMMARY
+
+  kernel/xmake.lua (739 lines, most complex):
+    Arch facts: MD_CORE_DIRS, BUS_GLUE_DIRS, LDSCRIPT_NAMES, CMACHFLAGS, PER_FILE_CFLAGS
+    Reads generated_manifest.lua (OS_KERNEL_MANIFEST[arch].selected_files, ioconf_c)
+    KERNEL_MI_DIRS = core/kern, core/lib/libkern, core/miscfs, uvm, ddb, crypto,
+                     net/net, net/netinet, net/netinet6, net/netmpls, net80211,
+                     fs/ufs, fs/nfs, fs/msdosfs, fs/isofs, fs/ntfs, fs/tmpfs
+    target os-kernel (binary, basename bsd, add_rules os.base+os.kernel)
+      Adds MI dirs via glob, param.c/swapgeneric.c, per-file flags, selected_files
+      via PREFIXES {"","core/","dev/","fs/"} fallback, ioconf.c (on_load write),
+      MD dir *.c/*.S, bus glue, add_includedirs, ldscript -Wl,-T, add_deps os-headers,
+      on_load: machine copy, ioconf.c write, vers.c generation, genassym.sh -> assym.h.
+    target os-kernel-efiboot-<arch> (phony, on_build: compile -> link shared -> objcopy -> BOOT*.EFI)
+      EFI_BOOTLOADERS table with per-arch spec (prog_dir, prog_name, ldscript,
+      objcopy_mode, defines, cflags, own_srcs, boot_srcs, libsa_srcs) transcribed
+      from real Makefiles.
+
+  libraries/xmake.lua:
+    Builds every library as -static + -shared pair via os_bsd_library().
+    Parses libc/sys/Makefile.inc ASM lists -> 2-line syscall stubs in gendir.
+    Handles 19 extra libs; versions from OS_LIBRARIES_SHLIB_VERSIONS.
+    Symbol visibility (Symbols.map) NOT implemented (explicit deferral).
+
+  include/xmake.lua:
+    target os-headers (headeronly). add_headerfiles *.h + subdirs; public add_includedirs;
+    after_install copies machine/ + kernel/sys/dev/net/uvm/crypto headers, plus
+    compatibility symlinks (endian.h -> sys/endian.h etc.).
+
+  userland/xmake.lua:
+    Includes generated_manifest.lua; for each program calls os_program() which
+    creates target(PROG) with add_files(SRCS), LDADD->add_deps, MAN install,
+    BINOWN/BINMODE, MLINKS, yacc/lex generation, host-build for config/mklocale.
+
+  gui/xmake.lua:
+    Phony-wrapper per X.Org module; generic autotools wrapper + MODULE_CONFIGURE_OVERRIDES
+    for xserver (GLX/DRI via build_gl/build_dri) and xf86-video-intel; ~200 modules.
+
+  resources/xmake.lua:
+    headeronly, flat-category verbatim install, zic + mklocale data compilation.
+
+  configs/xmake.lua:
+    headeronly, flat copy, exclude Makefile, mode 600 for master.passwd.
+
+  installer/xmake.lua:
+    headeronly + phony; sets pipeline, special/ search, iso host-limited.
+
+  tests/xmake.lua:
+    phony + add_tests(); os.files/os.dirs walk; golden-file translation.
+
+5. BUILD ORDER AND ARTIFACT GRAPH (TEXTUAL)
+
+  xmake f  (configure)
+    |
+    v
+  tools/helpers+options+compiler+rules+toolchains  (framework)
+    |
+    v
+  include/os-headers  (headers staged)
+    |
+    +---> libraries/*-static, *-shared  (need headers)
+    |
+    +---> kernel/os-kernel (bsd)  (needs headers + machine copy + ioconf.c + assym.h + vers.c)
+    |        |
+    |        +---> kernel/os-kernel-efiboot-<arch> (BOOT*.EFI)
+    |
+    +---> resources/os-resources  (needs mklocale from userland host-build)
+    |
+    +---> userland/* programs  (need libraries + headers)
+    |
+    +---> gui/* modules  (need headers + libraries, autotools)
+    |
+    +---> configs (file install)
+    |
+    +---> installer sets/*.tgz  (need staged installdir)
+    |
+    +---> tests  (need prior artifacts)
+
+  Generated files under build/:
+    build/os-kernel-gen/<arch>/machine/     (copied headers)
+    build/os-kernel-gen/<arch>/config-run/build/ioconf.c
+    build/os-kernel-gen/<arch>/assym.h
+    build/os-kernel-gen/<arch>/vers.c
+    build/os-kernel-gen/<arch>/efiboot/BOOT*.EFI
+    build/install/{bin,sbin,usr/bin,usr/sbin,lib,include,etc,share/...}
+
+6. COMPILER / LINKER CONFIGURATION
+  CC: clang (or gcc if os-gcc). Flags: -Wall -Wextra, per-arch CMACHFLAGS,
+  per-file PER_FILE_CFLAGS, -target <triple> via toolchain, sysroot optional.
+  Kernel: -ffreestanding, -mno-red-zone (amd64), -mno-sse etc., no sanitizers.
+  Userland: hardening via os.userland; optional asan/ubsan/lto/werror.
+  Linker: ld.lld required for EFI (--pack-dyn-relocs=none LLD-only).
+  Kernel ldscript: -Wl,-T,<ldscript>.
+
+7. CROSS-COMPILATION
+  Same Clang binary retargeted via -target. Changing target_arch changes only a flag.
+  GCC requires external cross-gcc with prefix. Sysroot via --sysroot.
+  Host-build tools (config, mklocale) built with host toolchain (no -target).
+
+8. MODES
+  debug: symbols, no opt. release: optimized, no symbols.
+  releasedbg: optimized + symbols. minsizerel: size-optimized.
+
+9. GENERATED MANIFESTS (see 19)
+  All manifests committed; regeneration requires xmake lua (description scope
+  cannot run io/os.execv).
+
+10. VERIFICATION
+All statements VERIFIED from reading root and per-subsystem xmake.lua plus
+tools/*.lua. Legacy Makefile paths noted as stale where they reference
+pre-restructure locations.

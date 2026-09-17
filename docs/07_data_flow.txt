@@ -1,0 +1,92 @@
+LEVEL 7 -- DATA FLOW ANALYSIS
+===========================
+
+1. USER -> KERNEL DATA FLOW (SYSCALL)
+  Source: user buffer (libc caller)
+  Transformation: copyin (uvm_io.c) -> kernel buffer -> subsystem -> copyout -> user
+  Ownership: user owns original; kernel borrows via copy.
+  Lifetime: syscall duration.
+  Synchronization: process-private; subsystem may lock (vnode, socket).
+  Error: EFAULT if invalid pointer.
+
+2. SOURCE CODE -> BUILD ARTIFACTS DATA FLOW
+
+  Source files (.c/.S/.h, GENERIC, files.*, Makefiles)
+    |
+    v
+  Generators (tools/gen/*.lua, genassym.sh, makesyscalls.sh)
+    |-> generated_manifest.lua, ioconf.c, assym.h, vers.c, syscallargs.h
+    |
+    v
+  Compiler (clang/gcc -target <triple> + CMACHFLAGS)
+    |-> .o objects
+    |
+    v
+  Linker (ld.lld / ld, -T ld.script)
+    |-> bsd (kernel ELF) / shared libs / userland binaries / BOOT*.EFI
+    |
+    v
+  Install (build/install/{bin,lib,include,etc,share})
+    |
+    v
+  Installer sets (pax/tar -> baseXX.tgz etc.)
+    |
+    v
+  Boot media (iso/img via vnconfig/fdisk/newfs on OpenBSD host)
+
+3. KERNEL MEMORY DATA FLOW
+  Physical pages (uvm_page.c, uvm_pmemrange.c)
+    -> UVM maps (uvm_map.c, uvm_addr.c) -> address spaces (vmspace)
+    -> pagetables (pmap.c MD: amd64/pmap.c, arm64, riscv)
+    -> fault handler (uvm_fault.c) resolves missing pages via pager
+       -> anon (uvm_anon.c) / file (uvm_vnode.c) / device (uvm_device.c) / swap (uvm_swap.c)
+  Ownership: pmap owns page table entries; vm_map owns entries; anon owns swap slots.
+  Lifetime: page allocated -> mapped -> unmapped -> free (page daemon uvm_pdaemon.c).
+
+4. FILESYSTEM DATA FLOW
+  Path string -> namei cache (vfs_cache.c) -> vnode -> buffer cache (vfs_bio.c)
+    -> disk driver -> hardware
+  Read: driver DMA -> buffer -> vnode -> copyout to user.
+  Write: copyin -> buffer -> vnode -> driver DMA -> disk.
+  Sync: vfs_sync.c flushes dirty buffers.
+  Ownership: vnode holds refcount; buffer holds b_data.
+
+5. NETWORK DATA FLOW
+  App buffer -> socket buffer (uipc_socket.c) -> mbuf chain (uipc_mbuf.c: m_get/m_free)
+    -> protocol stack -> ifqueue -> driver ring -> wire. Reverse for ingress.
+  Ownership: mbuf chain passed by ref, freed by consumer.
+  Synchronization: splnet / mutex per queue.
+
+6. DEVICE DATA FLOW
+  User ioctl/read/write -> cdevsw/bdevsw dispatch (sys/conf.h: cdevsw[])
+    -> driver entry (dev/pci/if_em.c:em_start) -> bus_space/bus_dma -> hardware
+       -> interrupt -> softintr -> wakeup.
+  autoconf data: cfdata[] (ioconf.c) describes parent/child attachments.
+
+7. GUI DATA FLOW
+  X client draw request -> libX11 encode -> Unix socket -> X server dispatch
+    -> fb / drm driver -> wsdisplay -> monitor.
+  Input: hardware -> wscons -> X server -> X client event queue.
+
+8. CONFIGURATION DATA FLOW
+  Source: configs/{system,etc.<arch>,...}/ files
+    -> installdir/etc (verbatim, master.passwd 600)
+    -> runtime: init/rc reads rc.conf, sysctl.conf, login.conf, ttys
+    -> kernel sysctl MIB (kern_sysctl.c)
+  Build-time: GENERIC options -> compiled into kernel (opt_*.h via config(8)).
+
+9. RESOURCE DATA FLOW
+  Source: resources/{man,zoneinfo,locale,misc,...}
+    -> build: zic compiles tzdata -> binary zoneinfo; mklocale compiles ctype
+    -> installdir/share/* -> runtime: libc localtime, man, etc.
+
+10. TEST DATA FLOW
+  Source: tests/**/{*.c, *.in, *.out, Makefile}
+    -> build: compile test programs -> run -> capture output -> cmp golden -> result.
+
+11. CRYPTO DATA FLOW
+  Userland: plaintext -> libcrypto (aes, chacha) -> ciphertext (or /dev/crypto ioctl).
+  Kernel: network/disk data -> crypto.c -> cryptosoft.c or hardware driver (ccp_pci.c).
+
+Data integrity: explicit error returns (errno) and checksums (dkcsum.c, crc32.c).
+No flow observed to silently drop errors.

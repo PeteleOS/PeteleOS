@@ -1,0 +1,41 @@
+SUBSYSTEM: installer
+====================
+
+1. PURPOSE
+Builds install media, distribution sets, and manages installation/update.
+
+2. SOURCE LOCATIONS
+
+  installer/xmake.lua, installer/Makefile
+  installer/{amd64,arm64,riscv64,miniroot,notes,sets,special,syspatch}
+
+3. COMPONENTS
+
+  Component: sets
+    installer/sets/lists/<name>/{mi,md.<arch>} plain text lists.
+    Pipeline: concatenate -> sort -> lib-first reorder -> pax/tar -> <name><rev>.tgz
+    etc.tgz via makeetcset separate (not reimplemented).
+
+  Component: special (miniroot tools)
+    72 program dirs, each thin Makefile via ".PATH: ${.CURDIR}/../../../X"
+    Stale paths (../../../bin/cat etc.) -- new code searches by same-name across
+    userland categories instead.
+
+  Component: miniroot
+    Ramdisk contents for install kernel (requires RAMDISK config gap).
+
+  Component: image/iso
+    Requires vnconfig/fdisk/disklabel/newfs/mount (OpenBSD host only); wrapper
+    finds tools via find_tool() and skips with warning if absent.
+
+  Component: arch media
+    installer/{amd64,arm64,riscv64}/ per-arch install logic.
+
+4. BUILD INTEGRATION
+  headeronly + phony targets; sets pipeline fully implemented; iso host-limited.
+
+5. DEPENDENCIES
+  Depends on: kernel (bsd image, RAMDISK gap), userland, configs, resources.
+
+6. REFACTORING NOTES
+  Parameterize kernel/xmake.lua for RAMDISK to close boot image gap.

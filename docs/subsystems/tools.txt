@@ -1,0 +1,62 @@
+SUBSYSTEM: tools
+=================
+
+1. PURPOSE
+Development and build support tools; owns all project-wide build infrastructure
+(helpers, options, compiler/linker defaults, rules, toolchains). Also holds
+generators, verification scripts, and utilities for cross, debug, release.
+
+2. SOURCE LOCATIONS
+
+  tools/xmake.lua (framework loader, 115 lines VERIFIED)
+  tools/helpers.lua (OS_TARGET_TRIPLES etc.)
+  tools/options.lua (option() declarations)
+  tools/compiler.lua (set_config toolchain defaults)
+  tools/rules.lua (rule os.base etc.)
+  tools/toolchains.lua (toolchain os-clang/os-gcc)
+  tools/tasks.lua (regen tasks)
+  tools/verify-rpcgen-output.sh
+  tools/modules/os/helpers.lua (script-scope twin)
+  tools/gen/{gen_kernel_manifest.lua, gen_userland_manifest.lua, gen_libraries_manifest.lua,
+             gen_gui_manifest.lua, gen_tests_manifest.lua}
+  tools/{check,compiler,cross,debug,gen,lib,modules,release,scripts,toolchain}/ (subdirs)
+
+3. COMPONENTS
+
+  Component: build framework
+    helpers.lua must be first (defines OS_* globals); options.lua before compiler.lua;
+    compiler.lua before rules.lua; rules.lua before toolchains.lua; tasks.lua last.
+    Constraint: MUST NOT build any target; only declares project-global entities.
+
+  Component: generators
+    gen_kernel_manifest.lua bootstraps config(8) host tool, patches util.c sourcepath,
+    runs against each arch GENERIC, falls back to approximate parser, writes
+    kernel/generated_manifest.lua. Similarly gen_userland, gen_libraries, gen_tests, gen_gui.
+    All run via "xmake lua" (script scope where io/os.execv are real).
+
+  Component: toolchains
+    os-clang (standalone, -target <triple> retarget), os-gcc (cross-prefix fallback).
+    Users can override via xmake f --cc=...
+
+  Component: rules
+    os.base (every target), os.kernel (freestanding), os.userland, os.library,
+    os.asm, os.strip_release, os.lto, os.asan, os.ubsan.
+
+  Component: verification
+    verify-rpcgen-output.sh opt-in check for RPC .x freshness.
+    tools/check/, tools/debug/ subdirs (NOT VERIFIED content).
+
+4. BUILD INTEGRATION
+
+  Loaded FIRST by root xmake.lua; everything else depends on it.
+  Diagnostic target os-framework (phony) prints arch/triple/toolchain/mode/lto/asan.
+
+5. ARCHITECTURE SUPPORT
+  OS_SUPPORTED_ARCHS {"amd64","arm64","riscv64"}; validation via os_check_arch().
+
+6. DEPENDENCIES
+  Depends on: (none). Consumed by: all subsystems. Generates: manifests.
+
+7. REFACTORING NOTES
+  Description vs script scope distinction is critical (io nil at description).
+  Changing option names requires syncing helpers.lua + options.lua + compiler.lua.

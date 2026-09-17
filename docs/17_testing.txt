@@ -1,0 +1,84 @@
+LEVEL 1-2 -- TESTING ANALYSIS
+==============================
+
+1. LOCATION AND ORIGIN
+tests/ is OpenBSD's regress/ tree, renamed, mirroring pre-restructure top-level
+layout (VERIFIED from tests/xmake.lua header):
+  tests/{bin, sbin, usr.bin, usr.sbin, lib, libexec, gnu, include, misc, sys,
+         etc, usr.sben}  (11 entries verified).
+Roughly 20,000 files, arbitrarily nested, too many to hand-enumerate.
+Legacy: tests/Makefile (regress Makefile).
+
+2. BUILD SYSTEM -- tests/xmake.lua (VERIFIED ~80 lines read)
+
+  Discovery: walks tree with xmake os.files/os.dirs (portable, no find shell).
+  Two shapes of regress tests (driven by resources/mk/bsd.regress.mk):
+    (a) PROG/PROGS + nothing else -- bsd.regress.mk auto-generates
+        "run-regress-<prog>" target that builds and runs it, pass/fail by exit code.
+        Maps directly onto xmake add_tests().
+    (b) hand-written REGRESS_TARGETS with custom shell recipes, often comparing
+        output against checked-in .in/.out golden files (verified real example:
+        tests/usr.bin/apply/Makefile runs six variations of /usr/bin/apply and cmps output).
+        Spot-checking suggests shape (b) is majority.
+
+  Makefile parsing features implemented:
+    Operators: =, +=, ?=, :=, != (shell-assignment, treated unresolved)
+    ${VAR}/$(VAR) expansion: second pass against collected VAR= assignments plus
+      well-known BSD Make built-ins (.CURDIR, MACHINE, MACHINE_ARCH).
+    .if ${MACHINE}=="xxx" / ${MACHINE_ARCH}=="xxx" evaluated against target_arch;
+      other .if treated as unconditional.
+    .include <bsd.regress.mk>/<bsd.subdir.mk> recognized; other includes recorded.
+
+  Golden-file recipe translation:
+    For REGRESS_TARGETS matching idiom (verified: apply's t1-t6):
+      <command...> > NAME.res
+      cmp -s EXPECTED.out NAME.res || (echo ... && false)
+    extracts command + expected output and wires as non-compiled test that runs
+    command and compares itself, rather than shelling to make.
+    Recipes not matching remain untranslated (honest gap; pattern-matching cannot
+    responsibly translate most custom shell recipes).
+
+  Non-compiled test support: tests that don't compile anything (just run an
+  installed program against golden files) are wired via helpers.
+
+  Limitations (honest): most custom shell recipes still not translated; majority
+  shape (b) coverage is partial, not closed.
+
+3. TEST CATEGORIES (INFERRED FROM DIRECTORY STRUCTURE)
+
+  bin, sbin, usr.bin, usr.sbin, usr.sben -- utility regression
+  lib, include -- library/header tests
+  sys -- kernel/syscall tests
+  gnu -- GNU tool tests
+  misc -- miscellaneous
+  etc, libexec -- daemons/config tests
+
+4. EXECUTION
+
+  Build: xmake build tests -> test programs + add_tests() registered.
+  Run: xmake test or run-regress-<prog> harness.
+  Golden-file: run command -> capture .res -> cmp .out -> pass/fail by exit code.
+  Requires installed userland/libs to run against (some tests just run
+  /usr/bin/apply already built).
+
+5. COVERAGE GAPS
+
+  - No dedicated unit test framework for kernel UVM/pmap (INFERRED; not found).
+  - Custom REGRESS_TARGETS majority not auto-translated -> manual verification needed.
+  - GUI has no tests in this tree (X tests are upstream).
+  - Installer not tested here (requires full install run).
+
+6. DEPENDENCIES
+
+  Build: tools, include, libraries, userland, kernel headers.
+  Execution: needs built/installed artifacts to test against.
+  If a subsystem lacks tests, it is noted as gap.
+
+7. GENERATED MANIFEST
+  tests/generated_manifest.lua (OS_TESTS_MANIFEST) -- committed, regenerated via
+  xmake lua tools/gen/gen_tests_manifest.lua.
+
+8. REFACTORING NOTES
+  Test harness is build-system heavy. Changing a program's Makefile may break
+  regress parsing. Adding golden-file recipes should follow the translatable
+  idiom (command > .res; cmp) for auto-wiring.
