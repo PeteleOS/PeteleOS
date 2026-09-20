@@ -76,14 +76,28 @@
 #include "cc.h"
 #include "cc_parse.h"
 
-/* 2-token lookahead over yylex() */
+/* N-token lookahead over yylex().
+ * Must cover the deepest yypeek() used by the parser
+ * (parse_arg_one peeks up to index 3 to tell tlist xdecor
+ * from tlist abdecor, e.g. `int (*)(Fmt*)`).
+ * The old 2-entry buffer overflowed on yypeek(2)/yypeek(3)
+ * and corrupted the parse, e.g. "expected ')'" on
+ * sys/include/libc.h protoypes with function pointers.
+ */
+enum { NLA = 8 };
 static int nla;
-static long latok[2];
-static YYSTYPE laval[2];
+static long latok[NLA];
+static YYSTYPE laval[NLA];
 
 static void
 lafill(int n)
 {
+	if(n < 0)
+		return;
+	if(n >= NLA){
+		yyerror("lookahead overflow");
+		n = NLA-1;
+	}
 	while(nla <= n){
 		latok[nla] = yylex();
 		laval[nla] = yylval;
@@ -94,6 +108,10 @@ lafill(int n)
 static long
 yypeek(int n)
 {
+	if(n < 0 || n >= NLA){
+		yyerror("lookahead overflow");
+		return 0;
+	}
 	lafill(n);
 	return latok[n];
 }
@@ -102,16 +120,17 @@ static long
 yyget(void)
 {
 	long t;
+	int i;
 
 	lafill(0);
 	t = latok[0];
 	yylval = laval[0];
-	if(nla == 2){
-		latok[0] = latok[1];
-		laval[0] = laval[1];
-		nla = 1;
-	}else
-		nla = 0;
+	for(i = 1; i < nla; i++){
+		latok[i-1] = latok[i];
+		laval[i-1] = laval[i];
+	}
+	if(nla > 0)
+		nla--;
 	return t;
 }
 
@@ -1905,12 +1924,15 @@ parse_xuexpr(void)
 		if(is_typestart(t1) || t1 == LSTRUCT || t1 == LUNION || t1 == LENUM || t1 == LTYPE){
 			/* Save lookahead, try type parse */
 			int save_nla = nla;
-			long save0 = latok[0];
-			long save1 = latok[1];
-			YYSTYPE savev0 = laval[0];
-			YYSTYPE savev1 = laval[1];
+			long savetok[NLA];
+			YYSTYPE saveval[NLA];
+			int si;
 			Type *t;
 			Node *ab;
+			for(si = 0; si < nla && si < NLA; si++){
+				savetok[si] = latok[si];
+				saveval[si] = laval[si];
+			}
 			yyget(); /* '(' */
 			t = parse_tlist();
 			ab = parse_abdecor();
@@ -1942,8 +1964,10 @@ parse_xuexpr(void)
 			}
 			/* not a cast: restore and fall through */
 			nla = save_nla;
-			latok[0] = save0; latok[1] = save1;
-			laval[0] = savev0; laval[1] = savev1;
+			for(si = 0; si < nla && si < NLA; si++){
+				latok[si] = savetok[si];
+				laval[si] = saveval[si];
+			}
 		}
 	}
 	return parse_uexpr();

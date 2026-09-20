@@ -76,14 +76,24 @@
 #include "dbg_parse.h"
 
 YYSTYPE yylval;
-/* 2-token lookahead over yylex() */
+/* N-token lookahead over yylex() (hardened: same pattern as cc;
+ * the old fixed 2-entry buffer with `if(nla == 2)` shift breaks
+ * as soon as any code peeks past index 1).
+ */
+enum { NLA = 8 };
 static int nla;
-static int latok[2];
-static YYSTYPE laval[2];
+static int latok[NLA];
+static YYSTYPE laval[NLA];
 
 static void
 lafill(int n)
 {
+	if(n < 0)
+		return;
+	if(n >= NLA){
+		yyerror("lookahead overflow");
+		n = NLA-1;
+	}
 	while(nla <= n){
 		latok[nla] = yylex();
 		laval[nla] = yylval;
@@ -94,6 +104,10 @@ lafill(int n)
 static int
 yypeek(int n)
 {
+	if(n < 0 || n >= NLA){
+		yyerror("lookahead overflow");
+		return 0;
+	}
 	lafill(n);
 	return latok[n];
 }
@@ -102,16 +116,17 @@ static int
 yyget(void)
 {
 	int t;
+	int i;
 
 	lafill(0);
 	t = latok[0];
 	yylval = laval[0];
-	if(nla == 2){
-		latok[0] = latok[1];
-		laval[0] = laval[1];
-		nla = 1;
-	}else
-		nla = 0;
+	for(i = 1; i < nla; i++){
+		latok[i-1] = latok[i];
+		laval[i-1] = laval[i];
+	}
+	if(nla > 0)
+		nla--;
 	return t;
 }
 
