@@ -1374,15 +1374,6 @@ parse_stmnt(void)
 		}
 		return new(OLIST, l, u);
 	}
-	/* try ulstmnt; on failure recover as error ';' */
-	{
-		long t = yypeek(0);
-		if(t == ';' || t == '}' || t == -1 || t == 0){
-			yyerror("expected statement");
-			skiptosemi();
-			return Z;
-		}
-	}
 	u = parse_ulstmnt();
 	return u;
 }
