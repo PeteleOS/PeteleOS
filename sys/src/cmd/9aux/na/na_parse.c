@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Hand-written recursive-descent replacement for na.y (LALR).
  *
  * Original yacc grammar (precedence low -> high):
@@ -56,7 +56,6 @@
 #include <libc.h>
 #include <stdio.h>
 #include <ctype.h>
-#include <stdarg.h>
 
 #include "na.h"
 

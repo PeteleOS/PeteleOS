@@ -5,7 +5,7 @@ TARG=expr
 OFILES=expr_parse.$O
 HFILES=regexp.h
 
- BIN=$APEBIN
- </sys/src/cmd/mkone
+BIN=$APEBIN
+</sys/src/cmd/mkone
 
- CFLAGS=-B -c
+CFLAGS=-B -c

@@ -1,5 +1,5 @@
 #include	"cc.h"
-#include "a_parse.h"
+#include	"cc_parse.h"
 
 #ifndef	CPP
 #define	CPP	"/bin/cpp"

@@ -21,5 +21,13 @@ OFILES=	picy_parse.$O\
 HFILES=pic.h\
 	picy_parse.h\
 
+CLEANFILES=picl.c\
+
 BIN=/$objtype/bin
 </sys/src/cmd/mkone
+CC=pcc
+LD=pcc
+CFLAGS=-FTV -c
+
+picl.c: picl.lx
+	$LEX -t $prereq > $target

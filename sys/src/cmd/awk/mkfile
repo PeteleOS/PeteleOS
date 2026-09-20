@@ -24,7 +24,7 @@ UPDATE=\
 	maketab.c\
 	${TARG:%=/amd64/bin/%}\
 
-</$objtype/mkfile
+</sys/src/cmd/mkone
 CFLAGS=-FTV -c -D_REGEXP_EXTENSION -D_RESEARCH_SOURCE -D_BSD_EXTENSION -DUTF
 CC=pcc
 LD=pcc

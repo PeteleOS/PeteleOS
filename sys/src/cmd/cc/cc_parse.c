@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Hand-written recursive-descent replacement for cc.y (LALR, 1183 lines).
  *
  * Original yacc precedence (low -> high):

@@ -2,8 +2,8 @@
 
 TARG=`{ls *.[cy] | sed '/\.tab\.c$/d;s/..$//'}
 HFILES=/$objtype/include/u.h /sys/include/libc.h
- BIN=$home/bin/$objtype
- PROGS=${TARG:%=$O.%}
- LDFLAGS=
+BIN=$home/bin/$objtype
+PROGS=${TARG:%=$O.%}
+LDFLAGS=
 
- </sys/src/cmd/mkmany
+</sys/src/cmd/mkmany

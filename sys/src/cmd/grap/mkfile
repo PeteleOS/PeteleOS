@@ -20,4 +20,13 @@ HFILES=grap.h\
 
 LFILES=grapl.lx\
 
-BIN=/$objtype/bin</sys/src/cmd/mkone
+CLEANFILES=grapl.c\
+
+BIN=/$objtype/bin
+</sys/src/cmd/mkone
+CC=pcc
+LD=pcc
+CFLAGS=-FTV -c
+
+grapl.c: $LFILES
+	$LEX -t $prereq > $target
