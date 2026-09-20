@@ -73,6 +73,7 @@
  *	void yyerror(char*,...) from sub.c, int yyparse(void).
  */
 
+#include "cc.h"
 #include "cc_parse.h"
 
 /* 2-token lookahead over yylex() */

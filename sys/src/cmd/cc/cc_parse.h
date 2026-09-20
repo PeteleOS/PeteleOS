@@ -3,8 +3,14 @@
 /*
  * Token numbers and YYSTYPE for cc hand parser (replaces y.tab.h).
  * Single-char tokens use ASCII; multi-char tokens > 255.
+ * NOTE: include "cc.h" before this header (for uchar, vlong, etc.),
+ * just like the old y.tab.h required. This header only forward-declares
+ * Node/Sym/Type so including both headers never pulls <u.h> twice
+ * (Plan 9 cc reports "macro redefined" on double inclusion).
  */
-#include "cc.h"
+typedef struct Node Node;
+typedef struct Sym Sym;
+typedef struct Type Type;
 
 typedef union {
 	Node *node;
