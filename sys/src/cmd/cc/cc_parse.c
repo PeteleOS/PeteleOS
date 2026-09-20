@@ -200,6 +200,7 @@ static Node *parse_stmnt(void);
 static Node *parse_forexpr(void);
 static Node *parse_ulstmnt(void);
 static Node *parse_zcexpr(void);
+static Node *parse_zcexpr_rp(void);
 static Node *parse_zexpr(void);
 static Node *parse_lexpr(void);
 static Node *parse_cexpr(void);
@@ -1477,7 +1478,7 @@ parse_ulstmnt(void)
 			yyerror("expected ';'");
 			skiptosemi();
 		}
-		f3 = parse_zcexpr();
+		f3 = parse_zcexpr_rp();
 		if(yyget() != ')'){
 			yyerror("expected ')'");
 			skiptosemi();
@@ -1626,6 +1627,22 @@ static Node*
 parse_zcexpr(void)
 {
 	if(yypeek(0) == ';')
+		return Z;
+	return parse_cexpr();
+}
+
+/*
+ * Like parse_zcexpr, but for the third (increment) clause of a
+ * `for(init; cond; incr)' statement, which is terminated by ')'
+ * rather than ';'. `for(;;)' must be recognized as all three
+ * clauses empty -- reusing the ';'-only check here fed a bare ')'
+ * to parse_cexpr, which reported "expected expression" and then
+ * desynced brace/paren matching for the rest of the file.
+ */
+static Node*
+parse_zcexpr_rp(void)
+{
+	if(yypeek(0) == ')')
 		return Z;
 	return parse_cexpr();
 }
