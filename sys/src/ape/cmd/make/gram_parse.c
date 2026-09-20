@@ -89,6 +89,7 @@ static YYSTYPE yysaveval;
 
 static int yypeek(void);
 static int yyget(void);
+int yyerror(char*, ...);
 static void parse_file(void);
 static void parse_comline(void);
 static nameblkp parse_namelist(void);

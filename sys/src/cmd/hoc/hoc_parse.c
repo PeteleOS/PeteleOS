@@ -32,6 +32,7 @@ static Symbol* parse_procname(void);
 static int parse_arglist(void);
 static void parse_defn(void);
 int yylex(void);
+void yyerror(char*);
 static int yypeek(void);
 static int yypeek2(void);
 static int yyget(void);
