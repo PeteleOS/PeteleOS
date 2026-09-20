@@ -41,6 +41,8 @@ static int	yyhave;
 static int	yytok;
 static YYSTYPE yyval;
 
+YYSTYPE yylval;
+
 static long
 yylex(void)
 {

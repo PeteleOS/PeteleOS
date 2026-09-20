@@ -75,6 +75,7 @@
 #include "acid.h"
 #include "dbg_parse.h"
 
+YYSTYPE yylval;
 /* 2-token lookahead over yylex() */
 static int nla;
 static int latok[2];

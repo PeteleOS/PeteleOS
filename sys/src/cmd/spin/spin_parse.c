@@ -74,6 +74,8 @@
 
 extern	Lextok *yytext;
 
+YYSTYPE yylval;
+
 static	int	yyhave;
 static	int	yytok;
 static	YYSTYPE yyval;

@@ -1,5 +1,7 @@
 #include "a.h"
 #include "a_parse.h"
+
+YYSTYPE yylval;
 /*
  * Hand-written recursive-descent replacement for a.y (LALR, 4a/arm).
  * Original precedence low->high: '|' '^' '&' '<' '>' '+' '-' '*' '/' '%'.
