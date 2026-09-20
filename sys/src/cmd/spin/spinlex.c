@@ -7,11 +7,12 @@
  */
 
 #include <stdlib.h>
+#include <stdarg.h>
 #include <assert.h>
 #include <errno.h>
 #include <ctype.h>
 #include "spin.h"
-#include "y.tab.h"
+#include "spin_parse.h"
 
 #define MAXINL	16	/* max recursion depth inline fcts */
 #define MAXPAR	32	/* max params to an inline call */
@@ -1888,6 +1889,22 @@ check_name(char *s)
 		return INAME;
 
 	return NAME;
+}
+
+/*
+ * yyerror -- called by spin_parse.c on syntax errors.
+ * Delegates to non_fatal (which does not abort).
+ */
+void
+yyerror(char *s, ...)
+{
+	va_list ap;
+	char *arg;
+
+	va_start(ap, s);
+	arg = va_arg(ap, char *);
+	non_fatal(s, arg);
+	va_end(ap);
 }
 
 int

@@ -2,7 +2,7 @@
 
 TARG=grap
 OFILES=\
-	grap.$O\
+	grap_parse.$O\
 	grapl.$O\
 	main.$O\
 	input.$O\
@@ -16,24 +16,8 @@ OFILES=\
 	misc.$O\
 
 HFILES=grap.h\
-	y.tab.h\
-
-YFILES=grap.y\
+	grap_parse.h\
 
 LFILES=grapl.lx\
 
-BIN=/$objtype/bin
-</sys/src/cmd/mkone
-CC=pcc
-LD=pcc
-YFLAGS = -d -S
-CFLAGS=-FTV -c
-
-grap.c:	y.tab.c
-	mv $prereq $target
-
-grapl.c:	$LFILES
-	$LEX -t $prereq > $target
-
-clean:V:
-	rm -f [$OS].out *.[$OS] y.tab.? lex.yy.c grapl.c grap.c grap
+BIN=/$objtype/bin</sys/src/cmd/mkone

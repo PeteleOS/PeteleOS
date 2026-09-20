@@ -36,7 +36,7 @@ bzip2recover.$O: bzip2recover.c
 	pcc -D_POSIX_SOURCE -D_BSD_EXTENSION -c bzip2recover.c
 
 clean:V:
-	rm -f *.[$OS] y.tab.? y.debug y.output [$OS].* $TARG *.rb2 *.tst
+	rm -f *.[$OS] y.debug y.output [$OS].* $TARG *.rb2 *.tst
 	@{cd lib; mk clean}
 
 lib/libbzip2.a$O:

@@ -8,7 +8,7 @@
 
 #include "spin.h"
 #include "version.h"
-#include "y.tab.h"
+#include "spin_parse.h"
 #include "pangen2.h"
 #include "pangen4.h"
 #include "pangen5.h"

@@ -8,7 +8,7 @@
 
 #include <stdlib.h>
 #include "spin.h"
-#include "y.tab.h"
+#include "spin_parse.h"
 
 extern RunList	*X_lst, *run_lst;
 extern Symbol	*Fname;

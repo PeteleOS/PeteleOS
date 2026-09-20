@@ -6,7 +6,7 @@
 #include <regexp.h>
 #define Extern extern
 #include "acid.h"
-#include "y.tab.h"
+#include "dbg_parse.h"
 
 void	cvtatof(Node*, Node*);
 void	cvtatoi(Node*, Node*);

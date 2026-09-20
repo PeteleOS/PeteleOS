@@ -10,7 +10,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <limits.h>
-#include "y.tab.h"
+#include "spin_parse.h"
 
 extern RunList	*run_lst, *X_lst;
 extern Element	*Al_El;

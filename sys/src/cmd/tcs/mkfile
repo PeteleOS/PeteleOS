@@ -34,7 +34,7 @@ conv%.$O:		conv.h
 conv_ksc.$O:		ksc.h
 
 clean:V:
-	rm -f *.[$OS] [$OS].out y.tab.? y.debug y.output $TARG
+	rm -f *.[$OS] [$OS].out y.debug y.output $TARG
 
 nuke:V:
-	rm -f *.[$OS] [$OS].out y.tab.? y.debug y.output $TARG
+	rm -f *.[$OS] [$OS].out y.debug y.output $TARG

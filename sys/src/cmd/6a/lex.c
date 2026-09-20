@@ -1,6 +1,6 @@
 #define	EXTERN
 #include "a.h"
-#include "y.tab.h"
+#include "a_parse.h"
 #include <ctype.h>
 
 void

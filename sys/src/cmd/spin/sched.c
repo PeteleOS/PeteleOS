@@ -8,7 +8,7 @@
 
 #include <stdlib.h>
 #include "spin.h"
-#include "y.tab.h"
+#include "spin_parse.h"
 
 extern int	verbose, s_trail, analyze, no_wrapup;
 extern char	*claimproc, *eventmap, GBuf[];

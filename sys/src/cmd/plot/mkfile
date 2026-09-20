@@ -15,7 +15,7 @@ $LIB:
 	mk install
 
 clean:V:
-	rm -f *.[$OS] [$OS].out y.tab.? y.debug y.output $TARG
+	rm -f *.[$OS] [$OS].out y.debug y.output $TARG
 	cd libplot
 	mk clean
 

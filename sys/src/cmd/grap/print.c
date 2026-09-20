@@ -4,7 +4,7 @@
 #include <math.h>
 #include <ctype.h>
 #include "grap.h"
-#include "y.tab.h"
+#include "grap_parse.h"
 
 double	margin	= MARGIN;	/* extra space around edges */
 extern	double	frame_ht, frame_wid, ticklen;

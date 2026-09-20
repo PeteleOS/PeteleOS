@@ -1,5 +1,5 @@
 #include "e.h"
-#include "y.tab.h"
+#include "eqn_parse.h"
 
 tbl	*keytbl[TBLSIZE];	/* key words */
 tbl	*restbl[TBLSIZE];	/* reserved words */

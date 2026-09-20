@@ -1,7 +1,7 @@
 #include	<stdio.h>
 #include	<math.h>
 #include	"pic.h"
-#include	"y.tab.h"
+#include "picy_parse.h"
 
 void arc_extreme(double, double, double, double, double, double);
 int quadrant(double x, double y);

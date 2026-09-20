@@ -26,7 +26,7 @@ big5.$O bmap.$O:	../big5.h
 gb.$O gmap.$O:		../gb.h
 
 clean:V:
-	rm -f [$OS].out *.[$OS] y.tab.? rc.*
+	rm -f [$OS].out *.[$OS] rc.*
 
 poot:V:	merge
 	merge /lib/font/bit/gb/*.7000.24 > /dev/null

@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "grap.h"
-#include "y.tab.h"
+#include "grap_parse.h"
 
 int	nnum	= 0;	/* number of saved numbers */
 double	num[MAXNUM];

@@ -32,7 +32,7 @@ THIS SOFTWARE.
 #include <stdlib.h>
 #include <time.h>
 #include "awk.h"
-#include "y.tab.h"
+#include "awkgram_parse.h"
 #include "regexp.h"
 
 	/* This file provides the interface between the main body of

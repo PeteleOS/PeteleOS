@@ -1,5 +1,5 @@
 #include "e.h"
-#include "y.tab.h"
+#include "eqn_parse.h"
 
 extern int Intps;
 extern double Intht, Intbase, Int1h, Int1v, Int2h, Int2v;

@@ -1,7 +1,7 @@
 < /$objtype/mkfile
 
 TARG=pic
-OFILES=picy.$O\
+OFILES=	picy_parse.$O\
 	picl.$O\
 	main.$O\
 	print.$O\
@@ -19,22 +19,7 @@ OFILES=picy.$O\
 	pltroff.$O\
 
 HFILES=pic.h\
-	y.tab.h\
-
-YFILES=picy.y\
+	picy_parse.h\
 
 BIN=/$objtype/bin
 </sys/src/cmd/mkone
-CC=pcc
-LD=pcc
-CFLAGS=-FTV -c
-YFLAGS=-S -d
-
-picy.c:	y.tab.c
-	mv $prereq $target
-
-picl.c:	picl.lx
-	$LEX -t $prereq > $target
-
-clean:V:
-	rm -f *.[$OS] [$OS].out y.tab.? y.debug $TARG picy.c picl.c

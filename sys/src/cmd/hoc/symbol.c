@@ -1,7 +1,7 @@
 #include <u.h>
 #include <libc.h>
 #include "hoc.h"
-#include "y.tab.h"
+#include "hoc_parse.h"
 
 static Symbol *symlist = 0;  /* symbol table: linked list */
 

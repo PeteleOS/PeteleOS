@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "grap.h"
-#include "y.tab.h"
+#include "grap_parse.h"
 
 char	*dflt_coord = "gg";
 char	*curr_coord = "gg";

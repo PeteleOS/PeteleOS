@@ -3,7 +3,7 @@
 #include <ctype.h>
 #include <string.h>
 #include "pic.h"
-#include "y.tab.h"
+#include "picy_parse.h"
 
 YYSTYPE getvar(char *s)	/* return value of variable s (usually pointer) */
 {

@@ -7,7 +7,7 @@
  */
 
 #include "spin.h"
-#include "y.tab.h"
+#include "spin_parse.h"
 
 extern Symbol	*Fname;
 extern int	nr_errs, lineno, verbose, in_for, old_scope_rules, s_trail;

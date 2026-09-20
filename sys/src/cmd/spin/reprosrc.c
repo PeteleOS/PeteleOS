@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include "spin.h"
-#include "y.tab.h"
+#include "spin_parse.h"
 
 static int indent = 1;
 

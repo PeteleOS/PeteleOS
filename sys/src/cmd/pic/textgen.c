@@ -1,6 +1,6 @@
 #include	<stdio.h>
 #include	"pic.h"
-#include	"y.tab.h"
+#include "picy_parse.h"
 
 obj *textgen(void)
 {

@@ -19,7 +19,7 @@
 #else
  #include <unistd.h>
 #endif
-#include "y.tab.h"
+#include "spin_parse.h"
 
 extern int	DstepStart, lineno, tl_terse;
 extern FILE	*yyin, *yyout, *tl_out;

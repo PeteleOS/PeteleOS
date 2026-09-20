@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "spin.h"
-#include "y.tab.h"
+#include "spin_parse.h"
 #include <assert.h>
 #ifndef PC
 #include <unistd.h>

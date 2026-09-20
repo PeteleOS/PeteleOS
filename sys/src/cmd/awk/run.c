@@ -33,7 +33,7 @@ THIS SOFTWARE.
 #include <time.h>
 #include <utf.h>
 #include "awk.h"
-#include "y.tab.h"
+#include "awkgram_parse.h"
 
 #define tempfree(x)	if (istemp(x)) tfree(x); else
 

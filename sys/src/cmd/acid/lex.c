@@ -5,7 +5,7 @@
 #include <mach.h>
 #define Extern extern
 #include "acid.h"
-#include "y.tab.h"
+#include "dbg_parse.h"
 
 struct keywd
 {

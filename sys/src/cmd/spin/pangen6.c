@@ -7,7 +7,7 @@
  */
 
 #include "spin.h"
-#include "y.tab.h"
+#include "spin_parse.h"
 
 extern Ordered	 *all_names;
 extern FSM_use   *use_free;

@@ -111,11 +111,11 @@ update:V:
 
 clean:V:
 	mk cleandirs
-	rm -f *.[$OS] *.[$OS].a [$OS].* y.tab.? y.debug y.output $TARG
+	rm -f *.[$OS] *.[$OS].a [$OS].* y.debug y.output $TARG
 
 nuke:V:
 	mk nukedirs
-	rm -f *.[$OS] *.[$OS].a [$OS].* y.tab.? y.debug y.output $TARG *.acid
+	rm -f *.[$OS] *.[$OS].a [$OS].* y.debug y.output $TARG *.acid
 
 $O.%: lib.$O.a
 $O.dsa2ssh $O.dsafill $O.dsa2x509 $O.dsa2pub $O.dsa2csr: rsa2any.$O

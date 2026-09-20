@@ -5,12 +5,10 @@ HFILES=\
 	grep.h\
 
 OFILES=\
-	y.tab.$O\
+	grep_parse.$O\
 	main.$O\
 	comp.$O\
 	sub.$O\
-
-YFILES=grep.y\
 
 BIN=/$objtype/bin
 </sys/src/cmd/mkone

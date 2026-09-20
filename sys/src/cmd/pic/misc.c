@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "pic.h"
-#include "y.tab.h"
+#include "picy_parse.h"
 
 int whatpos(obj *p, int corner, double *px, double *py);
 void makeattr(int type, int sub, YYSTYPE val);

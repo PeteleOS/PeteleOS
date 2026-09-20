@@ -48,4 +48,4 @@ mport: $O.mport
 	cp $O.mport $target
 
 clean nuke:V:
-	rm -f *.[$OS] y.tab.? y.debug y.output [$OS].* $TARG mport nametest pcnfsd
+	rm -f *.[$OS] y.debug y.output [$OS].* $TARG mport nametest pcnfsd

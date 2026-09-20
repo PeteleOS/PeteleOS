@@ -2,14 +2,13 @@
 
 TARG=lex
 OFILES=lmain.$O\
-	y.tab.$O\
+	parser_parse.$O\
 	sub1.$O\
 	sub2.$O\
 	header.$O\
 
 HFILES=ldefs.h\
 
-YFILES=parser.y\
 
 BIN=/$objtype/bin
 UPDATE=\

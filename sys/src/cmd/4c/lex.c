@@ -1,5 +1,5 @@
 #include	"cc.h"
-#include	"y.tab.h"
+#include "a_parse.h"
 
 #ifndef	CPP
 #define	CPP	"/bin/cpp"

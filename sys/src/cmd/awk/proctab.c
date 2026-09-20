@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "awk.h"
-#include "y.tab.h"
+#include "awkgram_parse.h"
 
 static char *printname[93] = {
 	(char *) "FIRSTTOKEN",	/* 57346 */

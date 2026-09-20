@@ -7,7 +7,7 @@
  */
 
 #include "spin.h"
-#include "y.tab.h"
+#include "spin_parse.h"
 
 extern char	GBuf[];
 extern int	analyze, jumpsteps, nproc, nstop, columns, old_priority_rules;

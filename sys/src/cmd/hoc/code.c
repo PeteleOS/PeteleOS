@@ -2,7 +2,7 @@
 #include <libc.h>
 #include <bio.h>
 #include "hoc.h"
-#include "y.tab.h"
+#include "hoc_parse.h"
 
 #define	NSTACK	256
 

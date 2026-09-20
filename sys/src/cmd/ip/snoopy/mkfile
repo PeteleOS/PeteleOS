@@ -46,16 +46,14 @@ PROTOS=\
 POBJS=${PROTOS:%=%.$O}
 
 OFILES=	main.$O\
-	y.tab.$O\
+	filter_parse.$O\
 	protos.$O\
 	convM2DNS.$O\
 	$POBJS
 
 HFILES=dat.h\
 	protos.h\
-	y.tab.h\
-
-YFILES=filter.y
+	filter_parse.h\
 
 BIN=/$objtype/bin
 UPDATE=\

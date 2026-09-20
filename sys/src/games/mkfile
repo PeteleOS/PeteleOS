@@ -33,14 +33,14 @@ clean:V:
 		cd $i
 		mk clean
 	}
-	rm -f *.[$OS] [$OS].* y.tab.? y.debug y.output $TARG
+	rm -f *.[$OS] [$OS].* y.debug y.output $TARG
 
 nuke:V:
 	for (i in $DIRS) @{
 		cd $i
 		mk nuke
 	}
-	rm -f *.[$OS] [$OS].* y.tab.? y.debug y.output $TARG
+	rm -f *.[$OS] [$OS].* y.debug y.output $TARG
 
 dirinstall:V:
 	for (i in $DIRS) @{

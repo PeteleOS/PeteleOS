@@ -1,5 +1,5 @@
 # include "e.h"
-# include "y.tab.h"
+# include "eqn_parse.h"
 
 void move(int dir, int amt, int p)
 {

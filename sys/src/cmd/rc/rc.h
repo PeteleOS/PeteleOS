@@ -36,7 +36,7 @@ typedef struct builtin builtin;
 #define	YYMAXDEPTH	500
 #ifndef YYPREFIX
 #ifndef PAREN
-#include "x.tab.h"
+#include "syn_parse.h"
 #endif
 #endif
 

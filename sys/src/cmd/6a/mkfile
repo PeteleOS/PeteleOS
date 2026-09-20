@@ -2,25 +2,21 @@
 
 TARG=6a
 OFILES=\
-	y.tab.$O\
+	a_parse.$O\
 	lex.$O\
 
 HFILES=\
 	../6c/6.out.h\
-	y.tab.h\
+	a_parse.h\
 	a.h\
-
-YFILES=a.y\
 
 BIN=/$objtype/bin
 UPDATE=\
 	mkfile\
-	a.y\
 	lex.c\
 	a.h\
 	${TARG:%=/amd64/bin/%}\
 
 < /sys/src/cmd/mkone
-YFLAGS=-D1 -d
 
 lex.$O:	../cc/macbody ../cc/lexbody ../cc/compat

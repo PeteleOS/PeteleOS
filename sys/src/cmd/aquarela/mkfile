@@ -111,4 +111,4 @@ $SLIB:	${LIBOFILES:%=$SLIB(%)}
 #	rm $names
 
 clean:V:
-	rm -f *.[$OS] y.tab.? y.debug y.output [$OS].* $TARG *.log
+	rm -f *.[$OS] y.debug y.output [$OS].* $TARG *.log

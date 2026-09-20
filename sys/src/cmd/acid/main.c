@@ -4,7 +4,7 @@
 #include <mach.h>
 #define Extern
 #include "acid.h"
-#include "y.tab.h"
+#include "dbg_parse.h"
 
 extern int _ifmt(Fmt*);
 

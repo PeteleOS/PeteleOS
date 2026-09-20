@@ -34,11 +34,11 @@ installall:V:
 	mk lib
 
 nuke:V:
-	rm -f *.[$OS] [$OS].out [$OS].pcode y.tab.? y.debug y.output $TARG
+	rm -f *.[$OS] [$OS].out [$OS].pcode y.debug y.output $TARG
 	rm -f amspell brspell
 
 clean:V:
-	rm -f *.[$OS] [$OS].out [$OS].pcode y.tab.? y.debug y.output $TARG
+	rm -f *.[$OS] [$OS].out [$OS].pcode y.debug y.output $TARG
 
 test:V:	$O.out brspell
 	time ./$O.out -b -f brspell </dev/null >y

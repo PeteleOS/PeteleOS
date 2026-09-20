@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include "pic.h"
-#include "y.tab.h"
+#include "picy_parse.h"
 
 Infile	infile[10];
 Infile	*curfile = infile;
