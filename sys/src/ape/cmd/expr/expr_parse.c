@@ -454,7 +454,7 @@ char *index(s, t) char *s, *t; {
 	return "0";
 }
 
-char *match(s, p)
+char *match(char *s, char *p)
 {
 	register char *rv;
 
@@ -504,15 +504,15 @@ errxx(c)
 }
 
 #include  "regexp.h"
-yyerror(s)
-
+void
+yyerror(char *s)
 {
 	write(2, "expr: ", 6);
 	prt(2, s);
 	exit(2);
 }
-prt(fd, s)
-char *s;
+void
+prt(int fd, char *s)
 {
 	write(fd, s, strlen(s));
 	write(fd, "\n", 1);
