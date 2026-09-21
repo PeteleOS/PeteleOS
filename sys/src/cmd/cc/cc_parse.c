@@ -829,7 +829,11 @@ parse_qual(void)
 			yyerror("expected ']'");
 			skiptosemi();
 		}
-		return new(OARRAY, e, Z);
+		e = new(OARRAY, e, Z);
+		while(yypeek(0) == '='){
+			yyget();  /* qual '=' : postfix, no new node (yacc $$=$1) */
+		}
+		return e;
 	}
 	if(yypeek(0) == '.'){
 		Sym *s;
@@ -838,11 +842,10 @@ parse_qual(void)
 		s = parse_ltag();
 		n = new(OELEM, Z, Z);
 		n->sym = s;
+		while(yypeek(0) == '='){
+			yyget();  /* qual '=' */
+		}
 		return n;
-	}
-	if(yypeek(0) == '='){
-		yyget();
-		return parse_qual();
 	}
 	yyerror("expected qualifier");
 	skiptosemi();
