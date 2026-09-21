@@ -1068,9 +1068,10 @@ parse_types(Type **pt, int *pc)
 	for(;;){
 		long t = yypeek(0);
 		if(t==LSTRUCT||t==LUNION||t==LENUM||t==LTYPE){
-			Type *c = parse_complex();
+			Type *c;
 			if(havec)
-				diag(Z, "duplicate types given");
+				break;  /* yacc types has no complex-complex; trailing LTYPE is declarator (e.g. repeat `typedef struct Ieee Ieee;`) */
+			c = parse_complex();
 			ctype = c;
 			havec = 1;
 			continue;
