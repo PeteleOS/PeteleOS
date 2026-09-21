@@ -511,12 +511,27 @@ parse_adlist_one(void)
 	if(yypeek(0) == '='){
 		long w;
 		Node *in;
+		Sym *s;
+		Type *t;
 		yyget();
 		x = dodecl(adecl, lastclass, lasttype, x);
+		/*
+		 * save the declarator's sym/type BEFORE x gets reassigned
+		 * to doinit()'s result below. The original yacc grammar
+		 * kept these in a separate $1 slot from $$; collapsing
+		 * both into one `x' variable here left contig() reading
+		 * ->sym off of doinit()'s result node instead of off the
+		 * declarator, which is nil/garbage for that node shape and
+		 * crashed contig() on the first local array declared with
+		 * an initializer (e.g. `char buf[8] = {...};' inside a
+		 * function body).
+		 */
+		s = x->sym;
+		t = x->type;
 		in = parse_init();
-		w = x->sym->type->width;
-		x = doinit(x->sym, x->type, 0L, in);
-		l = contig(x->sym, x, w);
+		w = s->type->width;
+		x = doinit(s, t, 0L, in);
+		l = contig(s, x, w);
 		return l;
 	}
 	dodecl(adecl, lastclass, lasttype, x);
