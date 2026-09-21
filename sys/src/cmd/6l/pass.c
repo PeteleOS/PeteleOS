@@ -153,12 +153,11 @@ loop:
 	}
 	if(p->mark) {
 		/* copy up to 4 instructions to avoid branch */
-		int needbrk = 0;
 		for(i=0,q=p; i<4; i++,q=q->link) {
-			if(q == P || q == lastp) {
-				needbrk = 1;
+			if(q == P)
 				break;
-			}
+			if(q == lastp)
+				break;
 			a = q->as;
 			if(a == ANOP || a == ATEXT) {
 				i--;
@@ -186,8 +185,7 @@ loop:
 			case APOPFQ:
 			case APOPW:
 			case APOPFW:
-				needbrk = 1;
-				break;
+				goto brk;
 			}
 			if(q->pcond == P || q->pcond->mark)
 				continue;
@@ -217,15 +215,14 @@ loop:
 				goto loop;
 			}
 		} /* */
-		if(needbrk) {
-			q = prg();
-			q->as = AJMP;
-			q->line = p->line;
-			q->to.type = D_BRANCH;
-			q->to.offset = p->pc;
-			q->pcond = p;
-			p = q;
-		}
+	brk:;
+		q = prg();
+		q->as = AJMP;
+		q->line = p->line;
+		q->to.type = D_BRANCH;
+		q->to.offset = p->pc;
+		q->pcond = p;
+		p = q;
 	}
 	p->mark = 1;
 	lastp->link = p;
