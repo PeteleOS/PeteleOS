@@ -1016,6 +1016,7 @@ Keyword key[] = {
  *  are handled in yywhite() when skipping over white space.
  *
  */
+int
 yylex(void)
 {
 	String *t;

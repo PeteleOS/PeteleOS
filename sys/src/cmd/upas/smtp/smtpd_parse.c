@@ -1015,6 +1015,7 @@ parseinit(void)
 	zzfp = &bin;
 }
 
+int
 zzlex(void)
 {
 	int c;

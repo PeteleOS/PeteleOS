@@ -334,11 +334,13 @@ char *malloc();
 extern int nbra;
 int yyparse(void);
 
-main(argc, argv) char **argv; {
+int
+main(int argc, char **argv) {
 	Ac = argc;
 	Argi = 1;
 	Av = argv;
 	yyparse();
+	return 0;
 }
 
 char *operator[] = { "|", "&", "+", "-", "*", "/", "%", ":",
@@ -346,10 +348,11 @@ char *operator[] = { "|", "&", "+", "-", "*", "/", "%", ":",
 	"match", "substr", "length", "index", "\0" };
 int op[] = { OR, AND, ADD,  SUBT, MULT, DIV, REM, MCH,
 	EQ, EQ, LT, LEQ, GT, GEQ, NEQ,
-	MATCH, SUBSTR, LENGTH, INDEX };
-yylex() {
+ MATCH, SUBSTR, LENGTH, INDEX };
+int
+yylex(void) {
 	register char *p;
-	register i;
+	register int i;
 
 	if(Argi >= Ac) return NOARG;
 
@@ -366,7 +369,7 @@ yylex() {
 }
 
 char *rel(op, r1, r2) register char *r1, *r2; {
-	register i;
+	register int i;
 
 	if(ematch(r1, "-\\{0,1\\}[0-9]*$") && ematch(r2, "-\\{0,1\\}[0-9]*$"))
 		i = atol(r1) - atol(r2);
@@ -450,7 +453,7 @@ register char *res;
 }
 
 char *length(s) register char *s; {
-	register i = 0;
+	register int i = 0;
 	register char *rv;
 
 	while(*s++) ++i;
@@ -461,7 +464,7 @@ char *length(s) register char *s; {
 }
 
 char *index(s, t) char *s, *t; {
-	register i, j;
+	register int i, j;
 	register char *rv;
 
 	for(i = 0; s[i] ; ++i)
@@ -493,13 +496,12 @@ char *match(char *s, char *p)
 #define ERROR(c)	errxx(c)
 
 
-ematch(s, p)
-char *s;
-register char *p;
+int
+ematch(char *s, char *p)
 {
 	static char expbuf[ESIZE];
 	char *compile();
-	register num;
+	register int num;
 	extern char *braslist[], *braelist[], *loc2;
 
 	compile(p, expbuf, &expbuf[ESIZE], 0);
@@ -517,9 +519,12 @@ register char *p;
 	return(0);
 }
 
-errxx(c)
+int
+errxx(int c)
 {
+	(void)c;
 	yyerror("RE error");
+	return 0;
 }
 
 #include  "regexp.h"
@@ -541,8 +546,8 @@ long l;
 {
 	static char str[20];
 	register char *sp = &str[18];
-	register i;
-	register neg = 0;
+	register int i;
+	register int neg = 0;
 
 	if(l < 0)
 		++neg, l *= -1;

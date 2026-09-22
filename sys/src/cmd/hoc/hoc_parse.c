@@ -12,6 +12,14 @@
 #define code2(c1,c2) code(c1); code(c2)
 #define code3(c1,c2,c3) code(c1); code(c2); code(c3)
 YYSTYPE yylval;
+/* forward decls for globals/funcs defined at bottom (strict kencc) */
+extern int indef;
+void defnonly(char*);
+int backslash(int);
+int follow(int, int, int);
+int moreinput(void);
+void warning(char*, char*);
+void execerror(char*, char*);
 static Inst* parse_expr(void);
 static Inst* parse_or(void);
 static Inst* parse_and(void);
@@ -642,7 +650,6 @@ yyparse(void)
 char	*progname;
 int	lineno = 1;
 jmp_buf	begin;
-int	indef;
 char	*infile;
 Biobuf	*bin;
 Biobuf	binbuf;
@@ -655,6 +662,7 @@ int	backslash(int), follow(int, int, int);
 void	defnonly(char*), run(void);
 void	warning(char*, char*);
 
+int
 yylex(void)
 {
 	while ((c=Bgetc(bin)) == ' ' || c == '\t')
@@ -732,6 +740,7 @@ yylex(void)
 	}
 }
 
+int
 backslash(int c)
 {
 	static char transtab[] = "b\bf\fn\nr\rt\t";
@@ -743,6 +752,7 @@ backslash(int c)
 	return c;
 }
 
+int
 follow(int expect, int ifyes, int ifno)
 {
 	int c = Bgetc(bin);
@@ -815,6 +825,7 @@ main(int argc, char* argv[])
 	exits(0);
 }
 
+int
 moreinput(void)
 {
 	char *expr;
