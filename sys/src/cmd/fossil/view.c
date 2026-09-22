@@ -49,7 +49,7 @@ Tnode *initxentry(Entry);
 Tnode *initxsource(Entry, int);
 Tnode *initxentryblock(Block*, Entry*);
 Tnode *initxdatablock(Block*, uint);
-Tnode *initxroot(char *name, uchar[VtScoreSize]);
+Tnode *initxroot(char *name, uchar score[VtScoreSize]);
 
 int fd;
 int mainstacksize = STACK;

@@ -12,11 +12,11 @@ static u64int unittoull(char *s);
 static u32int blockAlloc(int type, u32int tag);
 static void blockRead(int part, u32int addr);
 static void blockWrite(int part, u32int addr);
-static void superInit(char *label, u32int root, uchar[VtScoreSize]);
+static void superInit(char *label, u32int root, uchar score[VtScoreSize]);
 static void rootMetaInit(Entry *e);
 static u32int rootInit(Entry *e);
 static void topLevel(char *name);
-static int parseScore(uchar[VtScoreSize], char*);
+static int parseScore(uchar score[VtScoreSize], char*);
 static u32int ventiRoot(char*, char*);
 static VtConn *z;
 
