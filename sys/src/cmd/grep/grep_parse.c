@@ -51,6 +51,23 @@ static Re2 parse_expr2(void);
 static Re2 parse_expr3(void);
 static Re2 parse_expr4(void);
 
+void
+yyerror(char *e, ...)
+{
+	va_list args;
+
+	fprint(2, "grep: ");
+	if(filename)
+		fprint(2, "%s:%ld: ", filename, lineno);
+	else if(pattern)
+		fprint(2, "%s: ", pattern);
+	va_start(args, e);
+	vfprint(2, e, args);
+	va_end(args);
+	fprint(2, "\n");
+	exits("syntax");
+}
+
 static long
 yylex(void)
 {
