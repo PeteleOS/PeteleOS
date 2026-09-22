@@ -259,6 +259,8 @@ extern int yylex(void);
 #define UMINUS 352
 #undef NOT
 #define NOT 353
+#undef NOEDGE
+#define NOEDGE 354
 
 /* small FIFO lookahead buffer over yylex() */
 #define NLA 4
@@ -681,6 +683,7 @@ parse_for(void)
 	char *nm;
 	double from, to, by;
 	int op;
+	int t;
 	char *body;
 
 	yyget();	/* FOR */

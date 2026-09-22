@@ -210,5 +210,7 @@ extern int yyparse(void);
 #define UMINUS 352
 #undef NOT
 #define NOT 353
+#undef NOEDGE
+#define NOEDGE 354
 
 #endif
