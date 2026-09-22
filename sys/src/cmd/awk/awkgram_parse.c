@@ -65,6 +65,8 @@ Node *arglist = 0;
 
 YYSTYPE yylval;
 
+void checkdup(Node*, Cell*);
+
 int
 yywrap(void)
 {
@@ -604,7 +606,7 @@ parse_match_full(void)
 		if(yypeek() == '/'){
 			yyget();
 			startreg();
-			if(yypeek() != REGEXP){
+			if(yypeek() != REGEXPR){
 				synerr = 1;
 				return NULL;
 			}
@@ -717,7 +719,7 @@ parse_ppmatch(void)
 		if(yypeek() == '/'){
 			yyget();
 			startreg();
-			if(yypeek() != REGEXP){
+			if(yypeek() != REGEXPR){
 				synerr = 1;
 				return NULL;
 			}
@@ -804,7 +806,7 @@ parse_reg_expr(void)
 	}
 	yyget();
 	startreg();
-	if(yypeek() != REGEXP){
+	if(yypeek() != REGEXPR){
 		synerr = 1;
 		return NULL;
 	}
