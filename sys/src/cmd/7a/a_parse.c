@@ -1448,8 +1448,6 @@ parse_inst(void)
 			int savehave, i;
 			long savetok[256];
 			YYSTYPE saveval[256];
-			Sym *s;
-			vlong off;
 			int isnireg;
 
 			savehave = yyhave;
@@ -1458,8 +1456,8 @@ parse_inst(void)
 				saveval[i] = yyval[i];
 			}
 			yyget();
-			s = yylval.sym;
-			off = parse_offset();
+			yylval.sym;
+			parse_offset();
 			if(yypeek(0) == '(' || yypeek(0) == '<')
 				isnireg = 1;
 			else

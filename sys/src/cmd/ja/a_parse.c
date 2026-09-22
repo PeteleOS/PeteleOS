@@ -554,15 +554,14 @@ parse_addr(void)
 			int savehave, i;
 			long savetok[256];
 			YYSTYPE saveval[256];
-			vlong c;
 
 			savehave = yyhave;
 			for(i = 0; i < yyhave; i++){
 				savetok[i] = yytok[i];
 				saveval[i] = yyval[i];
 			}
-			c = parse_con();
 			if(yypeek(0) == '('){
+				vlong c = parse_con();
 				long pin;
 
 				pin = yypeek(1);
@@ -820,8 +819,8 @@ parse_inst(void)
 				savetok[i] = yytok[i];
 				saveval[i] = yyval[i];
 			}
-			s = parse_sreg();
 			if(yypeek(0) == ','){
+				s = parse_sreg();
 				yyhave = savehave;
 				for(i = 0; i < savehave; i++){
 					yytok[i] = savetok[i];
@@ -877,8 +876,8 @@ parse_inst(void)
 				savetok[i] = yytok[i];
 				saveval[i] = yyval[i];
 			}
-			s = parse_sreg();
 			if(yypeek(0) == ','){
+				s = parse_sreg();
 				yyhave = savehave;
 				for(i = 0; i < savehave; i++){
 					yytok[i] = savetok[i];
@@ -924,8 +923,8 @@ parse_inst(void)
 				savetok[i] = yytok[i];
 				saveval[i] = yyval[i];
 			}
-			v = parse_con();
 			if(yypeek(0) == '('){
+				vlong v = parse_con();
 				yyhave = savehave;
 				for(i = 0; i < savehave; i++){
 					yytok[i] = savetok[i];
@@ -966,13 +965,10 @@ parse_inst(void)
 			}
 			/* try rel (LNAME offset without '(')? If '(' follows offset then addr */
 			if(yypeek(0) == LNAME){
-				Sym *sym2;
-				vlong off2;
-
 				yyget();
-				sym2 = yylval.sym;
-				off2 = parse_offset();
 				if(yypeek(0) == '('){
+					Sym *sym2 = yylval.sym;
+					vlong off2 = parse_offset();
 					yyhave = savehave;
 					for(i = 0; i < savehave; i++){
 						yytok[i] = savetok[i];
