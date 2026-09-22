@@ -41,7 +41,15 @@ static int	yyhave;
 static int	yytok;
 static YYSTYPE yyval;
 
-YYSTYPE yylval;
+/* yylval lives in grep.h via EXTERN (instantiated in main.c); do not
+ * redefine here or we get a duplicate symbol at link time. */
+
+static Re2 parse_expr(void);
+static Re2 parse_expr0(void);
+static Re2 parse_expr1(void);
+static Re2 parse_expr2(void);
+static Re2 parse_expr3(void);
+static Re2 parse_expr4(void);
 
 static long
 yylex(void)
@@ -195,8 +203,8 @@ parse_expr4(void)
 	case LCHAR:
 		yyget();
 		r.beg = ral(Tclass);
-		r.beg->lo = yyval.val;
-		r.beg->hi = yyval.val;
+		r.beg->lo = yylval.val;
+		r.beg->hi = yylval.val;
 		r.end = r.beg;
 		return r;
 	case LBEGIN:
@@ -336,9 +344,10 @@ parse_expr(void)
 			yyget();
 		if(yypeek() == 0 || yypeek() == -1)
 			break;
-		if(!expr3_can_start(yypeek()))
+		if(yypeek() == LSTAR || expr3_can_start(yypeek()))
+			r = re2or(r, parse_expr0());
+		else
 			break;
-		r = re2or(r, parse_expr0());
 	}
 	return r;
 }
@@ -355,18 +364,25 @@ yyparse(void)
 	}
 
 	r = parse_expr();
+	if(yypeek() != LNEWLINE && yypeek() != 0 && yypeek() != -1)
+		yyerror("syntax error");
 	parse_newlines();
 
 	/*
 	 * prog: expr newlines { finalize: prepend .* and append ^.|\n }
+	 * Original yacc action order (must preserve):
+	 *	e = Tend
+	 *	e = star(or(char(0x00,'\n'-1), char('\n'+1,0xff))) cat e
+	 *	r = r cat e
+	 *	r = star(char(0x00,0xff)) cat r
 	 */
 	{
 		Re2 e1;
 
 		e1.beg = ral(Tend);
 		e1.end = e1.beg;
+		e1 = re2cat(re2star(re2or(re2char(0x00, '\n'-1), re2char('\n'+1, 0xff))), e1);
 		r = re2cat(r, e1);
-		r = re2cat(re2star(re2or(re2char(0x00, '\n'-1), re2char('\n'+1, 0xff))), r);
 		r = re2cat(re2star(re2char(0x00, 0xff)), r);
 		topre = r;
 	}
