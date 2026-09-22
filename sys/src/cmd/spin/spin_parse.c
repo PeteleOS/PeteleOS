@@ -6,8 +6,6 @@
  * Tool documentation is available at http://spinroot.com
  */
 
-#include <u.h>
-#include <libc.h>
 #include <ctype.h>
 #include "spin.h"
 #include "spin_parse.h"

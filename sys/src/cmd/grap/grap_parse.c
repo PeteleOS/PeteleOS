@@ -1,5 +1,3 @@
-#include <u.h>
-#include <libc.h>
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>

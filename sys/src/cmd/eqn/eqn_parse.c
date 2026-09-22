@@ -1,5 +1,3 @@
-#include <u.h>
-#include <libc.h>
 #include "e.h"
 #include "eqn_parse.h"
 

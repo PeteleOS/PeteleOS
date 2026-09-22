@@ -1,5 +1,3 @@
-#include <u.h>
-#include <libc.h>
 #include <stdio.h>
 #include "pic.h"
 #include "picy_parse.h"
