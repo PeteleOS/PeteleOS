@@ -22,11 +22,11 @@ enum {
 	MSchapResplen = 24,
 };
 
-static int dochal(State*);
-static int doreply(State*, void*, int);
-static void doLMchap(char *, uchar [ChapChallen], uchar [MSchapResplen]);
-static void doNTchap(char *, uchar [ChapChallen], uchar [MSchapResplen]);
-static void dochap(char *, int, char [ChapChallen], uchar [ChapResplen]);
+static int dochal(State *s);
+static int doreply(State *s, void *reply, int nreply);
+static void doLMchap(char *pass, uchar chal[ChapChallen], uchar reply[MSchapResplen]);
+static void doNTchap(char *pass, uchar chal[ChapChallen], uchar reply[MSchapResplen]);
+static void dochap(char *pass, int id, char chal[ChapChallen], uchar resp[ChapResplen]);
 
 
 struct State
