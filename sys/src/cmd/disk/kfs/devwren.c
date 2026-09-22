@@ -80,7 +80,7 @@ wrenream(Device dev)
 	if(RBUFSIZE % 512)
 		panic("kfs: bad buffersize(%d): restart a multiple of 512\n", RBUFSIZE);
 	if(RBUFSIZE > sizeof(buf))
-		panic("kfs: bad buffersize(%d): must be at most %d\n", RBUFSIZE, sizeof(buf));
+		panic("kfs: bad buffersize(%d): must be at most %lud\n", RBUFSIZE, (ulong)sizeof(buf));
 
 	print("kfs: reaming the file system using %d byte blocks\n", RBUFSIZE);
 	w = wren(dev);

@@ -214,11 +214,11 @@ printsizes(void)
 		print("overflow computing INDPERBUF⁲\n");
 	if (INDPERBUF⁴/INDPERBUF⁲ != INDPERBUF⁲)
 		print("overflow computing INDPERBUF⁴\n");
-	print("\tINDPERBUF = %d, INDPERBUF^4 = %,lld, ", INDPERBUF,
+	print("\tINDPERBUF = %d, INDPERBUF^4 = %lld, ", INDPERBUF,
 		(Wideoff)INDPERBUF⁴);
 	print("CEPERBK = %d\n", CEPERBK);
-	print("\tsizeofs: Dentry = %d, Cache = %d\n",
-		sizeof(Dentry), sizeof(Cache));
+	print("\tsizeofs: Dentry = %lud, Cache = %lud\n",
+		(ulong)sizeof(Dentry), (ulong)sizeof(Cache));
 }
 
 void
@@ -271,8 +271,8 @@ main(int argc, char **argv)
 	Binit(&bin, 0, OREAD);
 	confinit();
 
-	print("\nPlan 9 %d-bit cached-worm file server with %d-deep indir blks\n",
-		sizeof(Off)*8 - 1, NIBLOCK);
+	print("\nPlan 9 %lud-bit cached-worm file server with %d-deep indir blks\n",
+		(ulong)(sizeof(Off)*8 - 1), NIBLOCK);
 	printsizes();
 
 	qlock(&reflock);

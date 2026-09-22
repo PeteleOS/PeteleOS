@@ -700,8 +700,8 @@ cmdmodesense(Pkts *pk)
 	/* req->cdb[4] is bytes permitted for sense data */
 	alen = req->cdb[4];
 	if (alen > sizeof sense)
-		sysfatal("sense array too small (%d bytes for %d asked)",
-			sizeof sense, alen);
+		sysfatal("sense array too small (%lud bytes for %d asked)",
+			(ulong)sizeof sense, alen);
 
 	memset(sense, 0, sizeof sense);
 	/* mode parameter header */

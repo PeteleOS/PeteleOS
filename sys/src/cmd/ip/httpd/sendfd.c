@@ -91,7 +91,7 @@ sendfd(HConnect *c, int fd, Dir *dir, HContent *type, HContent *enc)
 					hprint(hout, "Date: %D\r\n", time(nil));
 					hprint(hout, "Server: Plan9\r\n");
 					hprint(hout, "Content-Range: bytes */%lld\r\n", length);
-					hprint(hout, "Content-Length: %d\r\n", STRLEN(BADRANGE));
+					hprint(hout, "Content-Length: %lud\r\n", (ulong)STRLEN(BADRANGE));
 					hprint(hout, "Content-Type: text/html\r\n");
 					if(c->head.closeit)
 						hprint(hout, "Connection: close\r\n");
@@ -322,7 +322,7 @@ notaccept(HConnect *c, HContent *type, HContent *enc, char *which)
 	hprint(hout, "Server: Plan9\r\n");
 	hprint(hout, "Date: %D\r\n", time(nil));
 	hprint(hout, "Content-Type: text/html\r\n");
-	hprint(hout, "Content-Length: %lud\r\n", s - c->xferbuf);
+	hprint(hout, "Content-Length: %lud\r\n", (ulong)(s - c->xferbuf));
 	if(c->head.closeit)
 		hprint(hout, "Connection: close\r\n");
 	else if(!http11(c))
@@ -362,7 +362,7 @@ checkreq(HConnect *c, HContent *type, HContent *enc, long mtime, char *etag)
 		hprint(hout, "Server: Plan9\r\n");
 		hprint(hout, "Date: %D\r\n", time(nil));
 		hprint(hout, "Content-Type: text/html\r\n");
-		hprint(hout, "Content-Length: %d\r\n", STRLEN(UNMATCHED));
+		hprint(hout, "Content-Length: %lud\r\n", (ulong)STRLEN(UNMATCHED));
 		if(c->head.closeit)
 			hprint(hout, "Connection: close\r\n");
 		else if(!http11(c))
