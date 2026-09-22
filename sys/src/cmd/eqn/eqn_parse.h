@@ -15,64 +15,123 @@ extern YYSTYPE yylval;
 extern YYSTYPE yyval;
 extern int yyparse(void);
 
-enum {
-	CONTIG = 57346,
-	QTEXT = 57347,
-	SPACE = 57348,
-	THIN = 57349,
-	TAB = 57350,
-	MATRIX = 57351,
-	LCOL = 57352,
-	CCOL = 57353,
-	RCOL = 57354,
-	COL = 57355,
-	ABOVE = 57356,
-	MARK = 57357,
-	LINEUP = 57358,
-	SUM = 57359,
-	INT = 57360,
-	PROD = 57361,
-	UNION = 57362,
-	INTER = 57363,
-	DEFINE = 57364,
-	TDEFINE = 57365,
-	NDEFINE = 57366,
-	DELIM = 57367,
-	GSIZE = 57368,
-	GFONT = 57369,
-	INCLUDE = 57370,
-	IFDEF = 57371,
-	DOTEQ = 57372,
-	DOTEN = 57373,
-	FROM = 57374,
-	TO = 57375,
-	OVER = 57376,
-	SQRT = 57377,
-	SUP = 57378,
-	SUB = 57379,
-	SIZE = 57380,
-	FONT = 57381,
-	ROMAN = 57382,
-	ITALIC = 57383,
-	BOLD = 57384,
-	FAT = 57385,
-	UP = 57386,
-	DOWN = 57387,
-	BACK = 57388,
-	FWD = 57389,
-	LEFT = 57390,
-	RIGHT = 57391,
-	DOT = 57392,
-	DOTDOT = 57393,
-	HAT = 57394,
-	TILDE = 57395,
-	BAR = 57396,
-	LOWBAR = 57397,
-	HIGHBAR = 57398,
-	UNDER = 57399,
-	VEC = 57400,
-	DYAD = 57401,
-	UTILDE = 57402,
-};
+/* Token numbers: #define (like y.tab.h), not enum, because Plan 9 cc
+ * treats enum members as LNAME and any prior #define makes the enum
+ * fail with "expected '}'". #undef + #define exactly mimics yacc.
+ */
+#undef CONTIG
+#define CONTIG 57346
+#undef QTEXT
+#define QTEXT 57347
+#undef SPACE
+#define SPACE 57348
+#undef THIN
+#define THIN 57349
+#undef TAB
+#define TAB 57350
+#undef MATRIX
+#define MATRIX 57351
+#undef LCOL
+#define LCOL 57352
+#undef CCOL
+#define CCOL 57353
+#undef RCOL
+#define RCOL 57354
+#undef COL
+#define COL 57355
+#undef ABOVE
+#define ABOVE 57356
+#undef MARK
+#define MARK 57357
+#undef LINEUP
+#define LINEUP 57358
+#undef SUM
+#define SUM 57359
+#undef INT
+#define INT 57360
+#undef PROD
+#define PROD 57361
+#undef UNION
+#define UNION 57362
+#undef INTER
+#define INTER 57363
+#undef DEFINE
+#define DEFINE 57364
+#undef TDEFINE
+#define TDEFINE 57365
+#undef NDEFINE
+#define NDEFINE 57366
+#undef DELIM
+#define DELIM 57367
+#undef GSIZE
+#define GSIZE 57368
+#undef GFONT
+#define GFONT 57369
+#undef INCLUDE
+#define INCLUDE 57370
+#undef IFDEF
+#define IFDEF 57371
+#undef DOTEQ
+#define DOTEQ 57372
+#undef DOTEN
+#define DOTEN 57373
+#undef FROM
+#define FROM 57374
+#undef TO
+#define TO 57375
+#undef OVER
+#define OVER 57376
+#undef SQRT
+#define SQRT 57377
+#undef SUP
+#define SUP 57378
+#undef SUB
+#define SUB 57379
+#undef SIZE
+#define SIZE 57380
+#undef FONT
+#define FONT 57381
+#undef ROMAN
+#define ROMAN 57382
+#undef ITALIC
+#define ITALIC 57383
+#undef BOLD
+#define BOLD 57384
+#undef FAT
+#define FAT 57385
+#undef UP
+#define UP 57386
+#undef DOWN
+#define DOWN 57387
+#undef BACK
+#define BACK 57388
+#undef FWD
+#define FWD 57389
+#undef LEFT
+#define LEFT 57390
+#undef RIGHT
+#define RIGHT 57391
+#undef DOT
+#define DOT 57392
+#undef DOTDOT
+#define DOTDOT 57393
+#undef HAT
+#define HAT 57394
+#undef TILDE
+#define TILDE 57395
+#undef BAR
+#define BAR 57396
+#undef LOWBAR
+#define LOWBAR 57397
+#undef HIGHBAR
+#define HIGHBAR 57398
+#undef UNDER
+#define UNDER 57399
+#undef VEC
+#define VEC 57400
+#undef DYAD
+#define DYAD 57401
+#undef UTILDE
+#define UTILDE 57402
 
 #endif

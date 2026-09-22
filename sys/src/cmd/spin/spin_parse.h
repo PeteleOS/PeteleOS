@@ -14,101 +14,197 @@
 extern YYSTYPE yylval;
 extern int yyparse(void); 
 
-enum {
-	ASSERT = 257,
-	PRINT = 258,
-	PRINTM = 259,
-	PREPROC = 260,
-	C_CODE = 261,
-	C_DECL = 262,
-	C_EXPR = 263,
-	C_STATE = 264,
-	C_TRACK = 265,
-	RUN = 266,
-	LEN = 267,
-	ENABLED = 268,
-	SET_P = 269,
-	GET_P = 270,
-	EVAL = 271,
-	PC_VAL = 272,
-	TYPEDEF = 273,
-	MTYPE = 274,
-	INLINE = 275,
-	RETURN = 276,
-	LABEL = 277,
-	OF = 278,
-	GOTO = 279,
-	BREAK = 280,
-	ELSE = 281,
-	SEMI = 282,
-	ARROW = 283,
-	IF = 284,
-	FI = 285,
-	DO = 286,
-	OD = 287,
-	FOR = 288,
-	SELECT = 289,
-	IN = 290,
-	SEP = 291,
-	DOTDOT = 292,
-	ATOMIC = 293,
-	NON_ATOMIC = 294,
-	D_STEP = 295,
-	UNLESS = 296,
-	TIMEOUT = 297,
-	NONPROGRESS = 298,
-	ACTIVE = 299,
-	PROCTYPE = 300,
-	D_PROCTYPE = 301,
-	HIDDEN = 302,
-	SHOW = 303,
-	ISLOCAL = 304,
-	PRIORITY = 305,
-	PROVIDED = 306,
-	FULL = 307,
-	EMPTY = 308,
-	NFULL = 309,
-	NEMPTY = 310,
-	CONST = 311,
-	TYPE = 312,
-	XU = 313,
-	NAME = 314,
-	UNAME = 315,
-	PNAME = 316,
-	INAME = 317,
-	STRING = 318,
-	CLAIM = 319,
-	TRACE = 320,
-	INIT = 321,
-	LTL = 322,
-	ASGN = 323,
-	SND = 324,
-	O_SND = 325,
-	RCV = 326,
-	R_RCV = 327,
-	IMPLIES = 328,
-	EQUIV = 329,
-	OR = 330,
-	AND = 331,
-	ALWAYS = 332,
-	EVENTUALLY = 333,
-	UNTIL = 334,
-	WEAK_UNTIL = 335,
-	RELEASE = 336,
-	NEXT = 337,
-	EQ = 338,
-	NE = 339,
-	GT = 340,
-	LT = 341,
-	GE = 342,
-	LE = 343,
-	LSHIFT = 344,
-	RSHIFT = 345,
-	INCR = 346,
-	DECR = 347,
-	UMIN = 348,
-	NEG = 349,
-	DOT = 350,
-};
+/* Token numbers: #define (like y.tab.h), not enum, because Plan 9 cc
+ * treats enum members as LNAME and any prior #define makes the enum
+ * fail with "expected '}'". #undef + #define exactly mimics yacc.
+ */
+#undef ASSERT
+#define ASSERT 257
+#undef PRINT
+#define PRINT 258
+#undef PRINTM
+#define PRINTM 259
+#undef PREPROC
+#define PREPROC 260
+#undef C_CODE
+#define C_CODE 261
+#undef C_DECL
+#define C_DECL 262
+#undef C_EXPR
+#define C_EXPR 263
+#undef C_STATE
+#define C_STATE 264
+#undef C_TRACK
+#define C_TRACK 265
+#undef RUN
+#define RUN 266
+#undef LEN
+#define LEN 267
+#undef ENABLED
+#define ENABLED 268
+#undef SET_P
+#define SET_P 269
+#undef GET_P
+#define GET_P 270
+#undef EVAL
+#define EVAL 271
+#undef PC_VAL
+#define PC_VAL 272
+#undef TYPEDEF
+#define TYPEDEF 273
+#undef MTYPE
+#define MTYPE 274
+#undef INLINE
+#define INLINE 275
+#undef RETURN
+#define RETURN 276
+#undef LABEL
+#define LABEL 277
+#undef OF
+#define OF 278
+#undef GOTO
+#define GOTO 279
+#undef BREAK
+#define BREAK 280
+#undef ELSE
+#define ELSE 281
+#undef SEMI
+#define SEMI 282
+#undef ARROW
+#define ARROW 283
+#undef IF
+#define IF 284
+#undef FI
+#define FI 285
+#undef DO
+#define DO 286
+#undef OD
+#define OD 287
+#undef FOR
+#define FOR 288
+#undef SELECT
+#define SELECT 289
+#undef IN
+#define IN 290
+#undef SEP
+#define SEP 291
+#undef DOTDOT
+#define DOTDOT 292
+#undef ATOMIC
+#define ATOMIC 293
+#undef NON_ATOMIC
+#define NON_ATOMIC 294
+#undef D_STEP
+#define D_STEP 295
+#undef UNLESS
+#define UNLESS 296
+#undef TIMEOUT
+#define TIMEOUT 297
+#undef NONPROGRESS
+#define NONPROGRESS 298
+#undef ACTIVE
+#define ACTIVE 299
+#undef PROCTYPE
+#define PROCTYPE 300
+#undef D_PROCTYPE
+#define D_PROCTYPE 301
+#undef HIDDEN
+#define HIDDEN 302
+#undef SHOW
+#define SHOW 303
+#undef ISLOCAL
+#define ISLOCAL 304
+#undef PRIORITY
+#define PRIORITY 305
+#undef PROVIDED
+#define PROVIDED 306
+#undef FULL
+#define FULL 307
+#undef EMPTY
+#define EMPTY 308
+#undef NFULL
+#define NFULL 309
+#undef NEMPTY
+#define NEMPTY 310
+#undef CONST
+#define CONST 311
+#undef TYPE
+#define TYPE 312
+#undef XU
+#define XU 313
+#undef NAME
+#define NAME 314
+#undef UNAME
+#define UNAME 315
+#undef PNAME
+#define PNAME 316
+#undef INAME
+#define INAME 317
+#undef STRING
+#define STRING 318
+#undef CLAIM
+#define CLAIM 319
+#undef TRACE
+#define TRACE 320
+#undef INIT
+#define INIT 321
+#undef LTL
+#define LTL 322
+#undef ASGN
+#define ASGN 323
+#undef SND
+#define SND 324
+#undef O_SND
+#define O_SND 325
+#undef RCV
+#define RCV 326
+#undef R_RCV
+#define R_RCV 327
+#undef IMPLIES
+#define IMPLIES 328
+#undef EQUIV
+#define EQUIV 329
+#undef OR
+#define OR 330
+#undef AND
+#define AND 331
+#undef ALWAYS
+#define ALWAYS 332
+#undef EVENTUALLY
+#define EVENTUALLY 333
+#undef UNTIL
+#define UNTIL 334
+#undef WEAK_UNTIL
+#define WEAK_UNTIL 335
+#undef RELEASE
+#define RELEASE 336
+#undef NEXT
+#define NEXT 337
+#undef EQ
+#define EQ 338
+#undef NE
+#define NE 339
+#undef GT
+#define GT 340
+#undef LT
+#define LT 341
+#undef GE
+#define GE 342
+#undef LE
+#define LE 343
+#undef LSHIFT
+#define LSHIFT 344
+#undef RSHIFT
+#define RSHIFT 345
+#undef INCR
+#define INCR 346
+#undef DECR
+#define DECR 347
+#undef UMIN
+#define UMIN 348
+#undef NEG
+#define NEG 349
+#undef DOT
+#define DOT 350
 
 #endif

@@ -152,27 +152,250 @@ typedef union {
 } YYSTYPE;
 YYSTYPE yylval;
 
-enum {
-	NUM = 257,
-	MOVE, WHEN, SYMBOL, SELECT, WAIT, DISCONNECT, RESELECT, SET, CLEAR,
-	DATA_OUT, DATA_IN, COMMAND, STATUS, RESERVED_OUT, RESERVED_IN,
-	MESSAGE_OUT, MESSAGE_IN, WITH, ATN, FAIL, CARRY, TARGET, ACK,
-	COMMENT, TO,
-	SCNTL0, SCNTL1, SCNTL2, SCNTL3, SCID, SXFER, SDID, GPREG,
-	SFBR, SOCL, SSID, SBCL, DSTAT, SSTAT0, SSTAT1, SSTAT2,
-	ISTAT, CTEST0, CTEST1, CTEST2, CTEST3, TEMP, DFIFO, CTEST4,
-	CTEST5, CTEST6, DBC, DCMD, DNAD, DSP, DSPS, DMODE, DIEN, DWT,
-	DCNTL, ADDER, SIEN0, SIEN1, SIST0, SIST1, SLPAR, MACNTL, GPCNTL,
-	STIME0, STIME1, RESPID, STEST0, STEST1, STEST2, STEST3, SIDL,
-	SODL, SBDL, SHL, SHR, AND, OR, XOR, ADD, ADDC,
-	JUMP, CALL, RETURN, INT, INTFLY, NOT, ABSOLUTE, MASK, IF, REL,
-	PTR, TABLE, FROM, MEMORY, NOP, EXTERN,
-	SCRATCHA0, SCRATCHA1, SCRATCHA2, SCRATCHA3,
-	SCRATCHB0, SCRATCHB1, SCRATCHB2, SCRATCHB3,
-	SCRATCHC0, SCRATCHC1, SCRATCHC2, SCRATCHC3,
-	DSA0, DSA1, DSA2, DSA3,
-	DEFW
-};
+/* Token numbers: yacc replacement uses #define (like y.tab.h), not
+ * enum, because Plan 9 cc treats enum members as LNAME and any prior
+ * #define (system headers, -D flags, or other headers) makes the enum
+ * fail with "expected '}'" at the first colliding member. #undef +
+ * #define exactly mimics yacc output and always compiles.
+ */
+#undef NUM
+#define NUM 257
+#undef MOVE
+#define MOVE 258
+#undef WHEN
+#define WHEN 259
+#undef SYMBOL
+#define SYMBOL 260
+#undef SELECT
+#define SELECT 261
+#undef WAIT
+#define WAIT 262
+#undef DISCONNECT
+#define DISCONNECT 263
+#undef RESELECT
+#define RESELECT 264
+#undef SET
+#define SET 265
+#undef CLEAR
+#define CLEAR 266
+#undef DATA_OUT
+#define DATA_OUT 267
+#undef DATA_IN
+#define DATA_IN 268
+#undef COMMAND
+#define COMMAND 269
+#undef STATUS
+#define STATUS 270
+#undef RESERVED_OUT
+#define RESERVED_OUT 271
+#undef RESERVED_IN
+#define RESERVED_IN 272
+#undef MESSAGE_OUT
+#define MESSAGE_OUT 273
+#undef MESSAGE_IN
+#define MESSAGE_IN 274
+#undef WITH
+#define WITH 275
+#undef ATN
+#define ATN 276
+#undef FAIL
+#define FAIL 277
+#undef CARRY
+#define CARRY 278
+#undef TARGET
+#define TARGET 279
+#undef ACK
+#define ACK 280
+#undef COMMENT
+#define COMMENT 281
+#undef TO
+#define TO 282
+#undef SCNTL0
+#define SCNTL0 283
+#undef SCNTL1
+#define SCNTL1 284
+#undef SCNTL2
+#define SCNTL2 285
+#undef SCNTL3
+#define SCNTL3 286
+#undef SCID
+#define SCID 287
+#undef SXFER
+#define SXFER 288
+#undef SDID
+#define SDID 289
+#undef GPREG
+#define GPREG 290
+#undef SFBR
+#define SFBR 291
+#undef SOCL
+#define SOCL 292
+#undef SSID
+#define SSID 293
+#undef SBCL
+#define SBCL 294
+#undef DSTAT
+#define DSTAT 295
+#undef SSTAT0
+#define SSTAT0 296
+#undef SSTAT1
+#define SSTAT1 297
+#undef SSTAT2
+#define SSTAT2 298
+#undef ISTAT
+#define ISTAT 299
+#undef CTEST0
+#define CTEST0 300
+#undef CTEST1
+#define CTEST1 301
+#undef CTEST2
+#define CTEST2 302
+#undef CTEST3
+#define CTEST3 303
+#undef TEMP
+#define TEMP 304
+#undef DFIFO
+#define DFIFO 305
+#undef CTEST4
+#define CTEST4 306
+#undef CTEST5
+#define CTEST5 307
+#undef CTEST6
+#define CTEST6 308
+#undef DBC
+#define DBC 309
+#undef DCMD
+#define DCMD 310
+#undef DNAD
+#define DNAD 311
+#undef DSP
+#define DSP 312
+#undef DSPS
+#define DSPS 313
+#undef DMODE
+#define DMODE 314
+#undef DIEN
+#define DIEN 315
+#undef DWT
+#define DWT 316
+#undef DCNTL
+#define DCNTL 317
+#undef ADDER
+#define ADDER 318
+#undef SIEN0
+#define SIEN0 319
+#undef SIEN1
+#define SIEN1 320
+#undef SIST0
+#define SIST0 321
+#undef SIST1
+#define SIST1 322
+#undef SLPAR
+#define SLPAR 323
+#undef MACNTL
+#define MACNTL 324
+#undef GPCNTL
+#define GPCNTL 325
+#undef STIME0
+#define STIME0 326
+#undef STIME1
+#define STIME1 327
+#undef RESPID
+#define RESPID 328
+#undef STEST0
+#define STEST0 329
+#undef STEST1
+#define STEST1 330
+#undef STEST2
+#define STEST2 331
+#undef STEST3
+#define STEST3 332
+#undef SIDL
+#define SIDL 333
+#undef SODL
+#define SODL 334
+#undef SBDL
+#define SBDL 335
+#undef SHL
+#define SHL 336
+#undef SHR
+#define SHR 337
+#undef AND
+#define AND 338
+#undef OR
+#define OR 339
+#undef XOR
+#define XOR 340
+#undef ADD
+#define ADD 341
+#undef ADDC
+#define ADDC 342
+#undef JUMP
+#define JUMP 343
+#undef CALL
+#define CALL 344
+#undef RETURN
+#define RETURN 345
+#undef INT
+#define INT 346
+#undef INTFLY
+#define INTFLY 347
+#undef NOT
+#define NOT 348
+#undef ABSOLUTE
+#define ABSOLUTE 349
+#undef MASK
+#define MASK 350
+#undef IF
+#define IF 351
+#undef REL
+#define REL 352
+#undef PTR
+#define PTR 353
+#undef TABLE
+#define TABLE 354
+#undef FROM
+#define FROM 355
+#undef MEMORY
+#define MEMORY 356
+#undef NOP
+#define NOP 357
+#undef EXTERN
+#define EXTERN 358
+#undef SCRATCHA0
+#define SCRATCHA0 359
+#undef SCRATCHA1
+#define SCRATCHA1 360
+#undef SCRATCHA2
+#define SCRATCHA2 361
+#undef SCRATCHA3
+#define SCRATCHA3 362
+#undef SCRATCHB0
+#define SCRATCHB0 363
+#undef SCRATCHB1
+#define SCRATCHB1 364
+#undef SCRATCHB2
+#define SCRATCHB2 365
+#undef SCRATCHB3
+#define SCRATCHB3 366
+#undef SCRATCHC0
+#define SCRATCHC0 367
+#undef SCRATCHC1
+#define SCRATCHC1 368
+#undef SCRATCHC2
+#define SCRATCHC2 369
+#undef SCRATCHC3
+#define SCRATCHC3 370
+#undef DSA0
+#define DSA0 371
+#undef DSA1
+#define DSA1 372
+#undef DSA2
+#define DSA2 373
+#undef DSA3
+#define DSA3 374
+#undef DEFW
+#define DEFW 375
 
 int yylex(void);
 
@@ -180,7 +403,8 @@ int yylex(void);
  * the old fixed 2-entry buffer with `if(nla == 2)` shift breaks
  * as soon as any code peeks past index 1).
  */
-enum { NLA = 8 };
+#undef NLA
+#define NLA 8
 static int nla;
 static int latok[NLA];
 static YYSTYPE laval[NLA];

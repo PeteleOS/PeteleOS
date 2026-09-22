@@ -36,13 +36,15 @@
  * next line, matching yacc's abort-and-restart (no intra-line resync).
  */
 
-enum
-{
-	Ndim	= 15,		/* number of dimensions */
-	Nsym	= 40,		/* size of a name */
-	Nvar	= 203,		/* hash table size */
-	Maxe	= 695,		/* log of largest number */
-};
+/* #define (like y.tab.h), not enum: avoids Plan 9 cc "expected '}'" on macro collision. */
+#undef Ndim
+#define Ndim 15
+#undef Nsym
+#define Nsym 40
+#undef Nvar
+#define Nvar 203
+#undef Maxe
+#define Maxe 695
 
 typedef	struct	Var	Var;
 typedef	struct	Node	Node;
@@ -110,11 +112,13 @@ typedef	Node*	indnode;
 
 /* Token numbers: single-char tokens keep ASCII; named tokens >255
  * in yacc declaration order (VAL, VAR, SUP). */
-enum {
-	VAL = 257,
-	VAR = 258,
-	SUP = 259,
-};
+/* #define (like y.tab.h), not enum: avoids Plan 9 cc "expected '}'" on macro collision. */
+#undef VAL
+#define VAL 257
+#undef VAR
+#define VAR 258
+#undef SUP
+#define SUP 259
 
 typedef union {
 	Node	node;

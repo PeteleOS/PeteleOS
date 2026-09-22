@@ -66,105 +66,201 @@ YYSTYPE yylval, yyval;
 
 extern int yylex(void);
 
-enum {
-	BOX = 1,
-	LINE = 2,
-	ARROW = 3,
-	CIRCLE = 4,
-	ELLIPSE = 5,
-	ARC = 6,
-	SPLINE = 7,
-	BLOCK = 8,
-	TEXT = 9,
-	TROFF = 10,
-	MOVE = 11,
-	BLOCKEND = 12,
-	PLACE = 13,
-	PRINT = 270,
-	RESET = 271,
-	THRU = 272,
-	UNTIL = 273,
-	FOR = 274,
-	IF = 275,
-	COPY = 276,
-	THENSTR = 277,
-	ELSESTR = 278,
-	DOSTR = 279,
-	PLACENAME = 280,
-	VARNAME = 281,
-	SPRINTF = 282,
-	DEFNAME = 283,
-	ATTR = 284,
-	TEXTATTR = 285,
-	LEFT = 286,
-	RIGHT = 287,
-	UP = 288,
-	DOWN = 289,
-	FROM = 290,
-	TO = 291,
-	AT = 292,
-	BY = 293,
-	WITH = 294,
-	HEAD = 295,
-	CW = 296,
-	CCW = 297,
-	THEN = 298,
-	HEIGHT = 299,
-	WIDTH = 300,
-	RADIUS = 301,
-	DIAMETER = 302,
-	LENGTH = 303,
-	SIZE = 304,
-	CORNER = 305,
-	HERE = 306,
-	LAST = 307,
-	NTH = 308,
-	SAME = 309,
-	BETWEEN = 310,
-	AND = 311,
-	EAST = 312,
-	WEST = 313,
-	NORTH = 314,
-	SOUTH = 315,
-	NE = 316,
-	NW = 317,
-	SE = 318,
-	SW = 319,
-	START = 320,
-	END = 321,
-	DOTX = 322,
-	DOTY = 323,
-	DOTHT = 324,
-	DOTWID = 325,
-	DOTRAD = 326,
-	NUMBER = 327,
-	LOG = 328,
-	EXP = 329,
-	SIN = 330,
-	COS = 331,
-	ATAN2 = 332,
-	SQRT = 333,
-	RAND = 334,
-	MAX = 335,
-	MIN = 336,
-	INT = 337,
-	DIR = 338,
-	DOT = 339,
-	DASH = 340,
-	CHOP = 341,
-	FILL = 342,
-	ST = 343,
-	OROR = 344,
-	ANDAND = 345,
-	GT = 346,
-	LT = 347,
-	LE = 348,
-	GE = 349,
-	EQ = 350,
-	NEQ = 351,
-	UMINUS = 352,
-	NOT = 353,
-};
+/* #define (like y.tab.h), not enum: avoids Plan 9 cc "expected '}'" on macro collision. */
+#undef BOX
+#define BOX 1
+#undef LINE
+#define LINE 2
+#undef ARROW
+#define ARROW 3
+#undef CIRCLE
+#define CIRCLE 4
+#undef ELLIPSE
+#define ELLIPSE 5
+#undef ARC
+#define ARC 6
+#undef SPLINE
+#define SPLINE 7
+#undef BLOCK
+#define BLOCK 8
+#undef TEXT
+#define TEXT 9
+#undef TROFF
+#define TROFF 10
+#undef MOVE
+#define MOVE 11
+#undef BLOCKEND
+#define BLOCKEND 12
+#undef PLACE
+#define PLACE 13
+#undef PRINT
+#define PRINT 270
+#undef RESET
+#define RESET 271
+#undef THRU
+#define THRU 272
+#undef UNTIL
+#define UNTIL 273
+#undef FOR
+#define FOR 274
+#undef IF
+#define IF 275
+#undef COPY
+#define COPY 276
+#undef THENSTR
+#define THENSTR 277
+#undef ELSESTR
+#define ELSESTR 278
+#undef DOSTR
+#define DOSTR 279
+#undef PLACENAME
+#define PLACENAME 280
+#undef VARNAME
+#define VARNAME 281
+#undef SPRINTF
+#define SPRINTF 282
+#undef DEFNAME
+#define DEFNAME 283
+#undef ATTR
+#define ATTR 284
+#undef TEXTATTR
+#define TEXTATTR 285
+#undef LEFT
+#define LEFT 286
+#undef RIGHT
+#define RIGHT 287
+#undef UP
+#define UP 288
+#undef DOWN
+#define DOWN 289
+#undef FROM
+#define FROM 290
+#undef TO
+#define TO 291
+#undef AT
+#define AT 292
+#undef BY
+#define BY 293
+#undef WITH
+#define WITH 294
+#undef HEAD
+#define HEAD 295
+#undef CW
+#define CW 296
+#undef CCW
+#define CCW 297
+#undef THEN
+#define THEN 298
+#undef HEIGHT
+#define HEIGHT 299
+#undef WIDTH
+#define WIDTH 300
+#undef RADIUS
+#define RADIUS 301
+#undef DIAMETER
+#define DIAMETER 302
+#undef LENGTH
+#define LENGTH 303
+#undef SIZE
+#define SIZE 304
+#undef CORNER
+#define CORNER 305
+#undef HERE
+#define HERE 306
+#undef LAST
+#define LAST 307
+#undef NTH
+#define NTH 308
+#undef SAME
+#define SAME 309
+#undef BETWEEN
+#define BETWEEN 310
+#undef AND
+#define AND 311
+#undef EAST
+#define EAST 312
+#undef WEST
+#define WEST 313
+#undef NORTH
+#define NORTH 314
+#undef SOUTH
+#define SOUTH 315
+#undef NE
+#define NE 316
+#undef NW
+#define NW 317
+#undef SE
+#define SE 318
+#undef SW
+#define SW 319
+#undef START
+#define START 320
+#undef END
+#define END 321
+#undef DOTX
+#define DOTX 322
+#undef DOTY
+#define DOTY 323
+#undef DOTHT
+#define DOTHT 324
+#undef DOTWID
+#define DOTWID 325
+#undef DOTRAD
+#define DOTRAD 326
+#undef NUMBER
+#define NUMBER 327
+#undef LOG
+#define LOG 328
+#undef EXP
+#define EXP 329
+#undef SIN
+#define SIN 330
+#undef COS
+#define COS 331
+#undef ATAN2
+#define ATAN2 332
+#undef SQRT
+#define SQRT 333
+#undef RAND
+#define RAND 334
+#undef MAX
+#define MAX 335
+#undef MIN
+#define MIN 336
+#undef INT
+#define INT 337
+#undef DIR
+#define DIR 338
+#undef DOT
+#define DOT 339
+#undef DASH
+#define DASH 340
+#undef CHOP
+#define CHOP 341
+#undef FILL
+#define FILL 342
+#undef ST
+#define ST 343
+#undef OROR
+#define OROR 344
+#undef ANDAND
+#define ANDAND 345
+#undef GT
+#define GT 346
+#undef LT
+#define LT 347
+#undef LE
+#define LE 348
+#undef GE
+#define GE 349
+#undef EQ
+#define EQ 350
+#undef NEQ
+#define NEQ 351
+#undef UMINUS
+#define UMINUS 352
+#undef NOT
+#define NOT 353
 
 /* small FIFO lookahead buffer over yylex() */
 #define NLA 4

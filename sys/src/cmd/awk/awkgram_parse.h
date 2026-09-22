@@ -17,100 +17,195 @@ typedef union {
 extern YYSTYPE yylval;
 extern int yyparse(void);
 
-enum {
-	FIRSTTOKEN = 257,
-	PROGRAM = 258,
-	PASTAT = 259,
-	PASTAT2 = 260,
-	XBEGIN = 261,
-	XEND = 262,
-	NL = 263,
-	ARRAY = 264,
-	MATCH = 265,
-	NOTMATCH = 266,
-	MATCHOP = 267,
-	FINAL = 268,
-	DOT = 269,
-	ALL = 270,
-	CCL = 271,
-	NCCL = 272,
-	CHAR = 273,
-	OR = 274,
-	STAR = 275,
-	QUEST = 276,
-	PLUS = 277,
-	EMPTYRE = 278,
-	AND = 279,
-	BOR = 280,
-	APPEND = 281,
-	EQ = 282,
-	GE = 283,
-	GT = 284,
-	LE = 285,
-	LT = 286,
-	NE = 287,
-	IN = 288,
-	ARG = 289,
-	BLTIN = 290,
-	BREAK = 291,
-	CLOSE = 292,
-	CONTINUE = 293,
-	DELETE = 294,
-	DO = 295,
-	EXIT = 296,
-	FOR = 297,
-	FUNC = 298,
-	SUB = 299,
-	GSUB = 300,
-	IF = 301,
-	INDEX = 302,
-	LSUBSTR = 303,
-	MATCHFCN = 304,
-	NEXT = 305,
-	NEXTFILE = 306,
-	ADD = 307,
-	MINUS = 308,
-	MULT = 309,
-	DIVIDE = 310,
-	MOD = 311,
-	ASSIGN = 312,
-	ASGNOP = 313,
-	ADDEQ = 314,
-	SUBEQ = 315,
-	MULTEQ = 316,
-	DIVEQ = 317,
-	MODEQ = 318,
-	POWEQ = 319,
-	PRINT = 320,
-	PRINTF = 321,
-	SPRINTF = 322,
-	ELSE = 323,
-	INTEST = 324,
-	CONDEXPR = 325,
-	POSTINCR = 326,
-	PREINCR = 327,
-	POSTDECR = 328,
-	PREDECR = 329,
-	VAR = 330,
-	IVAR = 331,
-	VARNF = 332,
-	CALL = 333,
-	NUMBER = 334,
-	STRING = 335,
-	REGEXPR = 336,
-	GETLINE = 337,
-	RETURN = 338,
-	SPLIT = 339,
-	SUBSTR = 340,
-	WHILE = 341,
-	CAT = 342,
-	NOT = 343,
-	UMINUS = 344,
-	POWER = 345,
-	DECR = 346,
-	INCR = 347,
-	INDIRECT = 348,
-	LASTTOKEN = 349,
-};
+/* Token numbers: #define (like y.tab.h), not enum, because Plan 9 cc
+ * treats enum members as LNAME and any prior #define makes the enum
+ * fail with "expected '}'". #undef + #define exactly mimics yacc.
+ */
+#undef FIRSTTOKEN
+#define FIRSTTOKEN 257
+#undef PROGRAM
+#define PROGRAM 258
+#undef PASTAT
+#define PASTAT 259
+#undef PASTAT2
+#define PASTAT2 260
+#undef XBEGIN
+#define XBEGIN 261
+#undef XEND
+#define XEND 262
+#undef NL
+#define NL 263
+#undef ARRAY
+#define ARRAY 264
+#undef MATCH
+#define MATCH 265
+#undef NOTMATCH
+#define NOTMATCH 266
+#undef MATCHOP
+#define MATCHOP 267
+#undef FINAL
+#define FINAL 268
+#undef DOT
+#define DOT 269
+#undef ALL
+#define ALL 270
+#undef CCL
+#define CCL 271
+#undef NCCL
+#define NCCL 272
+#undef CHAR
+#define CHAR 273
+#undef OR
+#define OR 274
+#undef STAR
+#define STAR 275
+#undef QUEST
+#define QUEST 276
+#undef PLUS
+#define PLUS 277
+#undef EMPTYRE
+#define EMPTYRE 278
+#undef AND
+#define AND 279
+#undef BOR
+#define BOR 280
+#undef APPEND
+#define APPEND 281
+#undef EQ
+#define EQ 282
+#undef GE
+#define GE 283
+#undef GT
+#define GT 284
+#undef LE
+#define LE 285
+#undef LT
+#define LT 286
+#undef NE
+#define NE 287
+#undef IN
+#define IN 288
+#undef ARG
+#define ARG 289
+#undef BLTIN
+#define BLTIN 290
+#undef BREAK
+#define BREAK 291
+#undef CLOSE
+#define CLOSE 292
+#undef CONTINUE
+#define CONTINUE 293
+#undef DELETE
+#define DELETE 294
+#undef DO
+#define DO 295
+#undef EXIT
+#define EXIT 296
+#undef FOR
+#define FOR 297
+#undef FUNC
+#define FUNC 298
+#undef SUB
+#define SUB 299
+#undef GSUB
+#define GSUB 300
+#undef IF
+#define IF 301
+#undef INDEX
+#define INDEX 302
+#undef LSUBSTR
+#define LSUBSTR 303
+#undef MATCHFCN
+#define MATCHFCN 304
+#undef NEXT
+#define NEXT 305
+#undef NEXTFILE
+#define NEXTFILE 306
+#undef ADD
+#define ADD 307
+#undef MINUS
+#define MINUS 308
+#undef MULT
+#define MULT 309
+#undef DIVIDE
+#define DIVIDE 310
+#undef MOD
+#define MOD 311
+#undef ASSIGN
+#define ASSIGN 312
+#undef ASGNOP
+#define ASGNOP 313
+#undef ADDEQ
+#define ADDEQ 314
+#undef SUBEQ
+#define SUBEQ 315
+#undef MULTEQ
+#define MULTEQ 316
+#undef DIVEQ
+#define DIVEQ 317
+#undef MODEQ
+#define MODEQ 318
+#undef POWEQ
+#define POWEQ 319
+#undef PRINT
+#define PRINT 320
+#undef PRINTF
+#define PRINTF 321
+#undef SPRINTF
+#define SPRINTF 322
+#undef ELSE
+#define ELSE 323
+#undef INTEST
+#define INTEST 324
+#undef CONDEXPR
+#define CONDEXPR 325
+#undef POSTINCR
+#define POSTINCR 326
+#undef PREINCR
+#define PREINCR 327
+#undef POSTDECR
+#define POSTDECR 328
+#undef PREDECR
+#define PREDECR 329
+#undef VAR
+#define VAR 330
+#undef IVAR
+#define IVAR 331
+#undef VARNF
+#define VARNF 332
+#undef CALL
+#define CALL 333
+#undef NUMBER
+#define NUMBER 334
+#undef STRING
+#define STRING 335
+#undef REGEXPR
+#define REGEXPR 336
+#undef GETLINE
+#define GETLINE 337
+#undef RETURN
+#define RETURN 338
+#undef SPLIT
+#define SPLIT 339
+#undef SUBSTR
+#define SUBSTR 340
+#undef WHILE
+#define WHILE 341
+#undef CAT
+#define CAT 342
+#undef NOT
+#define NOT 343
+#undef UMINUS
+#define UMINUS 344
+#undef POWER
+#define POWER 345
+#undef DECR
+#define DECR 346
+#undef INCR
+#define INCR 347
+#undef INDIRECT
+#define INDIRECT 348
+#undef LASTTOKEN
+#define LASTTOKEN 349
 
 #endif

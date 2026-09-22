@@ -63,17 +63,25 @@ static char *zznextc;
 static int yylineno;
 static FILE *fin;
 
-enum {
-	NAME = 257,
-	SHELLINE = 258,
-	START = 259,
-	MACRODEF = 260,
-	COLON = 261,
-	DOUBLECOLON = 262,
-	GREATER = 263,
-	AMPER = 264,
-	AMPERAMPER = 265,
-};
+/* #define (like y.tab.h), not enum: avoids Plan 9 cc "expected '}'" on macro collision. */
+#undef NAME
+#define NAME 257
+#undef SHELLINE
+#define SHELLINE 258
+#undef START
+#define START 259
+#undef MACRODEF
+#define MACRODEF 260
+#undef COLON
+#define COLON 261
+#undef DOUBLECOLON
+#define DOUBLECOLON 262
+#undef GREATER
+#define GREATER 263
+#undef AMPER
+#define AMPER 264
+#undef AMPERAMPER
+#define AMPERAMPER 265
 
 typedef union
 	{

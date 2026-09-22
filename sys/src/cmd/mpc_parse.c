@@ -57,12 +57,15 @@
 typedef struct Sym Sym;
 typedef struct Node Node;
 
-enum {
-	FSET	= 1,
-	FUSE	= 2,
-	FARG	= 4,
-	FLOC	= 8,
-};
+/* #define (like y.tab.h), not enum: avoids Plan 9 cc "expected '}'" on macro collision. */
+#undef FSET
+#define FSET 1
+#undef FUSE
+#define FUSE 2
+#undef FARG
+#define FARG 4
+#undef FLOC
+#define FLOC 8
 
 struct Sym
 {
@@ -107,19 +110,29 @@ void	fcom(Node*,Node*,Node*);
 #pragma varargck argpos cprint 1
 #pragma varargck argpos diag 2
 
-enum {
-	EQ = 257,
-	NEQ = 258,
-	LSH = 259,
-	RSH = 260,
-	MOD = 261,
-	IF = 262,
-	ELSE = 263,
-	WHILE = 264,
-	BREAK = 265,
-	NAME = 266,
-	NUM = 267,
-};
+/* #define (like y.tab.h), not enum: avoids Plan 9 cc "expected '}'" on macro collision. */
+#undef EQ
+#define EQ 257
+#undef NEQ
+#define NEQ 258
+#undef LSH
+#define LSH 259
+#undef RSH
+#define RSH 260
+#undef MOD
+#define MOD 261
+#undef IF
+#define IF 262
+#undef ELSE
+#define ELSE 263
+#undef WHILE
+#define WHILE 264
+#undef BREAK
+#define BREAK 265
+#undef NAME
+#define NAME 266
+#undef NUM
+#define NUM 267
 
 typedef union {
 	Sym*	sval;
@@ -128,7 +141,9 @@ typedef union {
 YYSTYPE yylval;
 
 /* up to 4-token pushback for LL(2..3) decisions */
-enum { NPB = 4 };
+/* #define (like y.tab.h), not enum: avoids Plan 9 cc "expected '}'" on macro collision. */
+#undef NPB
+#define NPB 4
 static int nbuf;
 static int tbuf[NPB];
 static YYSTYPE vbuf[NPB];

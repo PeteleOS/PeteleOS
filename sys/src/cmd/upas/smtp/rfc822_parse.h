@@ -2,30 +2,56 @@
  * `yacc -d -o rfc822.tab.c rfc822.y'.
  * Token numbers match yacc declaration order (single chars keep ASCII).
  */
-enum {
-	WORD = 257,
-	DATE = 258,
-	RESENT_DATE = 259,
-	RETURN_PATH = 260,
-	FROM = 261,
-	SENDER = 262,
-	REPLY_TO = 263,
-	RESENT_FROM = 264,
-	RESENT_SENDER = 265,
-	RESENT_REPLY_TO = 266,
-	SUBJECT = 267,
-	TO = 268,
-	CC = 269,
-	BCC = 270,
-	RESENT_TO = 271,
-	RESENT_CC = 272,
-	RESENT_BCC = 273,
-	REMOTE = 274,
-	PRECEDENCE = 275,
-	MIMEVERSION = 276,
-	CONTENTTYPE = 277,
-	MESSAGEID = 278,
-	RECEIVED = 279,
-	MAILER = 280,
-	BADTOKEN = 281,
-};
+/* #define (like y.tab.h), not enum: avoids Plan 9 cc "expected '}'"
+ * when any token name collides with a prior #define.
+ */
+#undef WORD
+#define WORD 257
+#undef DATE
+#define DATE 258
+#undef RESENT_DATE
+#define RESENT_DATE 259
+#undef RETURN_PATH
+#define RETURN_PATH 260
+#undef FROM
+#define FROM 261
+#undef SENDER
+#define SENDER 262
+#undef REPLY_TO
+#define REPLY_TO 263
+#undef RESENT_FROM
+#define RESENT_FROM 264
+#undef RESENT_SENDER
+#define RESENT_SENDER 265
+#undef RESENT_REPLY_TO
+#define RESENT_REPLY_TO 266
+#undef SUBJECT
+#define SUBJECT 267
+#undef TO
+#define TO 268
+#undef CC
+#define CC 269
+#undef BCC
+#define BCC 270
+#undef RESENT_TO
+#define RESENT_TO 271
+#undef RESENT_CC
+#define RESENT_CC 272
+#undef RESENT_BCC
+#define RESENT_BCC 273
+#undef REMOTE
+#define REMOTE 274
+#undef PRECEDENCE
+#define PRECEDENCE 275
+#undef MIMEVERSION
+#define MIMEVERSION 276
+#undef CONTENTTYPE
+#define CONTENTTYPE 277
+#undef MESSAGEID
+#define MESSAGEID 278
+#undef RECEIVED
+#define RECEIVED 279
+#undef MAILER
+#define MAILER 280
+#undef BADTOKEN
+#define BADTOKEN 281

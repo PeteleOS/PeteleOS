@@ -48,28 +48,47 @@
 #define YYSTYPE charp
 typedef char *charp;
 
-enum {
-	OR = 257,
-	AND = 258,
-	ADD = 259,
-	SUBT = 260,
-	MULT = 261,
-	DIV = 262,
-	REM = 263,
-	EQ = 264,
-	GT = 265,
-	GEQ = 266,
-	LT = 267,
-	LEQ = 268,
-	NEQ = 269,
-	A_STRING = 270,
-	SUBSTR = 271,
-	LENGTH = 272,
-	INDEX = 273,
-	NOARG = 274,
-	MATCH = 275,
-	MCH = 276,
-};
+/* #define (like y.tab.h), not enum: avoids Plan 9 cc "expected '}'" on macro collision. */
+#undef OR
+#define OR 257
+#undef AND
+#define AND 258
+#undef ADD
+#define ADD 259
+#undef SUBT
+#define SUBT 260
+#undef MULT
+#define MULT 261
+#undef DIV
+#define DIV 262
+#undef REM
+#define REM 263
+#undef EQ
+#define EQ 264
+#undef GT
+#define GT 265
+#undef GEQ
+#define GEQ 266
+#undef LT
+#define LT 267
+#undef LEQ
+#define LEQ 268
+#undef NEQ
+#define NEQ 269
+#undef A_STRING
+#define A_STRING 270
+#undef SUBSTR
+#define SUBSTR 271
+#undef LENGTH
+#define LENGTH 272
+#undef INDEX
+#define INDEX 273
+#undef NOARG
+#define NOARG 274
+#undef MATCH
+#define MATCH 275
+#undef MCH
+#define MCH 276
 
 YYSTYPE yylval;
 

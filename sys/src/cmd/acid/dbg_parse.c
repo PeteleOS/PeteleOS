@@ -80,7 +80,9 @@ YYSTYPE yylval;
  * the old fixed 2-entry buffer with `if(nla == 2)` shift breaks
  * as soon as any code peeks past index 1).
  */
-enum { NLA = 8 };
+/* #define (like y.tab.h), not enum: avoids Plan 9 cc "expected '}'" on macro collision. */
+#undef NLA
+#define NLA 8
 static int nla;
 static int latok[NLA];
 static YYSTYPE laval[NLA];

@@ -40,17 +40,25 @@
  */
 
 typedef struct Exp Exp;
-enum {
-	NUM,
-	DOT,
-	DOLLAR,
-	ADD,
-	SUB,
-	MUL,
-	DIV,
-	FRAC,
-	NEG,
-};
+/* #define (like y.tab.h), not enum: avoids Plan 9 cc "expected '}'" on macro collision. */
+#undef NUM
+#define NUM 0
+#undef DOT
+#define DOT 1
+#undef DOLLAR
+#define DOLLAR 2
+#undef ADD
+#define ADD 3
+#undef SUB
+#define SUB 4
+#undef MUL
+#define MUL 5
+#undef DIV
+#define DIV 6
+#undef FRAC
+#define FRAC 7
+#undef NEG
+#define NEG 8
 
 struct Exp {
 	int ty;
@@ -63,9 +71,9 @@ typedef Exp* YYSTYPE;
 YYSTYPE yylval;
 Exp *yyexp;
 
-enum {
-	NUMBER = 257,	/* > 255 so it never collides with single-char tokens */
-};
+/* #define (like y.tab.h), not enum: avoids Plan 9 cc "expected '}'" on macro collision. */
+#undef NUMBER
+#define NUMBER 257
 
 static Exp* mkNUM(vlong x);
 static Exp* mkOP(int ty, Exp *e1, Exp *e2);

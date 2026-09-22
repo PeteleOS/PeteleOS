@@ -136,35 +136,61 @@ int	yyparse(void);
 typedef	void*	pointer;
 #pragma	varargck	type	"lx"	pointer
 
-enum {
-	LETTER = 257,
-	EQOP = 258,
-	_AUTO = 259,
-	DOT = 260,
-	DIGIT = 261,
-	SQRT = 262,
-	LENGTH = 263,
-	_IF = 264,
-	FFF = 265,
-	EQ = 266,
-	_PRINT = 267,
-	_WHILE = 268,
-	_FOR = 269,
-	NE = 270,
-	LE = 271,
-	GE = 272,
-	INCR = 273,
-	DECR = 274,
-	_RETURN = 275,
-	_BREAK = 276,
-	_DEFINE = 277,
-	BASE = 278,
-	OBASE = 279,
-	SCALE = 280,
-	QSTR = 281,
-	ERROR = 282,
-	UMINUS = 283,
-};
+/* #define (like y.tab.h), not enum: avoids Plan 9 cc "expected '}'" on macro collision. */
+#undef LETTER
+#define LETTER 257
+#undef EQOP
+#define EQOP 258
+#undef _AUTO
+#define _AUTO 259
+#undef DOT
+#define DOT 260
+#undef DIGIT
+#define DIGIT 261
+#undef SQRT
+#define SQRT 262
+#undef LENGTH
+#define LENGTH 263
+#undef _IF
+#define _IF 264
+#undef FFF
+#define FFF 265
+#undef EQ
+#define EQ 266
+#undef _PRINT
+#define _PRINT 267
+#undef _WHILE
+#define _WHILE 268
+#undef _FOR
+#define _FOR 269
+#undef NE
+#define NE 270
+#undef LE
+#define LE 271
+#undef GE
+#define GE 272
+#undef INCR
+#define INCR 273
+#undef DECR
+#define DECR 274
+#undef _RETURN
+#define _RETURN 275
+#undef _BREAK
+#define _BREAK 276
+#undef _DEFINE
+#define _DEFINE 277
+#undef BASE
+#define BASE 278
+#undef OBASE
+#define OBASE 279
+#undef SCALE
+#define SCALE 280
+#undef QSTR
+#define QSTR 281
+#undef ERROR
+#define ERROR 282
+#undef UMINUS
+#define UMINUS 283
 
 typedef union {
 	char*	cptr;
@@ -173,7 +199,9 @@ typedef union {
 YYSTYPE yylval;
 YYSTYPE yyval;
 
-enum { NPB = 4 };
+/* #define (like y.tab.h), not enum: avoids Plan 9 cc "expected '}'" on macro collision. */
+#undef NPB
+#define NPB 4
 static int nbuf;
 static int tbuf[NPB];
 static YYSTYPE vbuf[NPB];

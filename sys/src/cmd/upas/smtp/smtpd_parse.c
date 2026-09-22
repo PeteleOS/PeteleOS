@@ -75,15 +75,19 @@ int zzlex(void);
 ZZSTYPE anonymous(void);
 void zzerror(char*);
 
-enum {
-	SPACE = 257,
-	CNTRL = 258,
-	CRLF = 259,
-};
+/* #define (like y.tab.h), not enum: avoids Plan 9 cc "expected '}'" on macro collision. */
+#undef SPACE
+#define SPACE 257
+#undef CNTRL
+#define CNTRL 258
+#undef CRLF
+#define CRLF 259
 
 ZZSTYPE zzlval;
 
-enum { ZNPB = 16 };
+/* #define (like y.tab.h), not enum: avoids Plan 9 cc "expected '}'" on macro collision. */
+#undef ZNPB
+#define ZNPB 16
 static int znbuf;
 static int ztbuf[ZNPB];
 static ZZSTYPE zvbuf[ZNPB];

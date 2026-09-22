@@ -84,7 +84,9 @@
  * and corrupted the parse, e.g. "expected ')'" on
  * sys/include/libc.h protoypes with function pointers.
  */
-enum { NLA = 8 };
+/* #define (like y.tab.h), not enum: avoids Plan 9 cc "expected '}'" on macro collision. */
+#undef NLA
+#define NLA 8
 static int nla;
 static long latok[NLA];
 static YYSTYPE laval[NLA];

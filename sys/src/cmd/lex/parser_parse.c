@@ -7,18 +7,27 @@ union _yystype_
 };
 YYSTYPE yylval;
 
-enum {
-	CHAR = 257,	/* > 255 so they never collide with single-char tokens */
-	CCL = 258,
-	NCCL = 259,
-	STR = 260,
-	DELIM = 261,
-	SCON = 262,
-	ITER = 263,
-	NEWE = 264,
-	NULLS = 265,
-	CAT = 266,	/* implicit token: r r %prec CAT */
-};
+/* #define (like y.tab.h), not enum: avoids Plan 9 cc "expected '}'" on macro collision. */
+#undef CHAR
+#define CHAR 257
+#undef CCL
+#define CCL 258
+#undef NCCL
+#define NCCL 259
+#undef STR
+#define STR 260
+#undef DELIM
+#define DELIM 261
+#undef SCON
+#define SCON 262
+#undef ITER
+#define ITER 263
+#undef NEWE
+#define NEWE 264
+#undef NULLS
+#define NULLS 265
+#undef CAT
+#define CAT 266
 
 int yyparse(void);
 int yylex(void);

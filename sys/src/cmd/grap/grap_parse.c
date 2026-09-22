@@ -55,82 +55,155 @@
  * from the top action is preserved in yyparse.
  */
 
-enum {
-	FRAME = 257,
-	TICKS = 258,
-	GRID = 259,
-	LABEL = 260,
-	COORD = 261,
-	LINE = 262,
-	ARROW = 263,
-	CIRCLE = 264,
-	DRAW = 265,
-	NEW = 266,
-	PLOT = 267,
-	NEXT = 268,
-	PIC = 269,
-	COPY = 270,
-	THRU = 271,
-	UNTIL = 272,
-	FOR = 273,
-	FROM = 274,
-	TO = 275,
-	BY = 276,
-	AT = 277,
-	WITH = 278,
-	IF = 279,
-	GRAPH = 280,
-	THEN = 281,
-	ELSE = 282,
-	DOSTR = 283,
-	DOT = 284,
-	DASH = 285,
-	INVIS = 286,
-	SOLID = 287,
-	TEXT = 288,
-	JUST = 289,
-	SIZE = 290,
-	LOG = 291,
-	EXP = 292,
-	SIN = 293,
-	COS = 294,
-	ATAN2 = 295,
-	SQRT = 296,
-	RAND = 297,
-	MAX = 298,
-	MIN = 299,
-	INT = 300,
-	PRINT = 301,
-	SPRINTF = 302,
-	X = 303,
-	Y = 304,
-	SIDE = 305,
-	IN = 306,
-	OUT = 307,
-	OFF = 308,
-	UP = 309,
-	DOWN = 310,
-	ACROSS = 311,
-	HEIGHT = 312,
-	WIDTH = 313,
-	RADIUS = 314,
-	NUMBER = 315,
-	NAME = 316,
-	VARNAME = 317,
-	DEFNAME = 318,
-	STRING = 319,
-	ST = 320,
-	OR = 321,
-	AND = 322,
-	GT = 323,
-	LT = 324,
-	LE = 325,
-	GE = 326,
-	EQ = 327,
-	NE = 328,
-	NOT = 329,
-	UMINUS = 330,
-};
+/* #define (like y.tab.h), not enum: avoids Plan 9 cc "expected '}'" on macro collision. */
+#undef FRAME
+#define FRAME 257
+#undef TICKS
+#define TICKS 258
+#undef GRID
+#define GRID 259
+#undef LABEL
+#define LABEL 260
+#undef COORD
+#define COORD 261
+#undef LINE
+#define LINE 262
+#undef ARROW
+#define ARROW 263
+#undef CIRCLE
+#define CIRCLE 264
+#undef DRAW
+#define DRAW 265
+#undef NEW
+#define NEW 266
+#undef PLOT
+#define PLOT 267
+#undef NEXT
+#define NEXT 268
+#undef PIC
+#define PIC 269
+#undef COPY
+#define COPY 270
+#undef THRU
+#define THRU 271
+#undef UNTIL
+#define UNTIL 272
+#undef FOR
+#define FOR 273
+#undef FROM
+#define FROM 274
+#undef TO
+#define TO 275
+#undef BY
+#define BY 276
+#undef AT
+#define AT 277
+#undef WITH
+#define WITH 278
+#undef IF
+#define IF 279
+#undef GRAPH
+#define GRAPH 280
+#undef THEN
+#define THEN 281
+#undef ELSE
+#define ELSE 282
+#undef DOSTR
+#define DOSTR 283
+#undef DOT
+#define DOT 284
+#undef DASH
+#define DASH 285
+#undef INVIS
+#define INVIS 286
+#undef SOLID
+#define SOLID 287
+#undef TEXT
+#define TEXT 288
+#undef JUST
+#define JUST 289
+#undef SIZE
+#define SIZE 290
+#undef LOG
+#define LOG 291
+#undef EXP
+#define EXP 292
+#undef SIN
+#define SIN 293
+#undef COS
+#define COS 294
+#undef ATAN2
+#define ATAN2 295
+#undef SQRT
+#define SQRT 296
+#undef RAND
+#define RAND 297
+#undef MAX
+#define MAX 298
+#undef MIN
+#define MIN 299
+#undef INT
+#define INT 300
+#undef PRINT
+#define PRINT 301
+#undef SPRINTF
+#define SPRINTF 302
+#undef X
+#define X 303
+#undef Y
+#define Y 304
+#undef SIDE
+#define SIDE 305
+#undef IN
+#define IN 306
+#undef OUT
+#define OUT 307
+#undef OFF
+#define OFF 308
+#undef UP
+#define UP 309
+#undef DOWN
+#define DOWN 310
+#undef ACROSS
+#define ACROSS 311
+#undef HEIGHT
+#define HEIGHT 312
+#undef WIDTH
+#define WIDTH 313
+#undef RADIUS
+#define RADIUS 314
+#undef NUMBER
+#define NUMBER 315
+#undef NAME
+#define NAME 316
+#undef VARNAME
+#define VARNAME 317
+#undef DEFNAME
+#define DEFNAME 318
+#undef STRING
+#define STRING 319
+#undef ST
+#define ST 320
+#undef OR
+#define OR 321
+#undef AND
+#define AND 322
+#undef GT
+#define GT 323
+#undef LT
+#define LT 324
+#undef LE
+#define LE 325
+#undef GE
+#define GE 326
+#undef EQ
+#define EQ 327
+#undef NE
+#define NE 328
+#undef NOT
+#define NOT 329
+#undef UMINUS
+#define UMINUS 330
 
 YYSTYPE yylval, yyval;
 
