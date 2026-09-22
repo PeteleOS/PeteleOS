@@ -1,3 +1,19 @@
-BEGIN { printf("char* scname[] = {\n"); max = 0 }
-{ printf("[%d]\t\"%s\",\n", $3, $2); if (max < $3) max = $3 }
-END { printf("};\nint maxscval = %d;\n", max) }
+#!/bin/awk -f
+# Generate system call table from sys.h
+# Input: lines like "define name number" (after tr A-Z a-z)
+# Output: C array initialization
+
+BEGIN {
+    printf("char* scname[] = {\n");
+    max = 0;
+}
+
+{
+    # $1 = "define", $2 = name, $3 = number
+    printf("[%d]\t\"%s\",\n", $3, $2);
+    if (max < $3) max = $3;
+}
+
+END {
+    printf("};\nint maxscval = %d;\n", max);
+}
