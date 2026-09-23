@@ -298,12 +298,13 @@ parse_bang(void)
 			Node cw, fst;
 			cw = mung1(r, parse_brace());
 			cw->type = PIPEFD;
-			/* comword -> first ('^' word)*, then simple tail */
+			/* comword -> first ('^' word)*, then simple tail.
+			 * Left-assoc per %left '^': RHS is base (like parse_first). */
 			fst = cw;
 			while(!parse_failed && lookahead == '^'){
 				Node w;
 				syn_advance();
-				w = parse_word();
+				w = parse_word_base();
 				fst = tree2('^', fst, w);
 			}
 			return simplemung(parse_simple_rest(fst));
@@ -644,11 +645,12 @@ parse_simple_rest(Node t)
 					Node cw, word;
 					cw = mung1(r, parse_brace());
 					cw->type = PIPEFD;
+					/* Left-assoc per %left '^': RHS is base. */
 					word = cw;
 					while(!parse_failed && lookahead == '^'){
 						Node ww;
 						syn_advance();
-						ww = parse_word();
+						ww = parse_word_base();
 						word = tree2('^', word, ww);
 					}
 					t = tree2(ARGLIST, t, word);
@@ -775,9 +777,16 @@ parse_word_base(void)
 	    || lookahead == IF || lookahead == NOT || lookahead == TWIDDLE
 	    || lookahead == BANG || lookahead == SUBSHELL
 	    || lookahead == SWITCH || lookahead == FN){
-		lastword = 1;
+		/*
+		 * word: keyword { lastword=1; $1->type=WORD; }
+		 * yacc runs the action at reduce time, i.e. AFTER the
+		 * lookahead following the keyword is already lexed, so set
+		 * lastword only after advancing (lex next with lastword=0,
+		 * exactly like yacc).
+		 */
 		t = parse_keyword();
 		t->type = WORD;
+		lastword = 1;
 		return t;
 	}
 	return parse_comword();

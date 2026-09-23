@@ -993,7 +993,8 @@ parse_vlane(void)
 	Gen g;
 
 	if(yypeek(0) == LVREG || yypeek(0) == LV){
-		v = parse_vreg().reg;
+		Gen tmp = parse_vreg();
+		v = tmp.reg;
 		yyexpect('[');
 		off = parse_con();
 		yyexpect(']');

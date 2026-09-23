@@ -111,7 +111,7 @@ wrencheck(Device dev)
 	if(badmagic)
 		return 1;
 	if(RBUFSIZE > sizeof(buf))
-		panic("kfs: bad buffersize(%d): must be at most %d\n", RBUFSIZE, sizeof(buf));
+		panic("kfs: bad buffersize(%d): must be at most %d\n", RBUFSIZE, (int)sizeof(buf));
 
 	if(wrenread(dev, wrensuper(dev), buf) || wrentag(buf, Tsuper, QPSUPER)
 	|| wrenread(dev, wrenroot(dev), buf) || wrentag(buf, Tdir, QPROOT))

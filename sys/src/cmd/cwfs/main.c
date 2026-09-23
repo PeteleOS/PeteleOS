@@ -214,9 +214,9 @@ printsizes(void)
 		print("overflow computing INDPERBUF⁲\n");
 	if (INDPERBUF⁴/INDPERBUF⁲ != INDPERBUF⁲)
 		print("overflow computing INDPERBUF⁴\n");
-	print("\tINDPERBUF = %d, INDPERBUF^4 = %lld, ", INDPERBUF,
+	print("\tINDPERBUF = %lld, INDPERBUF^4 = %lld, ", (vlong)INDPERBUF,
 		(Wideoff)INDPERBUF⁴);
-	print("CEPERBK = %d\n", CEPERBK);
+	print("CEPERBK = %lld\n", (vlong)CEPERBK);
 	print("\tsizeofs: Dentry = %lud, Cache = %lud\n",
 		(ulong)sizeof(Dentry), (ulong)sizeof(Cache));
 }

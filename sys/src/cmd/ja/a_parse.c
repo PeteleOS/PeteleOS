@@ -561,7 +561,7 @@ parse_addr(void)
 				saveval[i] = yyval[i];
 			}
 			if(yypeek(0) == '('){
-				vlong c = parse_con();
+				(void)parse_con();
 				long pin;
 
 				pin = yypeek(1);
@@ -820,7 +820,7 @@ parse_inst(void)
 				saveval[i] = yyval[i];
 			}
 			if(yypeek(0) == ','){
-				s = parse_sreg();
+				(void)parse_sreg();
 				yyhave = savehave;
 				for(i = 0; i < savehave; i++){
 					yytok[i] = savetok[i];
@@ -877,7 +877,7 @@ parse_inst(void)
 				saveval[i] = yyval[i];
 			}
 			if(yypeek(0) == ','){
-				s = parse_sreg();
+				(void)parse_sreg();
 				yyhave = savehave;
 				for(i = 0; i < savehave; i++){
 					yytok[i] = savetok[i];
@@ -924,7 +924,7 @@ parse_inst(void)
 				saveval[i] = yyval[i];
 			}
 			if(yypeek(0) == '('){
-				vlong v = parse_con();
+				(void)parse_con();
 				yyhave = savehave;
 				for(i = 0; i < savehave; i++){
 					yytok[i] = savetok[i];
@@ -967,8 +967,8 @@ parse_inst(void)
 			if(yypeek(0) == LNAME){
 				yyget();
 				if(yypeek(0) == '('){
-					Sym *sym2 = yylval.sym;
-					vlong off2 = parse_offset();
+					(void)yylval.sym;
+					(void)parse_offset();
 					yyhave = savehave;
 					for(i = 0; i < savehave; i++){
 						yytok[i] = savetok[i];
