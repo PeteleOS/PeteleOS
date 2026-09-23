@@ -66,9 +66,12 @@ static Node parse_line(void);
 static void
 syn_advance(void)
 {
-	if (!have_look)
-		lookahead = yylex();
-	have_look = 0;
+	/* consume current token and buffer the next one, so that
+	 * lookahead always holds the next unconsumed token and
+	 * yylval corresponds to it. Callers needing the current
+	 * token's tree must save yylval.tree BEFORE calling. */
+	lookahead = yylex();
+	have_look = 1;
 }
 
 /*
@@ -170,13 +173,14 @@ parse_andor(void)
 static Node
 parse_pipe(void)
 {
-	Node left, right;
+	Node left, right, opnode;
 
 	left = parse_bang();
 	while (lookahead == PIPE) {
+		opnode = yylval.tree;
 		syn_advance();
 		right = parse_bang();
-		left = mung2(PIPE, left, right);
+		left = mung2(opnode, left, right);
 	}
 	return left;
 }
@@ -201,9 +205,9 @@ parse_bang(void)
 
 	/* BANG cmd  /  SUBSHELL cmd */
 	if (lookahead == BANG || lookahead == SUBSHELL) {
-		int op = lookahead;
+		Node n = yylval.tree;
 		syn_advance();
-		return mung1(op, parse_pipe());
+		return mung1(n, parse_pipe());
 	}
 
 	/* redir cmd  %prec BANG
@@ -211,7 +215,7 @@ parse_bang(void)
 	 */
 	if (lookahead == REDIR || lookahead == DUP) {
 		r = parse_redir_word();
-		return mung2(r->type, r->child[0], parse_pipe());
+		return mung2(r, r->child[0], parse_pipe());
 	}
 
 	/* assign cmd  %prec BANG
@@ -257,10 +261,11 @@ parse_bang(void)
 static Node
 parse_primary(void)
 {
-	Node w, b;
+	Node w, b, n, n2;
 
 	switch (lookahead) {
 	case IF:
+		n = yylval.tree;
 		syn_advance();
 		if (lookahead != '(')
 			yyerror("expected '(' after if");
@@ -272,14 +277,16 @@ parse_primary(void)
 		else
 			syn_advance();
 		if (lookahead == NOT) {
+			n2 = yylval.tree;
 			syn_advance();
 			skipnl();
-			return mung1(NOT, parse_pipe());
+			return mung1(n2, parse_pipe());
 		}
 		skipnl();
-		return mung2(IF, w, parse_pipe());
+		return mung2(n, w, parse_pipe());
 
 	case WHILE:
+		n = yylval.tree;
 		syn_advance();
 		if (lookahead != '(')
 			yyerror("expected '(' after while");
@@ -291,9 +298,10 @@ parse_primary(void)
 		else
 			syn_advance();
 		skipnl();
-		return mung2(WHILE, w, parse_pipe());
+		return mung2(n, w, parse_pipe());
 
 	case FOR:
+		n = yylval.tree;
 		syn_advance();
 		if (lookahead != '(')
 			yyerror("expected '(' after for");
@@ -312,9 +320,9 @@ parse_primary(void)
 			syn_advance();
 		skipnl();
 		if (b)
-			return mung3(FOR, w, b, parse_pipe());
+			return mung3(n, w, b, parse_pipe());
 		else
-			return mung3(FOR, w, (Node)0, parse_pipe());
+			return mung3(n, w, tree1(PAREN, b), parse_pipe());
 
 	case SWITCH:
 		syn_advance();
@@ -334,10 +342,11 @@ parse_primary(void)
 		return tree1(FN, w);
 
 	case TWIDDLE:
+		n = yylval.tree;
 		syn_advance();
 		w = parse_word();
 		b = parse_words();
-		return mung2(TWIDDLE, w, b);
+		return mung2(n, w, b);
 
 	case '{':
 		b = parse_brace();
@@ -350,7 +359,6 @@ parse_primary(void)
 	case ')':
 	case '}':
 	case EOF:
-	case YYEOF:
 		return (Node)0;
 
 	default:
@@ -433,7 +441,7 @@ parse_epilog(void)
 
 	if (lookahead == REDIR || lookahead == DUP) {
 		r = parse_redir_word();
-		return mung2(r->type, r->child[0], parse_epilog());
+		return mung2(r, r->child[0], parse_epilog());
 	}
 	return (Node)0;
 }
@@ -466,11 +474,11 @@ parse_redir_word(void)
 	if (op == REDIR) {
 		w = parse_word();
 		if (t->rtype == HERE)
-			return mung1(REDIR, heredoc(w));
-		return mung1(REDIR, w);
+			return mung1(t, heredoc(w));
+		return mung1(t, w);
 	}
-	/* DUP */
-	return tree1(DUP, (Node)0);
+	/* DUP: pass the lexer's node through (keeps fd/rtype info) */
+	return t;
 }
 
 /*
@@ -521,9 +529,9 @@ parse_first(void)
 static Node
 parse_keyword(void)
 {
-	int op = lookahead;
+	Node n = yylval.tree;
 	syn_advance();
-	return tree1(op, (Node)0);
+	return n;
 }
 
 /*
@@ -643,9 +651,10 @@ parse_comword(void)
 		return tree1(PAREN, w);
 
 	case REDIR:
+		t = yylval.tree;
 		syn_advance();
-		t = parse_brace();
-		t = mung1(REDIR, t);
+		w = parse_brace();
+		t = mung1(t, w);
 		t->type = PIPEFD;
 		return t;
 
