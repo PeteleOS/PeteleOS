@@ -780,13 +780,12 @@ parse_word_base(void)
 		/*
 		 * word: keyword { lastword=1; $1->type=WORD; }
 		 * yacc runs the action at reduce time, i.e. AFTER the
-		 * lookahead following the keyword is already lexed, so set
-		 * lastword only after advancing (lex next with lastword=0,
-		 * exactly like yacc).
+		 * keyword is recognized but BEFORE the next token is lexed.
+		 * The next token is then lexed with lastword=1.
 		 */
+		lastword = 1;
 		t = parse_keyword();
 		t->type = WORD;
-		lastword = 1;
 		return t;
 	}
 	return parse_comword();
