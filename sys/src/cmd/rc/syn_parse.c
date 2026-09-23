@@ -30,22 +30,33 @@
  * PIPE(4) > ANDAND(2): PIPE is tighter, so a|PIPE b shifts before
  * ANDAND reduces:
  *     a && b | c      =>  a && (b | c)
+ *
+ * Structural cmds (level 1, loosest) take a full cmd operand:
+ *     if(a) b && c    =>  if(a) (b && c)
+ * BANG/redir/assign (level 3) take a PIPE-level operand:
+ *     ! a | b         =>  !(a | b)
+ *     ! a && b        =>  (!a) && b
  */
 
 typedef tree *Node;
 
 static int lookahead;
-static int have_look;
-
-#define YYEOF EOF
+/* set by syn_error(); unwinds parsing so one bad line cannot merge
+ * with the next (yacc abandons the rule; yyerror already skipped
+ * input chars to the next line, so just stop consuming tokens). */
+static int parse_failed;
 
 extern int yylex(void);
-/* extern void yyerror(char *);  -- provided by subr.c */
+/* yyerror(char *) provided by subr.c; it skips input to '\n'/EOF */
+extern int lastdol;
+/* lastword declared in rc.h */
 
-/* the lexer sets yylval.tree before returning WORD/REDIR/DUP/etc. */
 YYSTYPE yylval;
 
 static void syn_advance(void);
+static void syn_error(char*);
+static void skipnl_tok(void);
+static int is_wordstart(int);
 
 static Node parse_cmd(void);
 static Node parse_andor(void);
@@ -55,8 +66,10 @@ static Node parse_primary(void);
 static Node parse_body(void);
 static Node parse_brace(void);
 static Node parse_simple(void);
+static Node parse_simple_rest(Node);
 static Node parse_first(void);
 static Node parse_word(void);
+static Node parse_word_base(void);
 static Node parse_comword(void);
 static Node parse_words(void);
 static Node parse_epilog(void);
@@ -66,51 +79,105 @@ static Node parse_line(void);
 static void
 syn_advance(void)
 {
-	/* consume current token and buffer the next one, so that
-	 * lookahead always holds the next unconsumed token and
-	 * yylval corresponds to it. Callers needing the current
-	 * token's tree must save yylval.tree BEFORE calling. */
+	/* buffer next token in lookahead; yylval corresponds to it.
+	 * Callers needing the current token's tree must save
+	 * yylval.tree BEFORE calling. */
 	lookahead = yylex();
-	have_look = 1;
+}
+
+static void
+syn_error(char *msg)
+{
+	/* yyerror() consumes chars to end of line at char level.
+	 * Do NOT lex here: the next yyparse() call will lex fresh
+	 * from the start of the next line. Lexing now would buffer
+	 * the next line's first token in lookahead, only for the
+	 * next yyparse() to overwrite it (losing that token). */
+	yyerror(msg);
+	parse_failed = 1;
 }
 
 /*
- * entry point:  rc: (empty) { return 1; }
- *                 | line '\n'  { return !compile($1); }
+ * Token-level equivalent of lex.c skipnl(): skip buffered newlines.
+ * Must clear lastword/lastdol before lexing past a newline, otherwise
+ * yylex() would insert a bogus '^'/SUB (e.g. "a\n(b)" must not become
+ * "a SUB ...").  yacc's {skipnl();} runs before the next yylex(), so
+ * the override belongs here.
+ */
+static void
+skipnl_tok(void)
+{
+	while(!parse_failed && lookahead == '\n'){
+		lastword = 0;
+		lastdol = 0;
+		syn_advance();
+	}
+}
+
+static int
+is_wordstart(int t)
+{
+	switch(t){
+	case WORD:
+	case '$':
+	case '"':
+	case COUNT:
+	case '`':
+	case '(':
+	case REDIR:
+	case FOR:
+	case IN:
+	case WHILE:
+	case IF:
+	case NOT:
+	case TWIDDLE:
+	case BANG:
+	case SUBSHELL:
+	case SWITCH:
+	case FN:
+		return 1;
+	default:
+		return 0;
+	}
+}
+
+/*
+ * entry point, faithful to syn.y:
+ *	rc: (empty) { return 1; }
+ *	  | line '\n' { return !compile($1); }
+ *
+ * Exactly one line per call.  return 1 means EOF (or compile error,
+ * so Xrdcmds takes the no-execute path); return 0 means codebuf holds
+ * freshly compiled code for Xrdcmds to start().
  *
  * line: cmd
  *     | cmdsa line  { $$ = tree2(';', $1, $2); }
- *
  * cmdsa: cmd ';'  { $$ = tree1(';', $1); }
- *     | cmd '&'  { $$ = tree1('&', $1); }
- *
- * In yyparse, parse_cmd() parses a full cmd (including binary operators).
- * If the next token is ';' or '&', wrap the cmd and continue parsing the
- * rest of the line (right-recursive). Otherwise, the line is just the
- * single cmd.
+ *      | cmd '&'  { $$ = tree1('&', $1); }
  */
 int
 yyparse(void)
 {
 	Node t;
 
-	have_look = 1;
+	parse_failed = 0;
 	lookahead = yylex();
-	for (;;) {
-		if (lookahead == YYEOF)
-			break;
-		/* skip leading newlines */
-		if (lookahead == '\n') {
-			syn_advance();
-			continue;
-		}
-		t = parse_line();
-		if (t)
-			compile(t);
-		if (lookahead == '\n')
-			syn_advance();
-	}
-	return 0;
+	if(lookahead == EOF)
+		return 1;
+	t = parse_line();
+	if(parse_failed)
+		return 1;
+	/*
+	 * line '\n': the terminating '\n' token's chars are already
+	 * consumed by yylex, so there is nothing to advance past --
+	 * prefetching here would drop the next line's first token.
+	 * Accept EOF as terminator too.
+	 */
+	if(lookahead != '\n' && lookahead != EOF)
+		syn_error("expected newline");
+	if(parse_failed)
+		return 1;
+	return !compile(t);
 }
 
 /*
@@ -121,9 +188,11 @@ parse_line(void)
 {
 	Node t;
 
+	if(parse_failed)
+		return (Node)0;
 	t = parse_cmd();
-	while (lookahead == ';' || lookahead == '&') {
-		if (lookahead == '&') {
+	while(!parse_failed && (lookahead == ';' || lookahead == '&')){
+		if(lookahead == '&'){
 			syn_advance();
 			t = tree2(';', tree1('&', t), parse_line());
 		} else {
@@ -141,11 +210,8 @@ parse_line(void)
  *     parse_pipe (level 4: PIPE)
  *       parse_bang (level 3: prefix BANG/SUBSHELL, redir/assign %prec BANG)
  *         parse_primary (level 1: structural + simple)
- *
- * Level numbers: lower = binds looser.
  */
 
-/* level 2: ANDAND, OROR (left-assoc, loosest cmd binary ops) */
 /* parse_cmd is the entry point for a single command (with binary operators) */
 static Node
 parse_cmd(void)
@@ -153,6 +219,7 @@ parse_cmd(void)
 	return parse_andor();
 }
 
+/* level 2: ANDAND, OROR (left-assoc, loosest cmd binary ops) */
 static Node
 parse_andor(void)
 {
@@ -160,7 +227,7 @@ parse_andor(void)
 	int op;
 
 	left = parse_pipe();
-	while (lookahead == ANDAND || lookahead == OROR) {
+	while(!parse_failed && (lookahead == ANDAND || lookahead == OROR)){
 		op = lookahead;
 		syn_advance();
 		right = parse_pipe();
@@ -176,7 +243,7 @@ parse_pipe(void)
 	Node left, right, opnode;
 
 	left = parse_bang();
-	while (lookahead == PIPE) {
+	while(!parse_failed && lookahead == PIPE){
 		opnode = yylval.tree;
 		syn_advance();
 		right = parse_bang();
@@ -203,41 +270,78 @@ parse_bang(void)
 {
 	Node r;
 
+	if(parse_failed)
+		return (Node)0;
 	/* BANG cmd  /  SUBSHELL cmd */
-	if (lookahead == BANG || lookahead == SUBSHELL) {
+	if(lookahead == BANG || lookahead == SUBSHELL){
 		Node n = yylval.tree;
 		syn_advance();
 		return mung1(n, parse_pipe());
 	}
 
-	/* redir cmd  %prec BANG
+	/*
+	 * redir cmd  %prec BANG
 	 * REDIR word  or  DUP
+	 * Ambiguity: REDIR '{' starts a comword (PIPEFD), not a redir.
+	 * yacc shifts REDIR then decides on the next token, so do the
+	 * same: consume REDIR, then branch.
 	 */
-	if (lookahead == REDIR || lookahead == DUP) {
-		r = parse_redir_word();
-		return mung2(r, r->child[0], parse_pipe());
+	if(lookahead == REDIR || lookahead == DUP){
+		if(lookahead == DUP){
+			r = parse_redir_word();
+			return mung2(r, r->child[0], parse_pipe());
+		}
+		/* REDIR: peek next token */
+		r = yylval.tree;
+		syn_advance();
+		if(lookahead == '{'){
+			Node cw, fst;
+			cw = mung1(r, parse_brace());
+			cw->type = PIPEFD;
+			/* comword -> first ('^' word)*, then simple tail */
+			fst = cw;
+			while(!parse_failed && lookahead == '^'){
+				Node w;
+				syn_advance();
+				w = parse_word();
+				fst = tree2('^', fst, w);
+			}
+			return simplemung(parse_simple_rest(fst));
+		}
+		{
+			Node w, red;
+			w = parse_word();
+			if(r->rtype == HERE)
+				red = mung1(r, heredoc(w));
+			else
+				red = mung1(r, w);
+			return mung2(red, red->child[0], parse_pipe());
+		}
 	}
 
-	/* assign cmd  %prec BANG
+	/*
+	 * assign cmd  %prec BANG
 	 * assign: first '=' word
-	 * Need to peek: parse first then check for '='.
+	 * Only attempt when lookahead can start a comword (first is
+	 * comword-based, not keyword-based).  Keywords fall through to
+	 * parse_primary (structural/word handling).
 	 */
-	if (lookahead == WORD || lookahead == '\'' || lookahead == '$'
-	    || lookahead == COUNT || lookahead == '`' || lookahead == '"') {
+	if(lookahead == WORD || lookahead == '$' || lookahead == '"'
+	    || lookahead == COUNT || lookahead == '`' || lookahead == '('
+	    || lookahead == REDIR){
 		Node first_t, assign_t, w;
-		/* save position, parse first, check '=' */
 		first_t = parse_first();
-		if (lookahead == '=') {
+		if(lookahead == '='){
 			syn_advance();
 			w = parse_word();
 			/* assign: first '=' word { $$ = tree2('=', $1, $3); } */
 			assign_t = tree2('=', first_t, w);
-			/* cmd: assign cmd %prec BANG { $$ = mung3($1, $1->child[0], $1->child[1], $2); } */
+			/* cmd: assign cmd %prec BANG */
 			return mung3(assign_t, assign_t->child[0], assign_t->child[1],
 			    parse_pipe());
 		}
-		/* not an assign: treat as simple */
-		return simplemung(first_t);
+		/* not an assign: continue as simple from first_t */
+		return simplemung(parse_simple_rest(first_t));
 	}
 
 	/* default: structural primary */
@@ -245,11 +349,11 @@ parse_bang(void)
 }
 
 /*
- * structural commands (level 1):
+ * structural commands (level 1, loosest: operand is a full cmd):
  *   IF paren skipnl() cmd
  *   IF NOT skipnl() cmd
- *   FOR '(' word IN words ')' skipnl() cmd
- *   FOR '(' word ')' skipnl() cmd
+ *   FOR '(' word IN words ')' skipnl() cmd   (saw_in: nil words => PAREN())
+ *   FOR '(' word ')' skipnl() cmd            (no IN: implicit $* loop, c1=0)
  *   WHILE paren skipnl() cmd
  *   SWITCH word skipnl() brace
  *   FN words brace
@@ -263,79 +367,89 @@ parse_primary(void)
 {
 	Node w, b, n, n2;
 
-	switch (lookahead) {
+	if(parse_failed)
+		return (Node)0;
+	switch(lookahead){
 	case IF:
 		n = yylval.tree;
 		syn_advance();
-		if (lookahead != '(')
-			yyerror("expected '(' after if");
+		if(lookahead != '(')
+			syn_error("expected '(' after if");
 		else
 			syn_advance();
-		w = parse_body();	/* 'if (cond)' -- cond is a body */
-		if (lookahead != ')')
-			yyerror("expected ')' after if condition");
+		w = tree1(PCMD, parse_body());	/* paren: '(' body ')' */
+		if(lookahead != ')')
+			syn_error("expected ')' after if condition");
 		else
 			syn_advance();
-		if (lookahead == NOT) {
+		if(lookahead == NOT){
 			n2 = yylval.tree;
 			syn_advance();
-			skipnl();
-			return mung1(n2, parse_pipe());
+			skipnl_tok();
+			return mung1(n2, parse_cmd());
 		}
-		skipnl();
-		return mung2(n, w, parse_pipe());
+		skipnl_tok();
+		return mung2(n, w, parse_cmd());
 
 	case WHILE:
 		n = yylval.tree;
 		syn_advance();
-		if (lookahead != '(')
-			yyerror("expected '(' after while");
+		if(lookahead != '(')
+			syn_error("expected '(' after while");
 		else
 			syn_advance();
-		w = parse_body();	/* 'while (cond)' -- cond is a body */
-		if (lookahead != ')')
-			yyerror("expected ')' after while condition");
+		w = tree1(PCMD, parse_body());	/* paren: '(' body ')' */
+		if(lookahead != ')')
+			syn_error("expected ')' after while condition");
 		else
 			syn_advance();
-		skipnl();
-		return mung2(n, w, parse_pipe());
+		skipnl_tok();
+		return mung2(n, w, parse_cmd());
 
 	case FOR:
 		n = yylval.tree;
 		syn_advance();
-		if (lookahead != '(')
-			yyerror("expected '(' after for");
+		if(lookahead != '(')
+			syn_error("expected '(' after for");
 		else
 			syn_advance();
 		w = parse_word();
-		if (lookahead == IN) {
+		if(lookahead == IN){
 			syn_advance();
 			b = parse_words();
-		} else {
-			b = (Node)0;
+			if(lookahead != ')')
+				syn_error("expected ')' in for");
+			else
+				syn_advance();
+			skipnl_tok();
+			/*
+			 * saw_in: distinguish "for(i in )" (empty set)
+			 * from "for(i)" (implicit $* loop).  nil words
+			 * with IN present becomes "()".
+			 */
+			if(b)
+				return mung3(n, w, b, parse_cmd());
+			return mung3(n, w, tree1(PAREN, b), parse_cmd());
 		}
-		if (lookahead != ')')
-			yyerror("expected ')' in for");
+		if(lookahead != ')')
+			syn_error("expected ')' in for");
 		else
 			syn_advance();
-		skipnl();
-		if (b)
-			return mung3(n, w, b, parse_pipe());
-		else
-			return mung3(n, w, tree1(PAREN, b), parse_pipe());
+		skipnl_tok();
+		return mung3(n, w, (Node)0, parse_cmd());
 
 	case SWITCH:
 		syn_advance();
 		w = parse_word();
-		skipnl();
-		if (lookahead != '{')
-			yyerror("expected '{' after switch");
+		skipnl_tok();
+		if(lookahead != '{')
+			syn_error("expected '{' after switch");
 		return tree2(SWITCH, w, parse_brace());
 
 	case FN:
 		syn_advance();
 		w = parse_words();
-		if (lookahead == '{') {
+		if(lookahead == '{'){
 			b = parse_brace();
 			return tree2(FN, w, b);
 		}
@@ -382,20 +496,22 @@ parse_body(void)
 {
 	Node t;
 
+	if(parse_failed)
+		return (Node)0;
 	t = parse_cmd();
 
-	if (lookahead == ';') {
+	if(lookahead == ';'){
 		syn_advance();
 		return tree2(';', tree1(';', t), parse_body());
 	}
-	if (lookahead == '&') {
+	if(lookahead == '&'){
 		syn_advance();
 		return tree2(';', tree1('&', t), parse_body());
 	}
-	if (lookahead == '\n') {
+	if(lookahead == '\n'){
 		syn_advance();
 		/* cmd '\n' is a cmdsan; wrap rest in ';' */
-		if (lookahead == ';' || lookahead == '&' ||
+		if(lookahead == ';' || lookahead == '&' ||
 		    lookahead == '\n' || lookahead == EOF)
 			return t;
 		return tree2(';', t, parse_body());
@@ -412,13 +528,17 @@ parse_brace(void)
 {
 	Node t;
 
-	if (lookahead != '{')
-		yyerror("expected '{'");
-	syn_advance();
+	if(parse_failed)
+		return tree1(BRACE, (Node)0);
+	if(lookahead != '{')
+		syn_error("expected '{'");
+	else
+		syn_advance();
 	t = parse_body();
-	if (lookahead != '}')
-		yyerror("expected '}'");
-	syn_advance();
+	if(lookahead != '}')
+		syn_error("expected '}'");
+	else
+		syn_advance();
 	return tree1(BRACE, t);
 }
 
@@ -439,7 +559,9 @@ parse_epilog(void)
 {
 	Node r;
 
-	if (lookahead == REDIR || lookahead == DUP) {
+	if(parse_failed)
+		return (Node)0;
+	if(lookahead == REDIR || lookahead == DUP){
 		r = parse_redir_word();
 		return mung2(r, r->child[0], parse_epilog());
 	}
@@ -461,9 +583,10 @@ parse_redir_word(void)
 	Node t, w;
 	int op = lookahead;
 
-	if (op != REDIR && op != DUP) {
-		yyerror("expected redir");
-		syn_advance();
+	if(parse_failed)
+		return (Node)0;
+	if(op != REDIR && op != DUP){
+		syn_error("expected redir");
 		return (Node)0;
 	}
 
@@ -471,9 +594,9 @@ parse_redir_word(void)
 	t = yylval.tree;
 	syn_advance();
 
-	if (op == REDIR) {
+	if(op == REDIR){
 		w = parse_word();
-		if (t->rtype == HERE)
+		if(t->rtype == HERE)
 			return mung1(t, heredoc(w));
 		return mung1(t, w);
 	}
@@ -485,22 +608,62 @@ parse_redir_word(void)
  * simple: first
  *       | simple word   { $$ = tree2(ARGLIST, $1, $2); }
  *       | simple redir  { $$ = tree2(ARGLIST, $1, $2); }
+ *
+ * Single interleaved loop (words and redirs can mix in any order).
+ * REDIR '{' is a PIPEFD comword (word), not a redir; handle like
+ * parse_bang: consume REDIR then branch on '{'.
  */
 static Node
 parse_simple(void)
 {
-	Node t, arg;
+	Node t;
 
+	if(parse_failed)
+		return (Node)0;
 	t = parse_first();
-	while (lookahead == WORD || lookahead == '\''
-	    || lookahead == '$' || lookahead == COUNT
-	    || lookahead == '"' || lookahead == '`' || lookahead == '{') {
-		arg = parse_word();
-		t = tree2(ARGLIST, t, arg);
-	}
-	while (lookahead == REDIR || lookahead == DUP) {
-		arg = parse_redir_word();
-		t = tree2(ARGLIST, t, arg);
+	return parse_simple_rest(t);
+}
+
+static Node
+parse_simple_rest(Node t)
+{
+	for(;;){
+		if(parse_failed)
+			break;
+		if(is_wordstart(lookahead)){
+			/* REDIR here may still be PIPEFD-word vs redir */
+			if(lookahead == REDIR){
+				Node r, w;
+				r = yylval.tree;
+				syn_advance();
+				if(lookahead == '{'){
+					Node cw, word;
+					cw = mung1(r, parse_brace());
+					cw->type = PIPEFD;
+					word = cw;
+					while(!parse_failed && lookahead == '^'){
+						Node ww;
+						syn_advance();
+						ww = parse_word();
+						word = tree2('^', word, ww);
+					}
+					t = tree2(ARGLIST, t, word);
+					continue;
+				}
+				w = parse_word();
+				if(r->rtype == HERE)
+					r = mung1(r, heredoc(w));
+				else
+					r = mung1(r, w);
+				t = tree2(ARGLIST, t, r);
+				continue;
+			}
+			t = tree2(ARGLIST, t, parse_word());
+		} else if(lookahead == DUP){
+			Node r = parse_redir_word();
+			t = tree2(ARGLIST, t, r);
+		} else
+			break;
 	}
 	return t;
 }
@@ -508,16 +671,19 @@ parse_simple(void)
 /*
  * first: comword
  *      | first '^' word  { $$ = tree2('^', $1, $3); }
+ * Left-assoc: iterate with base words.
  */
 static Node
 parse_first(void)
 {
 	Node t, w;
 
+	if(parse_failed)
+		return (Node)0;
 	t = parse_comword();
-	while (lookahead == '^') {
+	while(!parse_failed && lookahead == '^'){
 		syn_advance();
-		w = parse_word();
+		w = parse_word_base();
 		t = tree2('^', t, w);
 	}
 	return t;
@@ -530,6 +696,8 @@ static Node
 parse_keyword(void)
 {
 	Node n = yylval.tree;
+	if(parse_failed)
+		return n;
 	syn_advance();
 	return n;
 }
@@ -537,6 +705,9 @@ parse_keyword(void)
 /*
  * words:          { $$ = (tree*)0; }
  *       | words word { $$ = tree2(WORDS, $1, $2); }
+ * Terminators are tokens that cannot start a word: closers, separators,
+ * cmd operators, '=' and redirs (redir is not a word).  Keywords CAN
+ * start a word (converted by parse_word), so they are not terminators.
  */
 static Node
 parse_words(void)
@@ -544,16 +715,23 @@ parse_words(void)
 	Node t = (Node)0;
 	Node w;
 
-	for (;;) {
-		if (lookahead == ')' || lookahead == '{'
+	for(;;){
+		if(parse_failed)
+			break;
+		if(lookahead == ')' || lookahead == '}'
+		    || lookahead == '{'
 		    || lookahead == '\n' || lookahead == EOF
-		    || lookahead == YYEOF || lookahead == ANDAND
+		    || lookahead == ANDAND
 		    || lookahead == OROR || lookahead == PIPE
 		    || lookahead == ';' || lookahead == '&'
-		    || lookahead == '=' || lookahead == '^')
+		    || lookahead == '=' || lookahead == '^'
+		    || lookahead == REDIR || lookahead == DUP
+		    || lookahead == SUB)
+			break;
+		if(!is_wordstart(lookahead))
 			break;
 		w = parse_word();
-		if (w == (Node)0)
+		if(w == (Node)0)
 			break;
 		t = tree2(WORDS, t, w);
 	}
@@ -564,29 +742,41 @@ parse_words(void)
  * word: keyword         { lastword=1; $1->type=WORD; }
  *     | comword
  *     | word '^' word  { $$ = tree2('^', $1, $3); }
+ * Left-assoc via base iteration.
  */
 static Node
 parse_word(void)
 {
 	Node t, w;
 
-	if (lookahead == FOR || lookahead == IN || lookahead == WHILE
-	    || lookahead == IF || lookahead == NOT || lookahead == TWIDDLE
-	    || lookahead == BANG || lookahead == SUBSHELL
-	    || lookahead == SWITCH || lookahead == FN) {
-		lastword = 1;
-		t = parse_keyword();
-		t->type = WORD;
-	} else {
-		t = parse_comword();
-	}
-
-	while (lookahead == '^') {
+	if(parse_failed)
+		return (Node)0;
+	t = parse_word_base();
+	while(!parse_failed && lookahead == '^'){
 		syn_advance();
-		w = parse_word();
+		w = parse_word_base();
 		t = tree2('^', t, w);
 	}
 	return t;
+}
+
+static Node
+parse_word_base(void)
+{
+	Node t;
+
+	if(parse_failed)
+		return (Node)0;
+	if(lookahead == FOR || lookahead == IN || lookahead == WHILE
+	    || lookahead == IF || lookahead == NOT || lookahead == TWIDDLE
+	    || lookahead == BANG || lookahead == SUBSHELL
+	    || lookahead == SWITCH || lookahead == FN){
+		lastword = 1;
+		t = parse_keyword();
+		t->type = WORD;
+		return t;
+	}
+	return parse_comword();
 }
 
 /*
@@ -605,18 +795,23 @@ parse_comword(void)
 {
 	Node t, w;
 
-	switch (lookahead) {
+	if(parse_failed)
+		return (Node)0;
+	switch(lookahead){
 	case '$':
 		syn_advance();
-		if (lookahead == SUB) {
+		w = parse_word();
+		if(lookahead == SUB){
+			Node words;
 			syn_advance();
-			w = parse_word();
-			if (lookahead != ')')
-				yyerror("expected ')' in $");
-			syn_advance();
-			return tree2(SUB, w, parse_words());
+			words = parse_words();
+			if(lookahead != ')')
+				syn_error("expected ')' in $");
+			else
+				syn_advance();
+			return tree2(SUB, w, words);
 		}
-		return tree1('$', parse_word());
+		return tree1('$', w);
 
 	case '"':
 		syn_advance();
@@ -628,26 +823,26 @@ parse_comword(void)
 
 	case '`':
 		syn_advance();
-		if (lookahead == '{' || lookahead == WORD || lookahead == '\''
-		    || lookahead == '$' || lookahead == COUNT
-		    || lookahead == '"' || lookahead == FOR
-		    || lookahead == IN || lookahead == WHILE || lookahead == IF
-		    || lookahead == NOT || lookahead == TWIDDLE
-		    || lookahead == BANG || lookahead == SUBSHELL
-		    || lookahead == SWITCH || lookahead == FN) {
+		if(lookahead == '{')
+			return tree2('`', (Node)0, parse_brace());
+		if(is_wordstart(lookahead)){
 			w = parse_word();
-			if (lookahead == '{')
-				return tree2('`', w, parse_brace());
-			return w;
+			if(lookahead != '{'){
+				syn_error("expected '{' after ` word");
+				return tree2('`', w, tree1(BRACE, (Node)0));
+			}
+			return tree2('`', w, parse_brace());
 		}
-		return tree2('`', (Node)0, parse_brace());
+		syn_error("expected '{' or word after `");
+		return tree2('`', (Node)0, tree1(BRACE, (Node)0));
 
 	case '(':
 		syn_advance();
 		w = parse_words();
-		if (lookahead != ')')
-			yyerror("expected ')' in comword");
-		syn_advance();
+		if(lookahead != ')')
+			syn_error("expected ')' in comword");
+		else
+			syn_advance();
 		return tree1(PAREN, w);
 
 	case REDIR:
@@ -658,16 +853,13 @@ parse_comword(void)
 		t->type = PIPEFD;
 		return t;
 
-	case DUP:
-		/* DUP in comword context is unusual; treat as error */
-		yyerror("unexpected DUP");
-		syn_advance();
-		return (Node)0;
-
 	case WORD:
-	default:
 		t = yylval.tree;
 		syn_advance();
 		return t;
+
+	default:
+		syn_error("expected word");
+		return (Node)0;
 	}
 }
