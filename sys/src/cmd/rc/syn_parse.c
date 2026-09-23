@@ -373,6 +373,16 @@ parse_primary(void)
 	case IF:
 		n = yylval.tree;
 		syn_advance();
+		/* syn.y has two productions:
+		 *   IF paren skipnl cmd
+		 *   IF NOT skipnl cmd   (no parens, e.g. "if not { ... }")
+		 * Check NOT first. */
+		if(lookahead == NOT){
+			n2 = yylval.tree;
+			syn_advance();
+			skipnl_tok();
+			return mung1(n2, parse_cmd());
+		}
 		if(lookahead != '(')
 			syn_error("expected '(' after if");
 		else
@@ -382,12 +392,6 @@ parse_primary(void)
 			syn_error("expected ')' after if condition");
 		else
 			syn_advance();
-		if(lookahead == NOT){
-			n2 = yylval.tree;
-			syn_advance();
-			skipnl_tok();
-			return mung1(n2, parse_cmd());
-		}
 		skipnl_tok();
 		return mung2(n, w, parse_cmd());
 
