@@ -32,6 +32,8 @@
  *     a && b | c      =>  a && (b | c)
  */
 
+typedef tree *Node;
+
 static int lookahead;
 static int have_look;
 
@@ -43,8 +45,7 @@ extern int yylex(void);
 /* the lexer sets yylval.tree before returning WORD/REDIR/DUP/etc. */
 YYSTYPE yylval;
 
-static int  peek(void);
-static void advance(void);
+static void syn_advance(void);
 
 static Node parse_cmd(void);
 static Node parse_andor(void);
@@ -62,18 +63,8 @@ static Node parse_epilog(void);
 static Node parse_redir_word(void);
 static Node parse_line(void);
 
-static int
-peek(void)
-{
-	if (!have_look) {
-		lookahead = yylex();
-		have_look = 1;
-	}
-	return lookahead;
-}
-
 static void
-advance(void)
+syn_advance(void)
 {
 	if (!have_look)
 		lookahead = yylex();
@@ -107,14 +98,14 @@ yyparse(void)
 			break;
 		/* skip leading newlines */
 		if (lookahead == '\n') {
-			advance();
+			syn_advance();
 			continue;
 		}
 		t = parse_line();
 		if (t)
 			compile(t);
 		if (lookahead == '\n')
-			advance();
+			syn_advance();
 	}
 	return 0;
 }
@@ -130,10 +121,10 @@ parse_line(void)
 	t = parse_cmd();
 	while (lookahead == ';' || lookahead == '&') {
 		if (lookahead == '&') {
-			advance();
+			syn_advance();
 			t = tree2(';', tree1('&', t), parse_line());
 		} else {
-			advance();
+			syn_advance();
 			t = tree2(';', tree1(';', t), parse_line());
 		}
 	}
@@ -168,7 +159,7 @@ parse_andor(void)
 	left = parse_pipe();
 	while (lookahead == ANDAND || lookahead == OROR) {
 		op = lookahead;
-		advance();
+		syn_advance();
 		right = parse_pipe();
 		left = tree2(op, left, right);
 	}
@@ -183,7 +174,7 @@ parse_pipe(void)
 
 	left = parse_bang();
 	while (lookahead == PIPE) {
-		advance();
+		syn_advance();
 		right = parse_bang();
 		left = mung2(PIPE, left, right);
 	}
@@ -211,7 +202,7 @@ parse_bang(void)
 	/* BANG cmd  /  SUBSHELL cmd */
 	if (lookahead == BANG || lookahead == SUBSHELL) {
 		int op = lookahead;
-		advance();
+		syn_advance();
 		return mung1(op, parse_pipe());
 	}
 
@@ -233,7 +224,7 @@ parse_bang(void)
 		/* save position, parse first, check '=' */
 		first_t = parse_first();
 		if (lookahead == '=') {
-			advance();
+			syn_advance();
 			w = parse_word();
 			/* assign: first '=' word { $$ = tree2('=', $1, $3); } */
 			assign_t = tree2('=', first_t, w);
@@ -270,18 +261,18 @@ parse_primary(void)
 
 	switch (lookahead) {
 	case IF:
-		advance();
+		syn_advance();
 		if (lookahead != '(')
 			yyerror("expected '(' after if");
 		else
-			advance();
+			syn_advance();
 		w = parse_body();	/* 'if (cond)' -- cond is a body */
 		if (lookahead != ')')
 			yyerror("expected ')' after if condition");
 		else
-			advance();
+			syn_advance();
 		if (lookahead == NOT) {
-			advance();
+			syn_advance();
 			skipnl();
 			return mung1(NOT, parse_pipe());
 		}
@@ -289,28 +280,28 @@ parse_primary(void)
 		return mung2(IF, w, parse_pipe());
 
 	case WHILE:
-		advance();
+		syn_advance();
 		if (lookahead != '(')
 			yyerror("expected '(' after while");
 		else
-			advance();
+			syn_advance();
 		w = parse_body();	/* 'while (cond)' -- cond is a body */
 		if (lookahead != ')')
 			yyerror("expected ')' after while condition");
 		else
-			advance();
+			syn_advance();
 		skipnl();
 		return mung2(WHILE, w, parse_pipe());
 
 	case FOR:
-		advance();
+		syn_advance();
 		if (lookahead != '(')
 			yyerror("expected '(' after for");
 		else
-			advance();
+			syn_advance();
 		w = parse_word();
 		if (lookahead == IN) {
-			advance();
+			syn_advance();
 			b = parse_words();
 		} else {
 			b = (Node)0;
@@ -318,7 +309,7 @@ parse_primary(void)
 		if (lookahead != ')')
 			yyerror("expected ')' in for");
 		else
-			advance();
+			syn_advance();
 		skipnl();
 		if (b)
 			return mung3(FOR, w, b, parse_pipe());
@@ -326,7 +317,7 @@ parse_primary(void)
 			return mung3(FOR, w, (Node)0, parse_pipe());
 
 	case SWITCH:
-		advance();
+		syn_advance();
 		w = parse_word();
 		skipnl();
 		if (lookahead != '{')
@@ -334,7 +325,7 @@ parse_primary(void)
 		return tree2(SWITCH, w, parse_brace());
 
 	case FN:
-		advance();
+		syn_advance();
 		w = parse_words();
 		if (lookahead == '{') {
 			b = parse_brace();
@@ -343,7 +334,7 @@ parse_primary(void)
 		return tree1(FN, w);
 
 	case TWIDDLE:
-		advance();
+		syn_advance();
 		w = parse_word();
 		b = parse_words();
 		return mung2(TWIDDLE, w, b);
@@ -386,15 +377,15 @@ parse_body(void)
 	t = parse_cmd();
 
 	if (lookahead == ';') {
-		advance();
+		syn_advance();
 		return tree2(';', tree1(';', t), parse_body());
 	}
 	if (lookahead == '&') {
-		advance();
+		syn_advance();
 		return tree2(';', tree1('&', t), parse_body());
 	}
 	if (lookahead == '\n') {
-		advance();
+		syn_advance();
 		/* cmd '\n' is a cmdsan; wrap rest in ';' */
 		if (lookahead == ';' || lookahead == '&' ||
 		    lookahead == '\n' || lookahead == EOF)
@@ -415,11 +406,11 @@ parse_brace(void)
 
 	if (lookahead != '{')
 		yyerror("expected '{'");
-	advance();
+	syn_advance();
 	t = parse_body();
 	if (lookahead != '}')
 		yyerror("expected '}'");
-	advance();
+	syn_advance();
 	return tree1(BRACE, t);
 }
 
@@ -464,13 +455,13 @@ parse_redir_word(void)
 
 	if (op != REDIR && op != DUP) {
 		yyerror("expected redir");
-		advance();
+		syn_advance();
 		return (Node)0;
 	}
 
 	/* get the tree node from yylval before advancing */
 	t = yylval.tree;
-	advance();
+	syn_advance();
 
 	if (op == REDIR) {
 		w = parse_word();
@@ -517,7 +508,7 @@ parse_first(void)
 
 	t = parse_comword();
 	while (lookahead == '^') {
-		advance();
+		syn_advance();
 		w = parse_word();
 		t = tree2('^', t, w);
 	}
@@ -531,7 +522,7 @@ static Node
 parse_keyword(void)
 {
 	int op = lookahead;
-	advance();
+	syn_advance();
 	return tree1(op, (Node)0);
 }
 
@@ -583,7 +574,7 @@ parse_word(void)
 	}
 
 	while (lookahead == '^') {
-		advance();
+		syn_advance();
 		w = parse_word();
 		t = tree2('^', t, w);
 	}
@@ -608,27 +599,27 @@ parse_comword(void)
 
 	switch (lookahead) {
 	case '$':
-		advance();
+		syn_advance();
 		if (lookahead == SUB) {
-			advance();
+			syn_advance();
 			w = parse_word();
 			if (lookahead != ')')
 				yyerror("expected ')' in $");
-			advance();
+			syn_advance();
 			return tree2(SUB, w, parse_words());
 		}
 		return tree1('$', parse_word());
 
 	case '"':
-		advance();
+		syn_advance();
 		return tree1('"', parse_word());
 
 	case COUNT:
-		advance();
+		syn_advance();
 		return tree1(COUNT, parse_word());
 
 	case '`':
-		advance();
+		syn_advance();
 		if (lookahead == '{' || lookahead == WORD || lookahead == '\''
 		    || lookahead == '$' || lookahead == COUNT
 		    || lookahead == '"' || lookahead == FOR
@@ -644,15 +635,15 @@ parse_comword(void)
 		return tree2('`', (Node)0, parse_brace());
 
 	case '(':
-		advance();
+		syn_advance();
 		w = parse_words();
 		if (lookahead != ')')
 			yyerror("expected ')' in comword");
-		advance();
+		syn_advance();
 		return tree1(PAREN, w);
 
 	case REDIR:
-		advance();
+		syn_advance();
 		t = parse_brace();
 		t = mung1(REDIR, t);
 		t->type = PIPEFD;
@@ -661,13 +652,13 @@ parse_comword(void)
 	case DUP:
 		/* DUP in comword context is unusual; treat as error */
 		yyerror("unexpected DUP");
-		advance();
+		syn_advance();
 		return (Node)0;
 
 	case WORD:
 	default:
 		t = yylval.tree;
-		advance();
+		syn_advance();
 		return t;
 	}
 }

@@ -71,6 +71,7 @@
 #define	YYNOMORE	-1
 
 extern	Lextok *yytext;
+extern	int tl_yylex(void);
 
 YYSTYPE yylval;
 
@@ -161,9 +162,11 @@ static	void	skip_to_sync(void);
 
 /*
  * Lookahead buffer (1 token).
+ * NOTE: named spin_yylex (not yylex) to avoid colliding with the
+ * global yylex() declared in spin.h and defined in spinlex.c.
  */
 static int
-yylex(void)
+spin_yylex(void)
 {
 	return tl_yylex();
 }
@@ -172,7 +175,7 @@ static int
 yypeek(void)
 {
 	if(!yyhave){
-		yytok = yylex();
+		yytok = spin_yylex();
 		yyval = yylval;
 		yyhave = 1;
 	}
@@ -187,7 +190,7 @@ yyget(void)
 		yylval = yyval;
 		return yytok;
 	}
-	return yylex();
+	return spin_yylex();
 }
 
 static void
