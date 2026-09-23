@@ -488,7 +488,7 @@ parse_stmt(void)
 		if(yyget() != '(')
 			yyerror("syntax error");
 		c1 = parse_cond();
-		(void)c1;
+		USED(c1);
 		if(yyget() != ';')
 			yyerror("syntax error");
 		c2 = parse_cond();

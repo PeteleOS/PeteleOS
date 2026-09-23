@@ -1267,12 +1267,26 @@ parse_pplist(void)
 	return l;
 }
 
-/* prarg: empty | pplist | '(' plist ')' (covered via pplist) */
+/* prarg: empty | pplist | '(' plist ')' */
 static Node *
 parse_prarg(void)
 {
 	int t = yypeek();
+	Node *a;
 
+	if(t == '('){
+		yyget();
+		if(yypeek() == ')'){
+			yyget();
+			return rectonode();
+		}
+		a = parse_patlist();
+		if(a == NULL)
+			return NULL;
+		if(!expect_rparen())
+			return NULL;
+		return a;
+	}
 	if(t == '/' || can_start_term(t))
 		return parse_pplist();
 	return rectonode();

@@ -249,7 +249,7 @@ parse_postfix(void)
 static int
 parse_iter(void)
 {
-	int v, w, lo, hi;
+	int v, lo, hi;
 
 	v = parse_postfix();
 	for(;;){

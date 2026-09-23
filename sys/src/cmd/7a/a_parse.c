@@ -1018,8 +1018,6 @@ static Gen
 parse_vgen(void)
 {
 	long t;
-	vlong v;
-	Gen g;
 
 	t = yypeek(0);
 	if(t == LVREG || t == LV){
@@ -1150,7 +1148,7 @@ parse_oreg(void)
 				   In oreg context, '(' after name can only be this suffix
 				   (oreg followed by ',' ';' etc., not '('). So consume. */
 				/* Peek inside: '(' sreg ')'? */
-				long a1, a2;
+				long a1;
 
 				a1 = yypeek(1);
 				if(a1 == LREG || a1 == LR || a1 == LSP){
@@ -1456,7 +1454,7 @@ parse_inst(void)
 				saveval[i] = yyval[i];
 			}
 			yyget();
-			yylval.sym;
+			USED(yylval.sym);
 			parse_offset();
 			if(yypeek(0) == '(' || yypeek(0) == '<')
 				isnireg = 1;

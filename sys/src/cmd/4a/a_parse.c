@@ -525,6 +525,8 @@ static Gen parse_oreg(void)
         yyget();
         s = yylval.sym;
         off = parse_offset();
+        USED(s);
+        USED(off);
         if (yypeek(0) == '(')
         {
             yyhave = savehave;
@@ -593,6 +595,7 @@ static Gen parse_gen(void)
         {
             vlong c;
             c = parse_con();
+            USED(c);
             if (yypeek(0) == '(')
             {
                 yyhave = sh;
@@ -828,6 +831,7 @@ static void parse_inst(void)
                 sv[i] = yyval[i];
             }
             s = parse_sreg();
+            USED(s);
             if (yypeek(0) == ',')
             {
                 yyhave = sh;
@@ -870,6 +874,7 @@ static void parse_inst(void)
                 sv[i] = yyval[i];
             }
             s = parse_sreg();
+            USED(s);
             if (yypeek(0) == ',')
             {
                 yyhave = sh;
@@ -965,6 +970,8 @@ static void parse_inst(void)
                 yyget();
                 sx = yylval.sym;
                 off = parse_offset();
+                USED(sx);
+                USED(off);
                 if (yypeek(0) == '(' || yypeek(0) == '<')
                 {
                     yyhave = sh;
@@ -1009,6 +1016,7 @@ static void parse_inst(void)
                 sv[i] = yyval[i];
             }
             s = parse_sreg();
+            USED(s);
             if (yypeek(0) == ',')
             {
                 yyhave = sh;
@@ -1049,6 +1057,8 @@ static void parse_inst(void)
                 vlong off;
                 sx = yylval.sym;
                 off = parse_offset();
+                USED(sx);
+                USED(off);
                 if (yypeek(0) == '(' || yypeek(0) == '<')
                 {
                     yyhave = sh;
@@ -1112,6 +1122,7 @@ static void parse_inst(void)
             {
                 vlong c;
                 c = parse_con();
+                USED(c);
                 if (yypeek(0) == ',')
                 {
                     yyhave = sh;
@@ -1125,7 +1136,7 @@ static void parse_inst(void)
                     b = parse_rel();
                     if (!isreg(&a))
                         print("left side must be register\n");
-                    outcode(op, &a, NREG, &b);
+                    outcode(op, &a, s, &b);
                     return;
                 }
             }
@@ -1370,7 +1381,6 @@ static void parse_line(void)
     if (t == LSCHED)
     {
         yyget();
-        s = (Sym *)0;
         v = yylval.lval;
         yyexpect(';');
         nosched = v;
