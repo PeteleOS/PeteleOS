@@ -4,7 +4,7 @@
 /*
  * Token numbers and YYSTYPE for rc (hand-written parser replacement).
  * Replaces yacc-generated x.tab.h (same numbers: FIRSTTOKEN 257
- * through LASTTOKEN 278, single-char tokens keep ASCII codes).
+ * through LASTTOKEN 281, single-char tokens keep ASCII codes).
  * Included by rc.h and indirectly by the rest of rc.
  */
 
@@ -40,8 +40,13 @@ extern YYSTYPE yylval;
 #define	PAREN	276
 #define	PCMD	277
 #define	PIPEFD	278
+#define	ANDAND	279
+#define	OROR	280
+#define	COUNT	281
 
+#ifndef	YYMAXDEPTH
 #define	YYMAXDEPTH	500
+#endif
 #define	YYPREFIX
 #define	YYSTYPE_IS_DECLARED
 

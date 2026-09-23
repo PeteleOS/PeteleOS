@@ -33,7 +33,6 @@ typedef struct builtin builtin;
 #include "unix.h"
 #endif
 
-#define	YYMAXDEPTH	500
 #ifndef YYPREFIX
 #ifndef PAREN
 #include "syn_parse.h"
