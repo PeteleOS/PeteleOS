@@ -66,12 +66,12 @@ enum
 };
 
 char		*menu2str[] = {
- [Cut]		"cut",
- [Paste]		"paste",
- [Snarf]		"snarf",
- [Plumb]		"plumb",
- [Send]		"send",
- [Scroll]		"scroll",
+			"cut",
+			"paste",
+			"snarf",
+			"plumb",
+			"send",
+			"scroll",
 			nil
 };
 
@@ -83,12 +83,12 @@ Menu menu2 =
 int	Hidden = Exit+1;
 
 char		*menu3str[100] = {
- [New]		"New",
- [Reshape]	"Resize",
- [Move]		"Move",
- [Delete]		"Delete",
- [Hide]		"Hide",
- [Exit]		"Exit",
+			"New",
+			"Resize",
+			"Move",
+			"Delete",
+			"Hide",
+			"Exit",
 			nil
 };
 

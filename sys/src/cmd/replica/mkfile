@@ -38,9 +38,10 @@ BIN=/$objtype/bin/replica
 </sys/src/cmd/mkmany
 
 install:V:
+	mkdir -p $BIN
 	for(i in $TARG)
 		mk $MKFLAGS $i.install
-	mk scripts-install
+	mk $MKFLAGS scripts-install
 
 scripts-install:V: ${SCRIPTS:%=$BIN/%}
 
