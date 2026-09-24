@@ -554,6 +554,8 @@ parse_addr(void)
 			int savehave, i;
 			long savetok[256];
 			YYSTYPE saveval[256];
+			long pin;
+			vlong v;
 
 			savehave = yyhave;
 			for(i = 0; i < yyhave; i++){
@@ -561,8 +563,8 @@ parse_addr(void)
 				saveval[i] = yyval[i];
 			}
 			if(yypeek(0) == '('){
-				(void)parse_con();
-				long pin;
+				v = parse_con();
+				USED(v);
 
 				pin = yypeek(1);
 				if(pin == LSB || pin == LSP || pin == LFP){
@@ -820,7 +822,8 @@ parse_inst(void)
 				saveval[i] = yyval[i];
 			}
 			if(yypeek(0) == ','){
-				(void)parse_sreg();
+				s = parse_sreg();
+				USED(s);
 				yyhave = savehave;
 				for(i = 0; i < savehave; i++){
 					yytok[i] = savetok[i];
@@ -877,7 +880,8 @@ parse_inst(void)
 				saveval[i] = yyval[i];
 			}
 			if(yypeek(0) == ','){
-				(void)parse_sreg();
+				s = parse_sreg();
+				USED(s);
 				yyhave = savehave;
 				for(i = 0; i < savehave; i++){
 					yytok[i] = savetok[i];
@@ -924,7 +928,8 @@ parse_inst(void)
 				saveval[i] = yyval[i];
 			}
 			if(yypeek(0) == '('){
-				(void)parse_con();
+				v = parse_con();
+				USED(v);
 				yyhave = savehave;
 				for(i = 0; i < savehave; i++){
 					yytok[i] = savetok[i];
@@ -967,8 +972,6 @@ parse_inst(void)
 			if(yypeek(0) == LNAME){
 				yyget();
 				if(yypeek(0) == '('){
-					(void)yylval.sym;
-					(void)parse_offset();
 					yyhave = savehave;
 					for(i = 0; i < savehave; i++){
 						yytok[i] = savetok[i];

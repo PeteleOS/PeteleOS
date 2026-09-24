@@ -744,7 +744,9 @@ static Gen parse_addr(void)
             sv[i] = yyval[i];
         }
         {
-            (void)parse_con();
+            vlong v;
+            v = parse_con();
+            USED(v);
             if (yypeek(0) == '(')
             {
                 long pin;
@@ -800,7 +802,6 @@ static void parse_inst(void)
     long op;
     Gen a, b, c;
     vlong s;
-    (void)s;
     long t;
     op = yypeek(0);
     if (op == LMOVW || op == LMOVB)
@@ -1047,6 +1048,7 @@ static void parse_inst(void)
                 sv[i] = yyval[i];
             }
             s = parse_sreg();
+            USED(s);
             if (yypeek(0) == ',')
             {
                 yyhave = sh;
@@ -1099,6 +1101,7 @@ static void parse_inst(void)
                 sv[i] = yyval[i];
             }
             s = parse_con();
+            USED(s);
             if (yypeek(0) == ',')
             {
                 yyhave = sh;
@@ -1151,10 +1154,10 @@ static void parse_inst(void)
                 }
                 {
                     vlong cc;
-                    (void)cc;
                     if (isconstart(yypeek(0)))
                     {
                         cc = parse_con();
+                        USED(cc);
                         if (yypeek(0) == '(')
                         {
                             yyhave = sh;
@@ -1228,6 +1231,7 @@ static void parse_inst(void)
                 sv[i] = yyval[i];
             }
             s = parse_con();
+            USED(s);
             if (yypeek(0) == ',')
             {
                 yyhave = sh;
@@ -1296,9 +1300,6 @@ static void parse_inst(void)
             }
         }
         a = parse_rel();
-        outcode(op, &nullgen, NREG, &a);
-        return;
-        a = parse_addr();
         outcode(op, &nullgen, NREG, &a);
         return;
     }
@@ -1498,9 +1499,6 @@ static void parse_inst(void)
     case LXMV:
     case LXOP:
     {
-        long o2;
-        (void)o2;
-        o2 = op;
         yyget();
         op = yylval.lval;
         if (op == LXOP)

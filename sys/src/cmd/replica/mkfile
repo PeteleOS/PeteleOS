@@ -6,7 +6,7 @@ SCRIPTS=\
 	push\
 	scan\
 	setupdirs\
-	
+
 TARG=\
 	applychanges\
 	applylog\
@@ -30,7 +30,7 @@ UPDATE=\
 	$HFILES\
 	applychanges.c\
 	updatedb.c\
-	${TARG:%=/amd64/bin/replica/%}\
+	${TARG:%=/$objtype/bin/replica/%}\
 	${SCRIPTS:%=/rc/bin/replica/%}\
 	/rc/bin/replica/defs\
 
