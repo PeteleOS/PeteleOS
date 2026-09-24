@@ -39,8 +39,8 @@ BIN=/$objtype/bin/replica
 
 install:V:
 	mkdir -p $BIN
-	for(i in $TARG)
-		mk $MKFLAGS $i.install
+	@{for(i in $TARG)
+		mk $MKFLAGS $i.install}
 	mk $MKFLAGS scripts-install
 
 scripts-install:V: ${SCRIPTS:%=$BIN/%}
