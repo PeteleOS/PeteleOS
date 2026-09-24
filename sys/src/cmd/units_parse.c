@@ -581,7 +581,7 @@ yyerror(char *fmt, ...)
 	va_start(arg, fmt);
 	vseprint(buf, buf+sizeof(buf), fmt, arg);
 	va_end(arg);
-	print("%ld: %S\n\t%s\n", lineno, line, buf);
+	print("%lud: %S\n\t%s\n", lineno, line, buf);
 	nerrors++;
 	if(nerrors > 5) {
 		print("too many errors\n");

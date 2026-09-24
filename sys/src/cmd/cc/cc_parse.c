@@ -351,7 +351,7 @@ parse_xdecor_full(void)
 	if(yypeek(0) == '*'){
 		yyget();
 		g = 0;
-		while(is_specword(yypeek(0))){
+		while(yypeek(0)==LCONSTNT || yypeek(0)==LVOLATILE || yypeek(0)==LRESTRICT){
 			long b = specbit(yypeek(0));
 			if(b == BCONSTNT || b == BVOLATILE)
 				g = typebitor(g, b);
@@ -712,7 +712,7 @@ parse_abdecor1(void)
 	if(yypeek(0) == '*'){
 		long g = 0;
 		yyget();
-		while(is_specword(yypeek(0))){
+		while(yypeek(0)==LCONSTNT || yypeek(0)==LVOLATILE || yypeek(0)==LRESTRICT){
 			long b = specbit(yypeek(0));
 			if(b == BCONSTNT || b == BVOLATILE)
 				g = typebitor(g, b);
@@ -937,10 +937,10 @@ parse_arg_one(void)
 			/* Simplify: try xdecor if tag ahead, else abdecor */
 			/* For now, try abdecor if next is ','/')' after stars? */
 			/* Consume as abdecor unless tag found. */
-			/* Look ahead up to 4 tokens for LNAME/LTYPE */
+			/* Look ahead up to 16 tokens for LNAME/LTYPE */
 			int isx = 0;
 			int i;
-			for(i=0;i<4;i++){
+			for(i=0;i<16;i++){
 				long tt = yypeek(i);
 				if(tt == LNAME || tt == LTYPE){ isx = 1; break; }
 				if(tt == ',' || tt == ')' || tt == -1 || tt == 0) break;

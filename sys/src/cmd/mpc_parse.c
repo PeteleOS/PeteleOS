@@ -1086,9 +1086,9 @@ ecom(Node *f, Node *t)
 	switch(f->c){
 	case NUM:
 		if(mpsignif(f->m) <= 32)
-			cprint("uitomp(%uUL, %N);\n", mptoui(f->m), t);
+			cprint("uitomp(%udUL, %N);\n", mptoui(f->m), t);
 		else if(mpsignif(f->m) <= 64)
-			cprint("uvtomp(%lluULL, %N);\n", mptouv(f->m), t);
+			cprint("uvtomp(%lludULL, %N);\n", mptouv(f->m), t);
 		else
 			cprint("strtomp(\"%.16B\", nil, 16, %N);\n", f->m, t);
 		goto out;

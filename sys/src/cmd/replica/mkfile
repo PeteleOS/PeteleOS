@@ -39,7 +39,9 @@ BIN=/$objtype/bin/replica
 
 install:V:
 	mkdir -p $BIN
-	mk $MKFLAGS applychanges.install applylog.install compactdb.install updatedb.install scripts-install
+	for(i in $TARG)
+		mk $MKFLAGS $i.install
+	mk $MKFLAGS scripts-install
 
 scripts-install:V: ${SCRIPTS:%=$BIN/%}
 
