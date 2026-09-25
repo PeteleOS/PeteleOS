@@ -812,7 +812,22 @@ parse_comword(void)
 	switch(lookahead){
 	case '$':
 		syn_advance();
-		w = parse_word();
+		/*
+		 * '$' binds tighter than '^' (see the precedence list in
+		 * syn.y: %left '^' is declared before %right '$' COUNT '"'),
+		 * so its operand must be a single word_base(), not a full
+		 * parse_word(). Calling parse_word() here swallows any
+		 * following implicit '^'-concatenation (e.g. the literal
+		 * ".install" in "$i.install") into the variable-name operand
+		 * itself, so "$i.install" was mis-parsed as "$(i^.install)"
+		 * (look up a variable literally named "i.install") instead
+		 * of the correct "($i)^.install" (expand $i, then append the
+		 * literal ".install"). That silently evaluated to an empty
+		 * word instead of concatenating, breaking any "$var.suffix"
+		 * pattern (a very common idiom in rc scripts and mkfiles,
+		 * e.g. "mk $i.install", "elf=$base.elf").
+		 */
+		w = parse_word_base();
 		if(lookahead == SUB){
 			Node words;
 			syn_advance();
@@ -827,11 +842,13 @@ parse_comword(void)
 
 	case '"':
 		syn_advance();
-		return tree1('"', parse_word());
+		/* same precedence issue as '$' above: bind tighter than '^' */
+		return tree1('"', parse_word_base());
 
 	case COUNT:
 		syn_advance();
-		return tree1(COUNT, parse_word());
+		/* same precedence issue as '$' above: bind tighter than '^' */
+		return tree1(COUNT, parse_word_base());
 
 	case '`':
 		syn_advance();
