@@ -64,7 +64,7 @@ collect {
 	args="";
 	for(i = 2; i <= NF; i++)
 		if($i ~ "^args="){
-			sub("args=", "", $i);
+			$i = substr($i, 6);
 			for(j = i; j <= NF; j++)
 				if(j > i)
 					args = args  " " $j;
@@ -74,30 +74,30 @@ collect {
 	for(i = 2; i <= NF; i++){
 		if($i ~ "^csp="){
 			ncsp++;
-			sub("csp=", "", $i);
+			$i = substr($i, 5);
 			printf("%s, ", $i);
 		} else
 		if($i ~ "^subclass="){
 			ncsp++;
-			sub("subclass=", "", $i);
+			$i = substr($i, 10);
 			printf("DSC|%s, ", $i);
 		} else
 		if($i ~ "^class="){
 			ncsp++;
-			sub("class=", "", $i);
+			$i = substr($i, 7);
 			printf("DCL|%s, ", $i);
 		} else
 		if($i ~ "^proto="){
 			ncsp++;
-			sub("proto=", "", $i);
+			$i = substr($i, 7);
 			printf("DPT|%s, ", $i);
 		} else
 		if($i ~ "^vid="){
-			sub("vid=", "", $i);
+			$i = substr($i, 5);
 			vid=$i
 		} else
-		if($i ~ "did="){
-			sub("did=", "", $i);
+		if($i ~ "^did="){
+			$i = substr($i, 5);
 			did=$i
 		}
 	}

@@ -38,7 +38,7 @@ pac4dec(void *a)
 {
 	Playfd *pfd;
 	Pacbuf *pb;
-	int fd, type;
+	int fd, type = Pcm;
 	char *ext, buf[256];
 	static char args[6][32];
 	char *argv[6] = {args[0], args[1], args[2], args[3], args[4], args[5]};

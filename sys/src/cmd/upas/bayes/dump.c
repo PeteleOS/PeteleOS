@@ -14,10 +14,10 @@ dump(Dreprog *pp)
 	Dreinst *l;
 
 	print("start %ld %ld %ld %ld\n",
-		pp->start[0]-pp->inst,
-		pp->start[1]-pp->inst,
-		pp->start[2]-pp->inst,
-		pp->start[3]-pp->inst);
+		(long)(pp->start[0]-pp->inst),
+		(long)(pp->start[1]-pp->inst),
+		(long)(pp->start[2]-pp->inst),
+		(long)(pp->start[3]-pp->inst));
 
 	for(i=0; i<pp->ninst; i++){
 		l = &pp->inst[i];
@@ -32,7 +32,7 @@ dump(Dreprog *pp)
 			print("-");
 			if(j != l->nc-1)
 				print("%C%s", (l->c[j+1].start&0xFFFF)-1, (l->c[j+1].start&0x10000) ? "$" : "");
-			print("] %ld", l->c[j].next - pp->inst);
+			print("] %ld", (long)(l->c[j].next - pp->inst));
 		}
 		if(l->isfinal)
 			print(" final");

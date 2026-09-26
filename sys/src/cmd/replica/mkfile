@@ -43,11 +43,11 @@ install:V:
 		mk $MKFLAGS $i.install}
 	mk $MKFLAGS scripts-install
 
-scripts-install:V: ${SCRIPTS:%=$BIN/%}
+scripts-install:V:
+	@{for(i in $SCRIPTS){
+		{ echo '#!/bin/rc'; echo 'exec /rc/bin/replica/'^$i^' $*' } >$BIN/$i
+		chmod +x $BIN/$i
+	}}
 
 $O.applychanges: revproto.$O
-
-${SCRIPTS:%=$BIN/%}:
-	{ echo '#!/bin/rc'; echo 'exec /rc/bin/replica/'^`{basename $target}^' $*' } >$target
-	chmod +x $target
 

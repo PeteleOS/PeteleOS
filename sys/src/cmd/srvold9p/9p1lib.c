@@ -355,7 +355,7 @@ convD2M9p1(Dir *f, char *ap)
 	STRING(uid, NAMEREC);
 	STRING(gid, NAMEREC);
 
-	q = f->qid.path & ~0x80000000;
+	q = f->qid.path & ~(uvlong)0x80000000;
 	if(f->qid.type & QTDIR)
 		q |= 0x80000000;
 	VLONG(q);
@@ -582,7 +582,7 @@ convM2D9p1(char *ap, Dir *f)
 	p += NAMEREC;
 
 	LONG(qid.path);
-	f->qid.path &= ~0x80000000;
+	f->qid.path &= ~(uvlong)0x80000000;
 
 	LONG(qid.vers);
 	LONG(mode);

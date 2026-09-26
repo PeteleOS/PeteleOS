@@ -493,9 +493,9 @@ dread(Usbfs *fs, Fid *fid, void *data, long count, vlong offset)
 		e = buf + sizeof(buf);
 		if(lun->flags & Finqok)
 			s = seprint(s, e, "inquiry %s lun %ld: %s\n",
-				fs->dev->dir, lun - &ums->lun[0], lun->inq);
+				fs->dev->dir, (long)(lun - &ums->lun[0]), lun->inq);
 		if(lun->blocks > 0)
-			s = seprint(s, e, "geometry %llud %ld\n",
+			s = seprint(s, e, "geometry %llud %lud\n",
 				lun->blocks, lun->lbsize);
 		count = usbreadbuf(data, count, offset, buf, s - buf);
 		break;

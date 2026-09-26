@@ -29,7 +29,7 @@ info(int indent, int mno, Message *m)
 	Message *nm;
 
 	prindent(indent);
-	print("%d%c %d ", mno, m->allocated?'*':' ', m->end - m->start);
+	print("%d%c %d ", mno, m->allocated?'*':' ', (int)(m->end - m->start));
 	if(m->unixfrom != nil)
 		print("uf %s ", s_to_c(m->unixfrom));
 	if(m->unixdate != nil)

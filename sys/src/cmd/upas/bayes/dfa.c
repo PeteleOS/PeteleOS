@@ -600,8 +600,8 @@ rdump(Reprog *pp)
 
 	l = pp->firstinst;
 	do{
-		print("%ld:\t0%o\t%ld\t%ld", l-pp->firstinst, l->type,
-			l->left-pp->firstinst, l->right-pp->firstinst);
+		print("%ld:\t0%o\t%ld\t%ld", (long)(l-pp->firstinst), l->type,
+			(long)(l->left-pp->firstinst), (long)(l->right-pp->firstinst));
 		if(l->type == RUNE)
 			print("\t%C\n", l->r);
 		else if(l->type == CCLASS || l->type == NCCLASS){
@@ -626,10 +626,10 @@ dump(Dreprog *pp)
 	Dreinst *l;
 
 	print("start %ld %ld %ld %ld\n",
-		pp->start[0]-pp->inst,
-		pp->start[1]-pp->inst,
-		pp->start[2]-pp->inst,
-		pp->start[3]-pp->inst);
+		(long)(pp->start[0]-pp->inst),
+		(long)(pp->start[1]-pp->inst),
+		(long)(pp->start[2]-pp->inst),
+		(long)(pp->start[3]-pp->inst));
 
 	for(i=0; i<pp->ninst; i++){
 		l = &pp->inst[i];
@@ -644,7 +644,7 @@ dump(Dreprog *pp)
 			print("-");
 			if(j != l->nc-1)
 				print("%C%s", (l->c[j+1].start&0xFFFF)-1, (l->c[j+1].start&0x10000) ? "$" : "");
-			print("] %ld", l->c[j].next - pp->inst);
+			print("] %ld", (long)(l->c[j].next - pp->inst));
 		}
 		if(l->isfinal)
 			print(" final");
@@ -689,12 +689,12 @@ Bprintdfa(Biobuf *b, Dreprog *p)
 	for(i=0; i<p->ninst; i++)
 		nc += p->inst[i].nc;
 	Bprint(b, "%d %d %ld %ld %ld %ld\n", p->ninst, nc,
-		p->start[0]-p->inst, p->start[1]-p->inst,
-		p->start[2]-p->inst, p->start[3]-p->inst);
+		(long)(p->start[0]-p->inst), (long)(p->start[1]-p->inst),
+		(long)(p->start[2]-p->inst), (long)(p->start[3]-p->inst));
 	for(i=0; i<p->ninst; i++){
 		Bprint(b, "%d %d %d", p->inst[i].isfinal, p->inst[i].isloop, p->inst[i].nc);
 		for(j=0; j<p->inst[i].nc; j++)
-			Bprint(b, " %d %ld", p->inst[i].c[j].start, p->inst[i].c[j].next-p->inst);
+			Bprint(b, " %d %ld", p->inst[i].c[j].start, (long)(p->inst[i].c[j].next-p->inst));
 		Bprint(b, "\n");
 	}
 }
