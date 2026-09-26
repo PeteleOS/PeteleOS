@@ -515,9 +515,13 @@ parse_body(void)
 	}
 	if(lookahead == '\n'){
 		syn_advance();
-		/* cmd '\n' is a cmdsan; wrap rest in ';' */
-		if(lookahead == ';' || lookahead == '&' ||
-		    lookahead == '\n' || lookahead == EOF)
+		/* cmdsan: cmd '\n'; the body always continues, exactly
+		 * like yacc's cmdsan body rule.  In particular blank and
+		 * comment-only lines (extra '\n') must be consumed by
+		 * recursion here -- stopping early would strand input
+		 * and make the enclosing brace/paren fail later with
+		 * "expected '}'".  EOF terminates the body. */
+		if(lookahead == EOF)
 			return t;
 		return tree2(';', t, parse_body());
 	}
