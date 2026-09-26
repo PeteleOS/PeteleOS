@@ -141,6 +141,7 @@ static Lextok	*parse_body(void);
 static Lextok	*parse_sequence(void);
 static Lextok	*parse_step(void);
 static Lextok	*parse_stmnt(void);
+static Lextok	*parse_Stmnt(void);
 static Lextok	*parse_options(void);
 static Lextok	*parse_option(void);
 static Lextok	*parse_special(void);
@@ -668,7 +669,8 @@ parse_c_fcts(void)
 static Lextok*
 parse_ccode(void)
 {
-	Lextok *c, *s, *ctok;
+	Lextok *c, *ctok;
+	Symbol *s;
 
 	yyget();
 	ctok = yylval;  /* C_CODE or C_DECL */
@@ -716,7 +718,8 @@ parse_cstate(void)
 static Lextok*
 parse_cexpr(void)
 {
-	Lextok *c, *s, *ctok;
+	Lextok *c, *ctok;
+	Symbol *s;
 
 	yyget();
 	ctok = yylval;  /* C_EXPR */
@@ -778,8 +781,14 @@ parse_body(void)
 static Lextok*
 parse_sequence(void)
 {
+	Lextok *s;
+
+	/* sequence: step {if($1) add_seq($1);}
+	 *         | sequence MS step {if($3) add_seq($3);} */
 	for(;;){
-		parse_step();
+		s = parse_step();
+		if(s != ZN)
+			add_seq(s);
 		if(yypeek() != ';' && yypeek() != ARROW)
 			break;
 		while(yypeek() == ';' || yypeek() == ARROW)
@@ -795,33 +804,37 @@ parse_sequence(void)
 static Lextok*
 parse_step(void)
 {
+	Lextok *xu, *vl, *s1, *s2;
+
 	if(yypeek() == XU){
-		yyget();
-		/* vref_lst */
-		parse_vref_lst();
-		setxus(yylval, yylval->val);
+		yyget(); xu = yylval;  /* XU */
+		/* vref_lst: varref | varref ',' vref_lst (spin.y) */
+		vl = parse_vref_lst();
+		setxus(vl, xu->val);
 		return ZN;
 	}
-	if(yypeek() == NAME && yypeek() == ':'){
-		/* could be label or error case */
-		yyget();  /* NAME */
-		if(yypeek() == ':'){
-			yyget();
-			/* check next */
-		}
+	/* one_decl steps declare vars/chans and produce no sequence
+	 * element (spin.y: step: one_decl {$$=ZN;}). Detect them here
+	 * because parse_stmnt() only handles statements. */
+	if(yypeek() == HIDDEN || yypeek() == SHOW || yypeek() == ISLOCAL
+	|| yypeek() == TYPE || yypeek() == UNAME){
+		parse_one_decl();
+		return ZN;
 	}
 
-	parse_stmnt();
+	s1 = parse_stmnt();
 	if(yypeek() == UNLESS){
 		yyget();
-		if(parse_step()->ntyp == DO)
+		if(s1 != ZN && s1->ntyp == DO)
 			safe_break();
-		parse_step();
-		if(parse_step()->ntyp == DO)
+		s2 = parse_stmnt();
+		if(s1 != ZN && s1->ntyp == DO)
 			restore_break();
-		return ZN;
+		if(s1 != ZN && s2 != ZN)
+			s1 = do_unless(s1, s2);
+		return s1;
 	}
-	return ZN;
+	return s1;
 }
 
 /*
@@ -830,10 +843,10 @@ parse_step(void)
 static Lextok*
 parse_stmnt(void)
 {
-	if(yypeek() == varref)  /* heuristic */
-		return parse_special();
-	else
-		return parse_Stmnt();
+	/* stmnt: Special | Stmnt (see spin.y). With 1-token lookahead
+	 * Special and Stmnt overlap (both can start with NAME/UNAME),
+	 * so delegate to the unified parser which handles both. */
+	return parse_Stmnt();
 }
 
 static Lextok*
@@ -845,16 +858,16 @@ parse_special(void)
 static Lextok*
 parse_Stmnt(void)
 {
-	Lextok *r = ZN;
+	Lextok *r = ZN, *name;
 
 	/* This is a large dispatch — see spin.y lines 651-744 */
 	switch(yypeek()){
 	case RUN: case LEN: case ENABLED: case PC_VAL: case SET_P:
 	case PRINT: case PRINTM: case ASSERT: case FULL: case NFULL:
-	case EMPTY: case NEMPTY: case PNAME: case PC_VAL: case C_CODE:
-	case VAR: case UNAME: case NAME: case CONST: case C_EXPR:
+	case EMPTY: case NEMPTY: case PNAME: case C_CODE:
+	case UNAME: case NAME: case CONST: case C_EXPR:
 	case TIMEOUT: case NONPROGRESS: case ELSE: case ATOMIC:
-	case D_STEP: case '{': case INAME: case RETURN: case '}':
+	case D_STEP: case '{': case INAME: case RETURN:
 		/* Delegate to expr-level parsing */
 		r = parse_full_expr();
 		break;
@@ -876,7 +889,7 @@ parse_Stmnt(void)
 	case GOTO:
 		yyget();
 		if(yypeek() == NAME){
-			Lextok *name; yyget(); name = yylval;
+			yyget(); name = yylval;
 			if(name->sym->type != 0 && name->sym->type != LABEL)
 				non_fatal("bad label-name %s", name->sym->name);
 			name->sym->type = LABEL;
@@ -885,17 +898,20 @@ parse_Stmnt(void)
 			yyerror("syntax error");
 		break;
 	case NAME:
-		/* LABEL: stmnt */
-		if(yypeek() == ':'){
-			yyget();  /* NAME */
-			yyget();  /* ':' */
-			r = parse_Stmnt();
-			r = nn(yylval, ':', r, ZN);
-			if(yylval->sym->type != LABEL)
-				non_fatal("bad label-name %s", yylval->sym->name);
-			yylval->sym->type = LABEL;
-		} else {
-			r = parse_full_expr();
+		{
+			yyget(); name = yylval;  /* NAME */
+			if(yypeek() == ':'){
+				yyget();  /* ':' */
+				r = parse_Stmnt();
+				r = nn(name, ':', r, ZN);
+				if(name->sym->type != 0 && name->sym->type != LABEL)
+					non_fatal("bad label-name %s", name->sym->name);
+				name->sym->type = LABEL;
+			} else {
+				/* not a label: push NAME back and parse as expression */
+				yyhave = 1; yytok = NAME; yyval = name;
+				r = parse_full_expr();
+			}
 		}
 		break;
 	default:
@@ -912,20 +928,17 @@ parse_Stmnt(void)
 static Lextok*
 parse_options(void)
 {
-	Lextok *r, *first, *rest;
+	Lextok *r, *rest;
 
+	/* options: option {$$->sl=seqlist($1->sq,0);}
+	 *        | option options {$$->sl=seqlist($1->sq,$2->sl);} */
 	r = parse_option();
-	first = r;
-	while(yypeek() == SEP || (yypeek() != OD && yypeek() != FI)){
-		if(yypeek() == SEP || yypeek() != OD && yypeek() != FI){
-			rest = parse_option();
-			if(rest)
-				first->sl = seqlist(rest->sq, 0);
-		}
-		if(yypeek() == SEP)
-			break;
-	}
-	return first;
+	if(yypeek() == SEP){
+		rest = parse_options();
+		r->sl = seqlist(r->sq, rest->sl);
+	} else
+		r->sl = seqlist(r->sq, 0);
+	return r;
 }
 
 static Lextok*
@@ -1187,18 +1200,9 @@ parse_unary(void)
 		else
 			return nn(ZN, UMIN, r, ZN);
 	}
-	if(t == INCR || t == DECR){
-		yyget();
-		if(yypeek() == VAR){
-			Lextok *s; yyget(); s = yylval;
-			if(t == INCR)
-				return nn(ZN, CONST, ZN, ZN);  /* placeholder */
-			else
-				return nn(ZN, CONST, ZN, ZN);
-		}
-		yyerror("syntax error");
-		return ZN;
-	}
+	/* NOTE: INCR/DECR are postfix on varref in Stmnt (spin.y),
+	 * not prefix unary operators, so they are handled at the
+	 * statement level, not here. */
 	return parse_postfix(parse_primary());
 }
 
@@ -1218,11 +1222,6 @@ parse_postfix(Lextok *l)
 				yyerror("syntax error");
 			yyget();
 			break;
-		case NAME:
-			if(yypeek() == '->' || yypeek() == '['){
-				/* struct field access already handled by '.' */
-			}
-			return l;
 		default:
 			return l;
 		}
@@ -1232,7 +1231,7 @@ parse_postfix(Lextok *l)
 static Lextok*
 parse_primary(void)
 {
-	Lextok *r;
+	Lextok *r, *c, *p, *n, *e, *fld;
 
 	if(yypeek() == '('){
 		yyget();
@@ -1243,7 +1242,7 @@ parse_primary(void)
 		return r;
 	}
 	if(yypeek() == CONST){
-		Lextok *c; yyget(); c = yylval;
+		yyget(); c = yylval;
 		r = nn(ZN, CONST, ZN, ZN);
 		r->ismtyp = c->ismtyp;
 		r->sym = c->sym;
@@ -1270,21 +1269,50 @@ parse_primary(void)
 		has_np++;
 		return r;
 	}
-	if(yypeek() == PNAME && yypeek() == '@'){
-		Lextok *p; yyget(); p = yylval;  /* PNAME */
-		yyget();  /* '@' */
-		if(yypeek() == NAME){
-			Lextok *n; yyget(); n = yylval;
+	/* Remote references: PNAME '[' expr ']' '@' NAME,
+	 * PNAME '[' expr ']' ':' pfld, PNAME '@' NAME, PNAME ':' pfld
+	 * (see spin.y expr rules). */
+	if(yypeek() == PNAME){
+		yyget(); p = yylval;  /* PNAME */
+		if(yypeek() == '['){
+			yyget();  /* '[' */
+			e = parse_expr();
+			if(yypeek() != ']')
+				yyerror("syntax error");
+			yyget();  /* ']' */
+			if(yypeek() == '@'){
+				yyget();
+				if(yypeek() != NAME){
+					yyerror("syntax error");
+					return ZN;
+				}
+				yyget(); n = yylval;
+				return rem_lab(p->sym, e, n->sym);
+			}
+			if(yypeek() == ':'){
+				yyget();
+				fld = parse_pfld();
+				return rem_var(p->sym, e, fld->sym, fld->lft);
+			}
+			yyerror("syntax error");
+			return ZN;
+		}
+		if(yypeek() == '@'){
+			yyget();
+			if(yypeek() != NAME){
+				yyerror("syntax error");
+				return ZN;
+			}
+			yyget(); n = yylval;
 			return rem_lab(p->sym, ZN, n->sym);
 		}
-	}
-	if(yypeek() == PNAME && yypeek() == ':'){
-		Lextok *p; yyget(); p = yylval;
-		Lextok *q, *w;
-		yyget();  /* ':' */
-		yyget(); q = yylval;
-		yyget(); w = yylval;
-		return rem_var(p->sym, ZN, q->sym, w->lft);
+		if(yypeek() == ':'){
+			yyget();
+			fld = parse_pfld();
+			return rem_var(p->sym, ZN, fld->sym, fld->lft);
+		}
+		/* PNAME alone is not a valid primary; push back */
+		yyhave = 1; yytok = PNAME; yyval = p;
 	}
 
 	/* cexpr */
@@ -1303,7 +1331,8 @@ parse_primary(void)
 static Lextok*
 parse_Expr(void)
 {
-	Lextok *r;
+	Lextok *r, *r2;
+	int op;
 
 	r = parse_Probe();
 	if(yypeek() == ')'){
@@ -1311,8 +1340,7 @@ parse_Expr(void)
 		return r;
 	}
 	if(yypeek() == AND || yypeek() == OR){
-		int op = yyget();
-		Lextok *r2;
+		op = yyget();
 		r2 = parse_Expr();
 		if(!r2)
 			r2 = parse_expr();
@@ -1324,12 +1352,14 @@ parse_Expr(void)
 static Lextok*
 parse_Probe(void)
 {
+	Lextok *v;
+
 	if(yypeek() == FULL){
 		yyget();  /* FULL */
 		if(yypeek() != '(')
 			yyerror("syntax error");
 		yyget();
-		Lextok *v = parse_varref();
+		v = parse_varref();
 		if(yypeek() != ')')
 			yyerror("syntax error");
 		yyget();
@@ -1340,7 +1370,7 @@ parse_Probe(void)
 		if(yypeek() != '(')
 			yyerror("syntax error");
 		yyget();
-		Lextok *v = parse_varref();
+		v = parse_varref();
 		if(yypeek() != ')')
 			yyerror("syntax error");
 		yyget();
@@ -1351,7 +1381,7 @@ parse_Probe(void)
 		if(yypeek() != '(')
 			yyerror("syntax error");
 		yyget();
-		Lextok *v = parse_varref();
+		v = parse_varref();
 		if(yypeek() != ')')
 			yyerror("syntax error");
 		yyget();
@@ -1362,7 +1392,7 @@ parse_Probe(void)
 		if(yypeek() != '(')
 			yyerror("syntax error");
 		yyget();
-		Lextok *v = parse_varref();
+		v = parse_varref();
 		if(yypeek() != ')')
 			yyerror("syntax error");
 		yyget();
@@ -1375,7 +1405,7 @@ parse_Probe(void)
 static Lextok*
 parse_ltl_expr(void)
 {
-	Lextok *l, *r;
+	Lextok *l, *r, *a;
 
 	l = parse_expr();
 	if(yypeek() == UNTIL || yypeek() == RELEASE || yypeek() == WEAK_UNTIL ||
@@ -1396,7 +1426,7 @@ parse_ltl_expr(void)
 	if(yypeek() == WEAK_UNTIL){
 		yyget();
 		r = parse_expr();
-		Lextok *a = nn(ZN, ALWAYS, l, ZN);
+		a = nn(ZN, ALWAYS, l, ZN);
 		return nn(ZN, OR, a, nn(ZN, UNTIL, l, r));
 	}
 	return l;
@@ -1478,36 +1508,37 @@ parse_cmpnd(void)
 static Lextok*
 parse_sfld(void)
 {
+	Lextok *f;
+
 	if(yypeek() != '.')
 		return ZN;
 	yyget();
-	Lextok *f = parse_cmpnd();
+	f = parse_cmpnd();
 	return nn(ZN, '.', f, ZN);
 }
 
 static Lextok*
 parse_pfld(void)
 {
-	Lextok *r;
+	Lextok *r, *e;
 
-	if(yypeek() == NAME){
-		yyget(); r = yylval;
-		if(r->sym->isarray && !in_for)
-			non_fatal("missing array index for '%s'", r->sym->name);
-		return nn(r, NAME, ZN, ZN);
+	/* pfld: NAME | NAME '[' expr ']' (spin.y) */
+	if(yypeek() != NAME){
+		yyerror("syntax error");
+		return ZN;
 	}
-	/* NAME '[' expr ']' */
-	if(yypeek() == NAME){
-		yyget(); r = yylval;
+	yyget(); r = yylval;
+	if(yypeek() == '['){
 		yyget();  /* '[' */
-		Lextok *e = parse_expr();
+		e = parse_expr();
 		if(yypeek() != ']')
 			yyerror("syntax error");
 		yyget();  /* ']' */
 		return nn(r, NAME, e, ZN);
 	}
-	yyerror("syntax error");
-	return ZN;
+	if(r->sym->isarray && !in_for)
+		non_fatal("missing array index for '%s'", r->sym->name);
+	return nn(r, NAME, ZN, ZN);
 }
 
 /*
@@ -1590,7 +1621,7 @@ parse_ivar(void)
 static Lextok*
 parse_vardcl(void)
 {
-	Lextok *name;
+	Lextok *name, *c, *n2;
 
 	yyget(); name = yylval;  /* NAME */
 	name->sym->nel = 1;
@@ -1599,7 +1630,7 @@ parse_vardcl(void)
 		yyget();  /* ':' */
 		if(yypeek() != CONST)
 			yyerror("syntax error");
-		Lextok *c; yyget(); c = yylval;
+		yyget(); c = yylval;
 		name->sym->nbits = c->val;
 		if(c->val >= 8*sizeof(long)){
 			non_fatal("width-field %s too large", name->sym->name);
@@ -1611,11 +1642,11 @@ parse_vardcl(void)
 	if(yypeek() == '['){
 		yyget();  /* '[' */
 		if(yypeek() == CONST){
-			Lextok *c = parse_const_expr();
+			c = parse_const_expr();
 			name->sym->nel = c->val;
 			name->sym->isarray = 1;
 		} else if(yypeek() == NAME){
-			Lextok *n2; yyget(); n2 = yylval;
+			yyget(); n2 = yylval;
 			/* warning: NAME in array bound */
 			if(n2->sym->ini && n2->sym->ini->val > 0)
 				name->sym->nel = n2->sym->ini->val;
@@ -1697,10 +1728,12 @@ parse_vis(void)
 static Lextok*
 parse_asgn(void)
 {
+	Lextok *n;
+
 	if(yypeek() == ':'){
 		yyget();
 		if(yypeek() == NAME){
-			Lextok *n; yyget(); n = yylval;
+			yyget(); n = yylval;
 			return n;  /* mtype decl */
 		}
 	}
@@ -1776,11 +1809,11 @@ parse_vref_lst(void)
 static Lextok*
 parse_aname(void)
 {
-	Lextok *r;
+	Lextok *r = ZN;
 
-	if(yypeek() == NAME || yypeek() == PNAME)
+	if(yypeek() == NAME || yypeek() == PNAME){
 		yyget(); r = yylval;
-	else
+	} else
 		yyerror("syntax error");
 	return r;
 }
@@ -1799,10 +1832,11 @@ parse_basetype(void)
 		return r;
 	}
 	if(yypeek() == TYPE){
+		Lextok *n;
 		yyget(); r = yylval;
 		if(yypeek() == ':'){
 			yyget();
-			Lextok *n = parse_aname();
+			n = parse_aname();
 			r->sym = n ? n->sym : ZS;
 		}
 		if(r->val != MTYPE)
@@ -1879,12 +1913,12 @@ parse_prargs(void)
 static Lextok*
 parse_margs(void)
 {
-	Lextok *a;
+	Lextok *a, *inner;
 
 	a = parse_arg();
 	if(yypeek() == '('){
 		yyget();
-		Lextok *inner = parse_arg();
+		inner = parse_arg();
 		if(yypeek() != ')')
 			yyerror("syntax error");
 		yyget();
@@ -1902,7 +1936,7 @@ parse_margs(void)
 static Lextok*
 parse_arg(void)
 {
-	Lextok *e;
+	Lextok *e, *rest;
 
 	e = parse_expr();
 	if(e->ntyp == ',')
@@ -1910,7 +1944,7 @@ parse_arg(void)
 	else {
 		if(yypeek() == ','){
 			yyget();
-			Lextok *rest = parse_arg();
+			rest = parse_arg();
 			return nn(ZN, ',', e, rest);
 		}
 		return nn(ZN, ',', e, ZN);
@@ -1923,20 +1957,22 @@ parse_arg(void)
 static Lextok*
 parse_rarg(void)
 {
+	Lextok *e, *c, *r;
+
 	if(yypeek() == EVAL){
 		yyget();
 		if(yypeek() != '(')
 			yyerror("syntax error");
 		yyget();
-		Lextok *e = parse_expr();
+		e = parse_expr();
 		if(yypeek() != ')')
 			yyerror("syntax error");
 		yyget();
 		return nn(ZN, EVAL, e, ZN);
 	}
 	if(yypeek() == CONST){
-		Lextok *c; yyget(); c = yylval;
-		Lextok *r = nn(ZN, CONST, ZN, ZN);
+		yyget(); c = yylval;
+		r = nn(ZN, CONST, ZN, ZN);
 		r->ismtyp = c->ismtyp;
 		r->sym = c->sym;
 		r->val = c->val;
@@ -1946,8 +1982,8 @@ parse_rarg(void)
 		yyget();
 		if(yypeek() != CONST)
 			yyerror("syntax error");
-		Lextok *c; yyget(); c = yylval;
-		Lextok *r = nn(ZN, CONST, ZN, ZN);
+		yyget(); c = yylval;
+		r = nn(ZN, CONST, ZN, ZN);
 		r->val = -(c->val);
 		return r;
 	}
@@ -1960,7 +1996,7 @@ parse_rarg(void)
 static Lextok*
 parse_rargs(void)
 {
-	Lextok *r;
+	Lextok *r, *rest, *inner;
 
 	if(yypeek() == '('){
 		yyget();
@@ -1976,12 +2012,12 @@ parse_rargs(void)
 
 	if(yypeek() == ','){
 		yyget();
-		Lextok *rest = parse_rargs();
+		rest = parse_rargs();
 		return nn(ZN, ',', r, rest);
 	}
 	if(yypeek() == '('){
 		yyget();
-		Lextok *inner = parse_rargs();
+		inner = parse_rargs();
 		if(yypeek() != ')')
 			yyerror("syntax error");
 		yyget();
