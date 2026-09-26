@@ -1291,38 +1291,74 @@ parse_gen(void)
 		}
 		if(t == LNAME)
 			return parse_oreg();
-		/* con-start: parse con, check for '(' pointer ')'? */
+		/* con-start: parse con, then decide by what follows, mirroring
+		 * yacc's disambiguation (no save/restore: rewinding would
+		 * discard tokens already lexed past the save point and desync
+		 * the lexer -- e.g. "0(FP)" or "0(SP)" in syscall stubs).
+		 *   pointer (LSB/LSP/LFP) -> name: con '(' pointer ')'
+		 *   sreg (LREG/LR)        -> ioreg: con '(' sreg ')' */
 		{
-			int savehave, i;
-			long savetok[256];
-			YYSTYPE saveval[256];
 			vlong c;
+			long pin;
+			Gen g;
 
-			savehave = yyhave;
-			for(i = 0; i < yyhave; i++){
-				savetok[i] = yytok[i];
-				saveval[i] = yyval[i];
-			}
-			/* try to see if con '(' pointer ')' follows? */
-			/* Instead, parse con then peek '(' */
 			c = parse_con();
 			if(yypeek(0) == '('){
-				long pin;
-
 				pin = yypeek(1);
-				if(pin == LSB || pin == LSP || pin == LFP || pin == LREG || pin == LR){
-					yyhave = savehave;
-					for(i = 0; i < savehave; i++){
-						yytok[i] = savetok[i];
-						yyval[i] = saveval[i];
+				if(pin == LSB || pin == LSP || pin == LFP){
+					/* name: con '(' pointer ')' */
+					vlong ptr;
+
+					yyget();	/* '(' */
+					ptr = parse_pointer();
+					yyexpect(')');
+					g = nullgen;
+					g.type = D_OREG;
+					g.name = ptr;
+					g.sym = S;
+					g.offset = c;
+					/* oreg suffix: name '(' sreg ')' (mirrors parse_oreg) */
+					if(yypeek(0) == '('){
+						long a1;
+
+						a1 = yypeek(1);
+						if(a1 == LREG || a1 == LR || a1 == LSP){
+							vlong r;
+
+							yyget();
+							r = parse_spreg();
+							yyexpect(')');
+							g.type = D_OREG;
+							g.reg = r;
+							return g;
+						}
 					}
-					return parse_oreg();
+					return g;
+				}
+				if(pin == LREG || pin == LR){
+					/* ioreg: con '(' sreg ')' ['!'] (mirrors parse_ioreg) */
+					vlong r;
+
+					yyget();	/* '(' */
+					r = parse_sreg();
+					yyexpect(')');
+					if(yypeek(0) == '!'){
+						yyget();
+						g = nullgen;
+						g.type = D_XPRE;
+						g.reg = r;
+						g.offset = c;
+						return g;
+					}
+					g = nullgen;
+					g.type = D_OREG;
+					g.reg = r;
+					g.offset = c;
+					return g;
 				}
 			}
 			/* it was plain con (D_OREG) */
 			{
-				Gen g;
-
 				g = nullgen;
 				g.type = D_OREG;
 				g.offset = c;
@@ -1444,29 +1480,54 @@ parse_inst(void)
 			else
 				b = parse_rel();
 		} else if(yypeek(0) == LNAME){
-			int savehave, i;
-			long savetok[256];
-			YYSTYPE saveval[256];
-			int isnireg;
+			/* nireg vs rel: nireg (parse_name) is LNAME '<' ... '>'
+			   or LNAME [offset] '(' ..., rel is LNAME [offset].
+			   Decide with pure lookahead: skip the optional offset
+			   without consuming. A consume-then-rewind trial would
+			   discard tokens already lexed past the save point and
+			   desync the lexer (newline lexes as ';', so a rewound
+			   trial re-parses the next line's tokens as offset). */
+			int idx;
+			long tt;
 
-			savehave = yyhave;
-			for(i = 0; i < yyhave; i++){
-				savetok[i] = yytok[i];
-				saveval[i] = yyval[i];
+			idx = 1;
+			if(yypeek(idx) == '+' || yypeek(idx) == '-'){
+				idx++;
+				/* skip one con (mirrors parse_con shapes) */
+				for(;;){
+					tt = yypeek(idx);
+					if(tt == '+' || tt == '-' || tt == '~'){
+						idx++;
+						continue;
+					}
+					if(tt == '('){
+						int depth, j;
+
+						depth = 0;
+						for(j = idx; j < idx+200; j++){
+							tt = yypeek(j);
+							if(tt == 0 || tt == EOF)
+								yysyntax_error();
+							if(tt == ';')
+								break;
+							if(tt == '(')
+								depth++;
+							if(tt == ')'){
+								depth--;
+								if(depth == 0)
+									break;
+							}
+						}
+						if(depth == 0)
+							idx = j+1;
+						break;
+					}
+					if(tt == LCONST || tt == LVAR)
+						idx++;
+					break;
+				}
 			}
-			yyget();
-			USED(yylval.sym);
-			parse_offset();
-			if(yypeek(0) == '(' || yypeek(0) == '<')
-				isnireg = 1;
-			else
-				isnireg = 0;
-			yyhave = savehave;
-			for(i = 0; i < savehave; i++){
-				yytok[i] = savetok[i];
-				yyval[i] = saveval[i];
-			}
-			if(isnireg)
+			if(yypeek(idx) == '(' || yypeek(idx) == '<')
 				b = parse_nireg();
 			else
 				b = parse_rel();
@@ -1792,35 +1853,48 @@ parse_inst(void)
 			   sysarg starting '$' vs reg starting LREG/LR/LSP: distinct?
 			   sysarg imm starts '$', reg starts LREG/LR/LSP. No overlap except
 			   sysarg con-tuple starting con (LCONST...), which never starts reg.
-			   So reg-start means second form. Check for ',' after reg. */
+			   So reg-start with ',' after the reg means the second form.
+			   Check for ',' with pure lookahead: reg is LREG/LSP
+			   (1 token) or LR '(' expr ')' (variable length).
+			   A consume-then-rewind trial would discard already-lexed
+			   tokens and desync the lexer. */
 			{
-				int savehave, i;
-				long savetok[256];
-				YYSTYPE saveval[256];
-				Gen rgen;
+				int idx;
 
-				savehave = yyhave;
-				for(i = 0; i < yyhave; i++){
-					savetok[i] = yytok[i];
-					saveval[i] = yyval[i];
+				idx = 1;
+				if(yypeek(0) == LR){
+					/* skip '(' expr ')' with depth counting */
+					if(yypeek(1) == '('){
+						int depth, j;
+						long tt;
+
+						depth = 0;
+						idx = 0;
+						for(j = 1; j < 200; j++){
+							tt = yypeek(j);
+							if(tt == 0 || tt == EOF)
+								yysyntax_error();
+							if(tt == ';')
+								break;
+							if(tt == '(')
+								depth++;
+							if(tt == ')'){
+								depth--;
+								if(depth == 0){
+									idx = j+1;
+									break;
+								}
+							}
+						}
+					} else
+						idx = 0;
 				}
-				rgen = parse_reg();
-				if(yypeek(0) == ','){
-					yyhave = savehave;
-					for(i = 0; i < savehave; i++){
-						yytok[i] = savetok[i];
-						yyval[i] = saveval[i];
-					}
+				if(idx != 0 && yypeek(idx) == ','){
 					a = parse_reg();
 					yyexpect(',');
 					b = parse_sysarg();
 					outcode(op, &b, a.reg, &nullgen);
 					return;
-				}
-				yyhave = savehave;
-				for(i = 0; i < savehave; i++){
-					yytok[i] = savetok[i];
-					yyval[i] = saveval[i];
 				}
 			}
 		}
