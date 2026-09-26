@@ -1098,6 +1098,13 @@ parse_types(Type **pt, int *pc)
 			Type *c;
 			if(havec)
 				break;  /* yacc types has no complex-complex; trailing LTYPE is declarator (e.g. repeat `typedef struct Ieee Ieee;`) */
+			/* yacc `gcnlist tname gctnlist': if type words already seen,
+			 * the type is complete; a trailing LTYPE starts the declarator
+			 * (e.g. repeat `typedef unsigned int Rune;' when both <u.h>
+			 * and <utf.h> define it). Class/qual words alone (e.g. `const
+			 * uint') still take the complex branch below. */
+			if(t==LTYPE && (bits & (BCHAR|BSHORT|BINT|BLONG|BSIGNED|BUNSIGNED|BFLOAT|BDOUBLE|BVOID)))
+				break;
 			c = parse_complex();
 			ctype = c;
 			havec = 1;
