@@ -1891,21 +1891,9 @@ check_name(char *s)
 	return NAME;
 }
 
-/*
- * yyerror -- called by spin_parse.c on syntax errors.
- * Delegates to non_fatal (which does not abort).
+/* yyerror is defined once in spin_parse.c (carried over from spin.y);
+ * spin_parse.c calls yyerror() -> non_fatal (no abort).
  */
-void
-yyerror(char *s, ...)
-{
-	va_list ap;
-	char *arg;
-
-	va_start(ap, s);
-	arg = va_arg(ap, char *);
-	non_fatal(s, arg);
-	va_end(ap);
-}
 
 int
 yylex(void)
