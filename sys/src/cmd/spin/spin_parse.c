@@ -70,8 +70,53 @@
 
 #define	YYNOMORE	-1
 
-extern	Lextok *yytext;
-extern	int tl_yylex(void);
+#include <sys/types.h>
+#ifndef PC
+#include <unistd.h>
+#endif
+#include <stdarg.h>
+
+#define YYMAXDEPTH	20000	/* default is 10000 */
+#define YYDEBUG		0
+#define Stop	nn(ZN,'@',ZN,ZN)
+#define PART0	"place initialized declaration of "
+#define PART1	"place initialized chan decl of "
+#define PART2	" at start of proctype "
+
+static	Lextok *ltl_to_string(Lextok *);
+
+extern	Symbol	*context, *owner;
+extern	Lextok *for_body(Lextok *, int);
+extern	void for_setup(Lextok *, Lextok *, Lextok *);
+extern	Lextok *for_index(Lextok *, Lextok *);
+extern	Lextok *sel_index(Lextok *, Lextok *, Lextok *);
+extern	void	keep_track_off(Lextok *);
+extern	void	safe_break(void);
+extern	void	restore_break(void);
+extern	int	u_sync, u_async, dumptab, scope_level;
+extern	int	initialization_ok;
+extern	short	has_sorted, has_random, has_enabled, has_pcvalue, has_np, has_priority;
+extern	short	has_code, has_state, has_ltl, has_io;
+extern	void	check_mtypes(Lextok *, Lextok *);
+extern	void	count_runs(Lextok *);
+extern	void	no_internals(Lextok *);
+extern	void	any_runs(Lextok *);
+extern	void	explain(int);
+extern	void	ltl_list(char *, char *);
+extern	void	validref(Lextok *, Lextok *);
+extern	char	yytext[];
+
+int	Mpars = 0;	/* max nr of message parameters  */
+int	nclaims = 0;	/* nr of never claims */
+int	ltl_mode = 0;	/* set when parsing an ltl formula */
+int	Expand_Ok = 0, realread = 1, IArgs = 0, NamesNotAdded = 0;
+int	in_for = 0, in_seq = 0, par_cnt = 0;
+int	dont_simplify = 0;
+char	*claimproc = (char *) 0;
+char	*eventmap = (char *) 0;
+
+static	char *ltl_name;
+static	int  Embedded = 0, inEventMap = 0, has_ini = 0;
 
 YYSTYPE yylval;
 
@@ -125,6 +170,7 @@ static Lextok	*parse_full_expr(void);
 static Lextok	*parse_Expr(void);
 static Lextok	*parse_Probe(void);
 static Lextok	*parse_ltl_expr(void);
+static Lextok	*parse_ltl_body(void);
 static Lextok	*parse_optname(void);
 static Lextok	*parse_optname2(void);
 static Lextok	*parse_vis(void);
@@ -153,10 +199,6 @@ static Lextok	*parse_cstate(void);
 static Lextok	*parse_cexpr(void);
 static Lextok	*parse_for_pre(void);
 static Lextok	*parse_for_post(void);
-static int	parse_l_par(void);
-static int	parse_r_par(void);
-static int	parse_l_par_skip(void);
-static int	parse_r_par_skip(void);
 
 static	void	skip_to_sync(void);
 
@@ -168,7 +210,7 @@ static	void	skip_to_sync(void);
 static int
 spin_yylex(void)
 {
-	return tl_yylex();
+	return yylex();
 }
 
 static int
@@ -309,7 +351,8 @@ parse_unit(void)
 static Lextok*
 parse_proc(void)
 {
-	Lextok *inst, *proctype, *name, *body;
+	Lextok *inst, *proctype, *name, *body, *decl, *enabler;
+	ProcList *rl;
 	int has_dproctype = 0;
 
 	/* optional inst */
@@ -334,24 +377,22 @@ parse_proc(void)
 	yyget();
 
 	/* NAME */
-	name = yyget();
-	if(name->ntyp != NAME && name->ntyp != UNAME)
+	yyget();
+	name = yylval;
+	if(name == ZN || (name->ntyp != NAME && name->ntyp != UNAME))
 		yyerror("syntax error");
 
-	name->sym->ini = nn(ZN, CONST, ZN, ZN);
-	name->sym->ini->val = 0;
-
-	setptype(ZN, name->sym, has_dproctype ? D_PROCTYPE : PROCTYPE, ZN);
+	setptype(ZN, name, has_dproctype ? D_PROCTYPE : PROCTYPE, ZN);
 	setpname(name);
 	context = name->sym;
-	context->ini = name;
+	context->ini = proctype; /* was $2 in spin.y */
 	Expand_Ok++;
 	has_ini = 0;
 
 	/* l_par */
 	l_par();
 	/* decl */
-	parse_decl();
+	decl = parse_decl();
 	/* r_par */
 	r_par();
 	Expand_Ok--;
@@ -366,26 +407,27 @@ parse_proc(void)
 	}
 
 	/* Opt_enabler */
+	enabler = ZN;
 	if(yypeek() == PROVIDED){
 		yyget();
 		if(yypeek() == '(')
 			l_par();
-		parse_full_expr();
+		enabler = parse_full_expr();
 		if(yypeek() == ')')
 			r_par();
-	} else if(yypeek() == PROVIDED){
-		/* error case */
-		yyget();
-		non_fatal("usage: provided ( ..expr.. )", (char *)0);
+		if(!proper_enabler(enabler))
+		{
+			non_fatal("invalid PROVIDED clause", (char *)0);
+			enabler = ZN;
+		}
 	}
 
 	/* body */
 	body = parse_body();
 
 	if(inst != ZN && inst->val > 0){
-		ProcList *rl;
 		int j;
-		rl = mk_rdy(name->sym, body->sq, name->val, ZN, A_PROC);
+		rl = mk_rdy(name->sym, decl, body->sq, proctype->val, enabler, A_PROC);
 		for(j = 0; j < inst->val; j++){
 			runnable(rl, 1, 1);
 			announce(":root:");
@@ -393,11 +435,11 @@ parse_proc(void)
 		if(dumptab)
 			name->sym->ini = inst;
 	} else {
-		mk_rdy(name->sym, body->sq, name->val, ZN, P_PROC);
+		rl = mk_rdy(name->sym, decl, body->sq, proctype->val, enabler, P_PROC);
 	}
 
-	if(has_ini == 1)
-		/* mark unsafe */;
+	if(rl && has_ini == 1)
+		rl->unsafe = 1; /* global initializations, unsafe */
 
 	context = ZS;
 	return ZN;
@@ -410,21 +452,24 @@ static Lextok*
 parse_init(void)
 {
 	Lextok *init, *body;
+	ProcList *rl;
 	int val = 0;
 
-	init = yyget();
+	yyget();
+	init = yylval;
 	context = init->sym;
 
 	/* Opt_priority */
 	if(yypeek() == PRIORITY){
 		yyget();
-		val = yyget()->val;
+		yyget();
+		val = yylval->val;
 		has_priority++;
 	}
 
 	body = parse_body();
-	mk_rdy(context, body->sq, val, 0, I_PROC);
-	runnable(context, val ? val : 1, 1);
+	rl = mk_rdy(context, ZN, body->sq, 0, ZN, I_PROC);
+	runnable(rl, val ? val : 1, 1);
 	announce(":root:");
 	context = ZS;
 	return ZN;
@@ -438,7 +483,8 @@ parse_claim(void)
 {
 	Lextok *claim, *name, *body;
 
-	claim = yyget();
+	yyget();
+	claim = yylval;
 	name = parse_optname();
 	if(name != ZN)
 		claim->sym = name->sym;
@@ -449,7 +495,7 @@ parse_claim(void)
 	nclaims++;
 
 	body = parse_body();
-	mk_rdy(claim->sym, body->sq, 0, ZN, N_CLAIM);
+	(void) mk_rdy(claim->sym, ZN, body->sq, 0, ZN, N_CLAIM);
 	context = ZS;
 	return ZN;
 }
@@ -462,7 +508,8 @@ parse_ltl(void)
 {
 	Lextok *ltl, *name, *lb;
 
-	ltl = yyget();
+	yyget();
+	ltl = yylval;
 	ltl_mode = 1;
 	name = parse_optname2();
 	ltl_name = name->sym->name;
@@ -486,7 +533,7 @@ parse_ltl_body(void)
 	if(yypeek() != '}')
 		yyerror("syntax error");
 	yyget();
-	return r;
+	return ltl_to_string(r);
 }
 
 static Lextok*
@@ -495,11 +542,13 @@ parse_optname(void)
 	char tb[32];
 	Lextok *r;
 
-	if(yypeek() != NAME)
-		return ZN;
+	if(yypeek() == NAME){
+		yyget();
+		return yylval;
+	}
 
 	memset(tb, 0, 32);
-	snprint(tb, sizeof(tb), "never_%d", nclaims);
+	snprintf(tb, sizeof(tb), "never_%d", nclaims);
 	r = nn(ZN, NAME, ZN, ZN);
 	r->sym = lookup(tb);
 	return r;
@@ -512,11 +561,13 @@ parse_optname2(void)
 	Lextok *r;
 	static int nltl = 0;
 
-	if(yypeek() != NAME)
-		return ZN;
+	if(yypeek() == NAME){
+		yyget();
+		return yylval;
+	}
 
 	memset(tb, 0, 32);
-	snprint(tb, sizeof(tb), "ltl_%d", nltl++);
+	snprintf(tb, sizeof(tb), "ltl_%d", nltl++);
 	r = nn(ZN, NAME, ZN, ZN);
 	r->sym = lookup(tb);
 	return r;
@@ -530,7 +581,8 @@ parse_events(void)
 {
 	Lextok *trace, *body;
 
-	trace = yyget();
+	yyget();
+	trace = yylval;
 	context = trace->sym;
 	if(eventmap)
 		non_fatal("trace %s redefined", eventmap);
@@ -540,9 +592,9 @@ parse_events(void)
 	body = parse_body();
 
 	if(strcmp(trace->sym->name, ":trace:") == 0){
-		mk_rdy(trace->sym, body->sq, 0, ZN, E_TRACE);
+		(void) mk_rdy(trace->sym, ZN, body->sq, 0, ZN, E_TRACE);
 	}else{
-		mk_rdy(trace->sym, body->sq, 0, ZN, N_TRACE);
+		(void) mk_rdy(trace->sym, ZN, body->sq, 0, ZN, N_TRACE);
 	}
 	context = ZS;
 	inEventMap--;
@@ -555,23 +607,25 @@ parse_events(void)
 static Lextok*
 parse_utype(void)
 {
-	Lextok *td, *name;
+	Lextok *td, *name, *dl;
 
-	td = yyget();  /* TYPEDEF */
+	yyget();
+	td = yylval;  /* TYPEDEF */
 	if(context)
 		fatal("typedef %s must be global", "");
-	name = yyget();
+	yyget();
+	name = yylval;
 	owner = name->sym;
 	in_seq = td->ln;
 
 	if(yypeek() != '{')
 		yyerror("syntax error");
 	yyget();
-	parse_decl_lst();
+	dl = parse_decl_lst();
 	if(yypeek() != '}')
 		yyerror("syntax error");
 	yyget();
-	setuname(parse_aname());
+	setuname(dl);
 	owner = ZS;
 	in_seq = 0;
 	return ZN;
@@ -585,15 +639,16 @@ parse_ns(void)
 {
 	Lextok *inline_tok, *name, *args;
 
-	inline_tok = yyget();  /* INLINE */
+	yyget();
+	inline_tok = yylval;  /* INLINE */
 	NamesNotAdded++;
 	name = parse_aname();
-	namesNotAdded--;
+	NamesNotAdded--;
 
 	l_par();
 	args = parse_args();
 	r_par();
-	prep_inline(name->sym, args, ZN);
+	prep_inline(name->sym, args);
 	return ZN;
 }
 
@@ -613,18 +668,19 @@ parse_c_fcts(void)
 static Lextok*
 parse_ccode(void)
 {
-	Lextok *c, *s;
+	Lextok *c, *s, *ctok;
 
-	c = yyget();  /* C_CODE or C_DECL */
+	yyget();
+	ctok = yylval;  /* C_CODE or C_DECL */
 	NamesNotAdded++;
 	s = prep_inline(ZS, ZN);
 	NamesNotAdded--;
-	if(c->ntyp == C_DECL)
+	if(ctok->ntyp == C_DECL)
 		s->type = CODE_DECL;
 	c = nn(ZN, C_CODE, ZN, ZN);
 	c->sym = s;
-	c->ln = c->ln;
-	c->fn = c->fn;
+	c->ln = ctok->ln;
+	c->fn = ctok->fn;
 	has_code = 1;
 	return c;
 }
@@ -637,19 +693,19 @@ parse_cstate(void)
 	yyget();  /* C_STATE or C_TRACK */
 	if(t == C_STATE){
 		Lextok *s1, *s2, *s3 = ZN;
-		s1 = yyget();  /* STRING */
-		s2 = yyget();  /* STRING */
+		yyget(); s1 = yylval;  /* STRING */
+		yyget(); s2 = yylval;  /* STRING */
 		if(yypeek() == STRING){
-			s3 = yyget();
+			yyget(); s3 = yylval;
 		}
 		c_state(s1->sym, s2->sym, s3 ? s3->sym : ZS);
 		has_code = has_state = 1;
 	} else {
 		Lextok *s1, *s2, *s3 = ZN;
-		s1 = yyget();
-		s2 = yyget();
+		yyget(); s1 = yylval;
+		yyget(); s2 = yylval;
 		if(yypeek() == STRING){
-			s3 = yyget();
+			yyget(); s3 = yylval;
 		}
 		c_track(s1->sym, s2->sym, s3 ? s3->sym : ZS);
 		has_code = has_state = 1;
@@ -660,9 +716,10 @@ parse_cstate(void)
 static Lextok*
 parse_cexpr(void)
 {
-	Lextok *c, *s;
+	Lextok *c, *s, *ctok;
 
-	c = yyget();  /* C_EXPR */
+	yyget();
+	ctok = yylval;  /* C_EXPR */
 	NamesNotAdded++;
 	s = prep_inline(ZS, ZN);
 	if(!context)
@@ -670,8 +727,8 @@ parse_cexpr(void)
 	NamesNotAdded--;
 	c = nn(ZN, C_EXPR, ZN, ZN);
 	c->sym = s;
-	c->ln = c->ln;
-	c->fn = c->fn;
+	c->ln = ctok->ln;
+	c->fn = ctok->fn;
 	no_side_effects(s->name);
 	has_code = 1;
 	return c;
@@ -690,13 +747,14 @@ parse_semi(void)
 static Lextok*
 parse_body(void)
 {
-	Lextok *r;
+	Lextok *r, *open;
 
 	if(yypeek() != '{')
 		yyerror("syntax error");
 	yyget();
+	open = yylval;
 	open_seq(1);
-	in_seq = yytext ? yytext[0] : 0;
+	in_seq = open ? open->ln : 0;
 
 	parse_sequence();
 	add_seq(Stop);
@@ -704,7 +762,7 @@ parse_body(void)
 	if(yypeek() != '}')
 		yyerror("syntax error");
 	yyget();
-	r = ZN;
+	r = nn(ZN, 0, ZN, ZN);
 	r->sq = close_seq(0);
 	in_seq = 0;
 	if(scope_level != 0){
@@ -818,7 +876,7 @@ parse_Stmnt(void)
 	case GOTO:
 		yyget();
 		if(yypeek() == NAME){
-			Lextok *name = yyget();
+			Lextok *name; yyget(); name = yylval;
 			if(name->sym->type != 0 && name->sym->type != LABEL)
 				non_fatal("bad label-name %s", name->sym->name);
 			name->sym->type = LABEL;
@@ -1132,7 +1190,7 @@ parse_unary(void)
 	if(t == INCR || t == DECR){
 		yyget();
 		if(yypeek() == VAR){
-			Lextok *s = yyget();
+			Lextok *s; yyget(); s = yylval;
 			if(t == INCR)
 				return nn(ZN, CONST, ZN, ZN);  /* placeholder */
 			else
@@ -1185,7 +1243,7 @@ parse_primary(void)
 		return r;
 	}
 	if(yypeek() == CONST){
-		Lextok *c = yyget();
+		Lextok *c; yyget(); c = yylval;
 		r = nn(ZN, CONST, ZN, ZN);
 		r->ismtyp = c->ismtyp;
 		r->sym = c->sym;
@@ -1193,13 +1251,13 @@ parse_primary(void)
 		return r;
 	}
 	if(yypeek() == NAME){
-		r = yyget();
+		yyget(); r = yylval;
 		if(r->sym->type == CHAN && !in_for)
 			non_fatal("missing array index for '%s'", r->sym->name);
 		return nn(r, NAME, ZN, ZN);
 	}
 	if(yypeek() == STRING){
-		r = yyget();
+		yyget(); r = yylval;
 		return nn(ZN, CONST, ZN, ZN);
 	}
 	if(yypeek() == TIMEOUT){
@@ -1213,17 +1271,20 @@ parse_primary(void)
 		return r;
 	}
 	if(yypeek() == PNAME && yypeek() == '@'){
-		Lextok *p = yyget();  /* PNAME */
+		Lextok *p; yyget(); p = yylval;  /* PNAME */
 		yyget();  /* '@' */
 		if(yypeek() == NAME){
-			Lextok *n = yyget();
+			Lextok *n; yyget(); n = yylval;
 			return rem_lab(p->sym, ZN, n->sym);
 		}
 	}
 	if(yypeek() == PNAME && yypeek() == ':'){
-		Lextok *p = yyget();
+		Lextok *p; yyget(); p = yylval;
+		Lextok *q, *w;
 		yyget();  /* ':' */
-		return rem_var(p->sym, ZN, yyget()->sym, yyget()->lft);
+		yyget(); q = yylval;
+		yyget(); w = yylval;
+		return rem_var(p->sym, ZN, q->sym, w->lft);
 	}
 
 	/* cexpr */
@@ -1365,7 +1426,7 @@ parse_const_expr(void)
 		return c;
 	}
 	if(yypeek() == CONST){
-		c = yyget();
+		yyget(); c = yylval;
 		c->ntyp = CONST;
 		return c;
 	}
@@ -1379,12 +1440,12 @@ parse_varref(void)
 	Lextok *r;
 
 	if(yypeek() == NAME){
-		r = yyget();
+		yyget(); r = yylval;
 		r = mk_explicit(r, Expand_Ok, NAME);
 		return r;
 	}
 	if(yypeek() == UNAME){
-		r = yyget();
+		yyget(); r = yylval;
 		r = mk_explicit(r, Expand_Ok, NAME);
 		return r;
 	}
@@ -1430,14 +1491,14 @@ parse_pfld(void)
 	Lextok *r;
 
 	if(yypeek() == NAME){
-		r = yyget();
+		yyget(); r = yylval;
 		if(r->sym->isarray && !in_for)
 			non_fatal("missing array index for '%s'", r->sym->name);
 		return nn(r, NAME, ZN, ZN);
 	}
 	/* NAME '[' expr ']' */
 	if(yypeek() == NAME){
-		r = yyget();
+		yyget(); r = yylval;
 		yyget();  /* '[' */
 		Lextok *e = parse_expr();
 		if(yypeek() != ']')
@@ -1531,14 +1592,14 @@ parse_vardcl(void)
 {
 	Lextok *name;
 
-	name = yyget();  /* NAME */
+	yyget(); name = yylval;  /* NAME */
 	name->sym->nel = 1;
 
 	if(yypeek() == ':'){
 		yyget();  /* ':' */
 		if(yypeek() != CONST)
 			yyerror("syntax error");
-		Lextok *c = yyget();
+		Lextok *c; yyget(); c = yylval;
 		name->sym->nbits = c->val;
 		if(c->val >= 8*sizeof(long)){
 			non_fatal("width-field %s too large", name->sym->name);
@@ -1554,7 +1615,7 @@ parse_vardcl(void)
 			name->sym->nel = c->val;
 			name->sym->isarray = 1;
 		} else if(yypeek() == NAME){
-			Lextok *n2 = yyget();
+			Lextok *n2; yyget(); n2 = yylval;
 			/* warning: NAME in array bound */
 			if(n2->sym->ini && n2->sym->ini->val > 0)
 				name->sym->nel = n2->sym->ini->val;
@@ -1581,7 +1642,7 @@ parse_c_list(void)
 
 	if(yypeek() != CONST)
 		yyerror("syntax error");
-	c = yyget();
+	yyget(); c = yylval;
 	c->ntyp = CONST;
 	if(yypeek() == ','){
 		yyget();
@@ -1601,16 +1662,16 @@ parse_one_decl(void)
 	Lextok *vis, *type, *osubt, *vl;
 
 	vis = parse_vis();
-	type = yyget();
+	yyget(); type = yylval;
 
 	if(yypeek() == ':'){
 		yyget();  /* ':' */
-		osubt = yyget();  /* NAME */
+		yyget(); osubt = yylval;  /* NAME */
 	} else
 		osubt = ZN;
 
 	vl = parse_var_list();
-	setptype(vis, vl, type->val, vis ? vis->sym : ZS);
+	setptype(osubt, vl, type->val, vis);
 	vl->val = type->val;
 	return vl;
 }
@@ -1620,15 +1681,15 @@ parse_vis(void)
 {
 	if(yypeek() == HIDDEN){
 		yyget();
-		return yyval;
+		return yylval;
 	}
 	if(yypeek() == SHOW){
 		yyget();
-		return yyval;
+		return yylval;
 	}
 	if(yypeek() == ISLOCAL){
 		yyget();
-		return yyval;
+		return yylval;
 	}
 	return ZN;
 }
@@ -1639,12 +1700,14 @@ parse_asgn(void)
 	if(yypeek() == ':'){
 		yyget();
 		if(yypeek() == NAME){
-			Lextok *n = yyget();
+			Lextok *n; yyget(); n = yylval;
 			return n;  /* mtype decl */
 		}
 	}
-	if(yypeek() == ASGN)
+	if(yypeek() == ASGN){
+		yyget();
 		return ZN;
+	}
 	yyerror("syntax error");
 	return ZN;
 }
@@ -1654,8 +1717,10 @@ parse_osubt(void)
 {
 	if(yypeek() == ':'){
 		yyget();
-		if(yypeek() == NAME)
-			return yyget();
+		if(yypeek() == NAME){
+			yyget();
+			return yylval;
+		}
 	}
 	return ZN;
 }
@@ -1714,7 +1779,7 @@ parse_aname(void)
 	Lextok *r;
 
 	if(yypeek() == NAME || yypeek() == PNAME)
-		r = yyget();
+		yyget(); r = yylval;
 	else
 		yyerror("syntax error");
 	return r;
@@ -1729,13 +1794,12 @@ parse_basetype(void)
 	Lextok *r;
 
 	if(yypeek() == UNAME){
-		r = yyget();
-		r->sym = yyget()->sym;
+		yyget(); r = yylval;
 		r->val = STRUCT;
 		return r;
 	}
 	if(yypeek() == TYPE){
-		r = yyget();
+		yyget(); r = yylval;
 		if(yypeek() == ':'){
 			yyget();
 			Lextok *n = parse_aname();
@@ -1871,7 +1935,7 @@ parse_rarg(void)
 		return nn(ZN, EVAL, e, ZN);
 	}
 	if(yypeek() == CONST){
-		Lextok *c = yyget();
+		Lextok *c; yyget(); c = yylval;
 		Lextok *r = nn(ZN, CONST, ZN, ZN);
 		r->ismtyp = c->ismtyp;
 		r->sym = c->sym;
@@ -1882,7 +1946,7 @@ parse_rarg(void)
 		yyget();
 		if(yypeek() != CONST)
 			yyerror("syntax error");
-		Lextok *c = yyget();
+		Lextok *c; yyget(); c = yylval;
 		Lextok *r = nn(ZN, CONST, ZN, ZN);
 		r->val = -(c->val);
 		return r;
@@ -1935,56 +1999,123 @@ parse_rargs(void)
 static Lextok*
 parse_nlst(void)
 {
-	Lextok *r;
+	Lextok *r, *t;
 
-	r = nn(yyget(), NAME, ZN, ZN);
+	yyget(); t = yylval;
+	r = nn(t, NAME, ZN, ZN);
 	r = nn(ZN, ',', r, ZN);
 	while(yypeek() == NAME){
-		r = nn(ZN, ',', nn(yyget(), NAME, ZN, ZN), r);
+		yyget(); t = yylval;
+		r = nn(ZN, ',', nn(t, NAME, ZN, ZN), r);
 	}
 	if(yypeek() == ',')
 		yyget();
 	return r;
 }
 
-static int
-parse_l_par(void)
-{
-	if(yypeek() != '(')
-		yyerror("syntax error");
-	yyget();
-	par_cnt++;
-	return 0;
-}
-
-static int
-parse_r_par(void)
-{
-	if(yypeek() != ')')
-		yyerror("syntax error");
-	yyget();
-	par_cnt--;
-	return 0;
-}
-
-static int
-parse_l_par_skip(void)
-{
-	return l_par();
-}
-
-static int
-parse_r_par_skip(void)
-{
-	return r_par();
-}
+#define binop(n, sop)	fprintf(fd, "("); recursive(fd, n->lft); \
+			fprintf(fd, ") %s (", sop); recursive(fd, n->rgt); \
+			fprintf(fd, ")");
+#define unop(n, sop)	fprintf(fd, "%s (", sop); recursive(fd, n->lft); \
+			fprintf(fd, ")");
 
 static void
-skip_to_sync(void)
+recursive(FILE *fd, Lextok *n)
 {
-	while(yypeek() != 0 && yypeek() != EOF){
-		if(yypeek() == ';' || yypeek() == '}')
-			break;
-		yyget();
+	if (n)
+	switch (n->ntyp) {
+	case NEXT:
+		unop(n, "X");
+		break;
+	case ALWAYS:
+		unop(n, "[]");
+		break;
+	case EVENTUALLY:
+		unop(n, "<>");
+		break;
+	case '!':
+		unop(n, "!");
+		break;
+	case UNTIL:
+		binop(n, "U");
+		break;
+	case WEAK_UNTIL:
+		binop(n, "W");
+		break;
+	case RELEASE:
+		binop(n, "V");
+		break;
+	case OR:
+		binop(n, "||");
+		break;
+	case AND:
+		binop(n, "&&");
+		break;
+	case IMPLIES:
+		binop(n, "->");
+		break;
+	case EQUIV:
+		binop(n, "<->");
+		break;
+	case C_EXPR:
+		fprintf(fd, "c_expr { %s }", put_inline(fd, n->sym->name));
+		break;
+	default:
+		comment(fd, n, 0);
+		break;
 	}
+}
+
+static Lextok *
+ltl_to_string(Lextok *n)
+{	Lextok *m = nn(ZN, 0, ZN, ZN);
+	ssize_t retval;
+	char *ltl_formula = NULL;
+	FILE *tf = fopen(TMP_FILE1, "w+");
+
+	if (!tf)
+	{	fatal("cannot create temporary file", (char *) 0);
+	}
+	dont_simplify = 1;
+	recursive(tf, n);
+	dont_simplify = 0;
+	(void) fseek(tf, 0L, SEEK_SET);
+
+	size_t linebuffsize = 0;
+	retval = getline(&ltl_formula, &linebuffsize, tf);
+	fclose(tf);
+
+	(void) unlink(TMP_FILE1);
+
+	if (!retval)
+	{	printf("%ld\n", (long int) retval);
+		fatal("could not translate ltl ltl_formula", 0);
+	}
+
+	if (1) printf("ltl %s: %s\n", ltl_name, ltl_formula);
+
+	m->sym = lookup(ltl_formula);
+#ifndef __MINGW32__
+	free(ltl_formula);
+#endif
+	return m;
+}
+
+int
+is_temporal(int t)
+{
+	return (t == EVENTUALLY || t == ALWAYS || t == UNTIL
+	     || t == WEAK_UNTIL || t == RELEASE);
+}
+
+int
+is_boolean(int t)
+{
+	return (t == AND || t == OR || t == IMPLIES || t == EQUIV);
+}
+
+void
+yyerror(char *fmt, ...)
+{
+	non_fatal(fmt, (char *) 0);
 }

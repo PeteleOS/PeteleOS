@@ -22,7 +22,7 @@ SPIN_OS=\
 	spinlex.$O\
 	structs.$O\
 	sym.$O\
-		vars.$O\
+	vars.$O\
 	spin_parse.$O\
 
 TL_OS=\
@@ -34,8 +34,6 @@ TL_OS=\
 	tl_parse.$O\
 	tl_rewrt.$O\
 	tl_trans.$O\
-
-OFILES=$SPIN_OS $TL_OS
 
 OFILES=$SPIN_OS $TL_OS
 
