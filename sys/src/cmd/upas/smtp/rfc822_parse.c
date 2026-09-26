@@ -915,7 +915,6 @@ parse_fields(void)
 static int
 parse_msg(void)
 {
-	int t;
 	Node *n1, *n2, *n3, *n4, *n5, *n6;
 
 	yyhave = 0;

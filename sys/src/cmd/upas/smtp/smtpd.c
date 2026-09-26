@@ -1,6 +1,7 @@
 #include "common.h"
 #include "smtpd.h"
 #include "smtp.h"
+#include "rfc822_parse.h"
 #include <ctype.h>
 #include <ip.h>
 #include <ndb.h>

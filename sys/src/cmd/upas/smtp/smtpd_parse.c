@@ -268,7 +268,7 @@ parse_c(void)
 	if((t>='a' && t<='z') || (t>='0' && t<='9'))
 		return parse_let_dig();
 	if(is_notspecial(t)){
-		t = zzget();
+		zzget();
 		return zzlval;
 	}
 	zzget();
@@ -288,7 +288,7 @@ parse_q(void)
 	if((t>='a' && t<='z') || (t>='0' && t<='9'))
 		return parse_let_dig();
 	if(is_special1(t) || is_notspecial(t) || t == SPACE){
-		t = zzget();
+		zzget();
 		return zzlval;
 	}
 	zzget();
@@ -309,7 +309,7 @@ parse_x(void)
 		return parse_let_dig();
 	if(is_special1(t) || is_notspecial(t) || t == SPACE || t == '\\' || t == '"'){
 		/* '\\' and '"' are single-char tokens from lexer */
-		t = zzget();
+		zzget();
 		return zzlval;
 	}
 	zzget();
@@ -765,7 +765,6 @@ static ZZSTYPE
 parse_autharg(void)
 {
 	int t;
-	ZZSTYPE v;
 
 	t = zzpeek();
 	if(t == '<')
