@@ -882,7 +882,7 @@ parse_spr(void)
 	c = parse_con();
 	yyexpect(')');
 	g = nullgen;
-	g.type = t;
+	g.type = D_SPR;
 	g.offset = c;
 	return g;
 }
