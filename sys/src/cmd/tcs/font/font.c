@@ -13,7 +13,7 @@ bf(int n, int size, Bitmap *b, int *done)
 
 	fc = (Fontchar *)malloc(sizeof(Fontchar)*(n+1));
 	if(fc == 0){
-		fprint(2, "%s: fontchar malloc(%d) failure\n", argv0, sizeof(Fontchar)*(n+1));
+		fprint(2, "%s: fontchar malloc(%d) failure\n", argv0, (int)(sizeof(Fontchar)*(n+1)));
 		exits("fontchar malloc failure");
 	}
 	j = 0;

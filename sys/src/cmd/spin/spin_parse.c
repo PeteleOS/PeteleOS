@@ -865,7 +865,7 @@ parse_Stmnt(void)
 	case RUN: case LEN: case ENABLED: case PC_VAL: case SET_P:
 	case PRINT: case PRINTM: case ASSERT: case FULL: case NFULL:
 	case EMPTY: case NEMPTY: case PNAME: case C_CODE:
-	case UNAME: case NAME: case CONST: case C_EXPR:
+	case UNAME: case CONST: case C_EXPR:
 	case TIMEOUT: case NONPROGRESS: case ELSE: case ATOMIC:
 	case D_STEP: case '{': case INAME: case RETURN:
 		/* Delegate to expr-level parsing */

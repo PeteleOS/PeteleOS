@@ -88,7 +88,7 @@ setinclude(char *p)
 			return;
 
 	if(ninclude >= nelem(include)) {
-		yyerror("ninclude too small %d", nelem(include));
+		yyerror("ninclude too small %d", (int)nelem(include));
 		exits("ninclude");
 	}
 	include[ninclude++] = p;
