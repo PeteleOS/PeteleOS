@@ -55,6 +55,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+/* ape's <unistd.h> poisons itself (emits plain text that fails to
+ * parse) unless _POSIX_SOURCE is defined first; expr's mkfile builds
+ * this file with plain `pcc -B -c` (no -D_POSIX_SOURCE), so define it
+ * here since this is the only file in the command that needs it (for
+ * write(), used by errxx() below). */
+#define _POSIX_SOURCE
 #include <unistd.h>
 
 #define YYSTYPE charp
