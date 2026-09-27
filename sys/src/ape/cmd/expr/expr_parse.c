@@ -45,6 +45,18 @@
  *	preserving exits(2) semantics and NOARG terminator protocol.
  */
 
+/* Moved up from the yacc epilogue (see below): yyparse() below calls
+ * exit()/strcmp() before the epilogue's #include block would otherwise
+ * appear, which left them implicitly (K&R) declared and then clashing
+ * with the real prototypes once the epilogue's headers were reached --
+ * e.g. "external redeclaration of: exit" (GLOBL FUNC(INT) VOID vs
+ * GLOBL FUNC INT), which then desyncs the rest of the translation unit.
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
 #define YYSTYPE charp
 typedef char *charp;
 
@@ -317,10 +329,6 @@ yyparse(void)
 	return 0;	/* not reached */
 }
 /*	expression command */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
 /* get rid of yacc debug printf's */
 #define printf
 #define ESIZE	512
