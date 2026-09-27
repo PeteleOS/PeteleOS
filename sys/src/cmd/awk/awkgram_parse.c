@@ -439,12 +439,13 @@ parse_pa_stat(void)
 			curfname = 0;
 			return NULL;
 		}
-		if(!expect_rbrace()){
+		if(!expect('}')){
 			infunc--;
 			curfname = 0;
 			return NULL;
 		}
 		infunc--;
+		skip_nl();
 		curfname = 0;
 		defn(cp, vl, body);
 		return NIL;
