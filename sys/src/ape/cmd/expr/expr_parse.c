@@ -522,7 +522,7 @@ ematch(char *s, char *p)
 int
 errxx(int c)
 {
-	(void)c;
+	USED(c);
 	yyerror("RE error");
 	return 0;
 }

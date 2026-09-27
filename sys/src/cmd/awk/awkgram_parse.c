@@ -414,21 +414,36 @@ parse_pa_stat(void)
 		cp = parse_funcname();
 		if(cp == NULL)
 			return NULL;
-		if(!expect_lparen())
+		if(!expect_lparen()){
+			curfname = 0;
 			return NULL;
+		}
 		vl = parse_varlist();
-		if(synerr)
+		if(synerr){
+			curfname = 0;
 			return NULL;
-		if(!expect_rparen())
+		}
+		if(!expect_rparen()){
+			curfname = 0;
 			return NULL;
+		}
 		infunc++;
-		if(!expect_lbrace())
+		if(!expect_lbrace()){
+			infunc--;
+			curfname = 0;
 			return NULL;
+		}
 		body = parse_stmtlist();
-		if(synerr)
+		if(synerr){
+			infunc--;
+			curfname = 0;
 			return NULL;
-		if(!expect_rbrace())
+		}
+		if(!expect_rbrace()){
+			infunc--;
+			curfname = 0;
 			return NULL;
+		}
 		infunc--;
 		curfname = 0;
 		defn(cp, vl, body);
@@ -1643,8 +1658,10 @@ parse_stmt(void)
 		yyget();
 		inloop++;
 		b = parse_stmt();
-		if(b == NULL && synerr)
+		if(b == NULL && synerr){
+			inloop--;
 			return NULL;
+		}
 		inloop--;
 		if(yypeek() != WHILE){
 			synerr = 1;
@@ -1743,8 +1760,10 @@ parse_stmt(void)
 		a = notnull(a);
 		inloop++;
 		b = parse_stmt();
-		if(b == NULL && synerr)
+		if(b == NULL && synerr){
+			inloop--;
 			return NULL;
+		}
 		inloop--;
 		return stat2(WHILE, a, b);
 	case ';':
@@ -1811,8 +1830,10 @@ parse_for(void)
 			return NULL;
 		inloop++;
 		body = parse_stmt();
-		if(body == NULL && synerr)
+		if(body == NULL && synerr){
+			inloop--;
 			return NULL;
+		}
 		inloop--;
 		return stat3(IN, v1, makearr(v2), body);
 	}
@@ -1834,8 +1855,10 @@ parse_for(void)
 			return NULL;
 		inloop++;
 		body = parse_stmt();
-		if(body == NULL && synerr)
+		if(body == NULL && synerr){
+			inloop--;
 			return NULL;
+		}
 		inloop--;
 		return stat4(FOR, s1, NIL, s2, body);
 	}
@@ -1856,7 +1879,8 @@ parse_for(void)
 		return NULL;
 	inloop++;
 	body = parse_stmt();
-	if(body == NULL && synerr)
+	if(body == NULL && synerr){
+		inloop--;
 		return NULL;
 	inloop--;
 	return stat4(FOR, s1, notnull(cond), s2, body);

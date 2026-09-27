@@ -37,7 +37,7 @@ open(const char *path, int flags, ...)
 		}else{
 			va_start(va, flags);
 			mode = va_arg(va, int);
-			(void)va;
+			USED(va);
 			va_end(va);
 			n = _CREATE(path, f, mode&0777);
 		}
