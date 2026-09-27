@@ -1882,6 +1882,7 @@ parse_for(void)
 	if(body == NULL && synerr){
 		inloop--;
 		return NULL;
+	}
 	inloop--;
 	return stat4(FOR, s1, notnull(cond), s2, body);
 }

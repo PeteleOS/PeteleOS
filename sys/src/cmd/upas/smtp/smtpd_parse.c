@@ -73,7 +73,7 @@ ZZSTYPE cat(ZZSTYPE*, ZZSTYPE*, ZZSTYPE*, ZZSTYPE*, ZZSTYPE*, ZZSTYPE*, ZZSTYPE*
 int zzparse(void);
 int zzlex(void);
 ZZSTYPE anonymous(void);
-void zzerror(char*);
+void zzerror(char *s);
 
 /* #define (like y.tab.h), not enum: avoids Plan 9 cc "expected '}'" on macro collision. */
 #undef SPACE

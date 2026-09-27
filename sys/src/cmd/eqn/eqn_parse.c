@@ -51,7 +51,7 @@ YYSTYPE yylval;
 YYSTYPE yyval;
 
 extern int yylex(void);
-extern void yyerror(char*);
+extern void yyerror(char *s);
 
 /* 1-token lookahead buffer over yylex() */
 static int yyhave;

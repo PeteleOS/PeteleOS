@@ -148,8 +148,9 @@ yyinit(char *p)
 }
 
 void
-yyerror(char*)
+yyerror(char *s)
 {
+	USED(s);
 	sysfatal("error parsing filter");
 }
 
@@ -161,31 +162,46 @@ yyerror(char*)
 static Filter*
 parse_word(Filter *f)
 {
+	Filter *op, *w, *eq;
+
 	switch(yypeek()){
 	case '=':
 		yyget();
-		f->l = yylval;		/* next WORD */
+		op = yylval;
 		if(yypeek() != WORD)
 			yyerror("error parsing filter");
-		f->r = yylval; yyget();
-		break;
+		yyget();
+		w = yylval;
+		op->l = f;
+		op->r = w;
+		return op;
 	case NE:
 		yyget();
-		f->l = newfilter();
-		f->l->op = '=';
-		f->l->l = f;
+		op = yylval;
 		if(yypeek() != WORD)
 			yyerror("error parsing filter");
-		f->l->r = yylval; yyget();
-		f->op = '!';
-		break;
-	case '(':
 		yyget();
+		w = yylval;
+		eq = newfilter();
+		eq->op = '=';
+		eq->l = f;
+		eq->r = w;
+		op->l = eq;
+		op->op = '!';
+		return op;
+	case '(':{
+		Filter *lp, *rp;
+		yyget();
+		lp = yylval;
 		f->l = parse_lor();
 		if(yypeek() != ')')
 			yyerror("error parsing filter");
 		yyget();
+		rp = yylval;
+		free(lp);
+		free(rp);
 		break;
+	}
 	default:
 		/* bare WORD */
 		break;
@@ -204,13 +220,19 @@ parse_primary(void)
 	case WORD:
 		yyget();
 		return parse_word(yylval);
-	case '(':
+	case '(':{
+		Filter *lp, *rp;
 		yyget();
+		lp = yylval;
 		f = parse_lor();
 		if(yypeek() != ')')
 			yyerror("error parsing filter");
 		yyget();
+		rp = yylval;
+		free(lp);
+		free(rp);
 		return f;
+	}
 	default:
 		/* '!' handled in parse_unary */
 		if(t == '!')
@@ -226,8 +248,8 @@ parse_unary(void)
 	Filter *f;
 
 	if(yypeek() == '!'){
-		f = newfilter();
-		f->op = yyget();	/* consume '!' */
+		yyget();
+		f = yylval;
 		f->l = parse_unary();
 		return f;
 	}
@@ -237,13 +259,15 @@ parse_unary(void)
 static Filter*
 parse_bitand(void)
 {
-	Filter *f;
+	Filter *f, *op;
 
 	f = parse_unary();
 	while(yypeek() == '&'){
 		yyget();
-		f->l = f;
-		f->r = parse_unary();
+		op = yylval;
+		op->l = f;
+		op->r = parse_unary();
+		f = op;
 	}
 	return f;
 }
@@ -251,13 +275,15 @@ parse_bitand(void)
 static Filter*
 parse_bitor(void)
 {
-	Filter *f;
+	Filter *f, *op;
 
 	f = parse_bitand();
 	while(yypeek() == '|'){
 		yyget();
-		f->l = f;
-		f->r = parse_bitand();
+		op = yylval;
+		op->l = f;
+		op->r = parse_bitand();
+		f = op;
 	}
 	return f;
 }
@@ -265,13 +291,15 @@ parse_bitor(void)
 static Filter*
 parse_land(void)
 {
-	Filter *f;
+	Filter *f, *op;
 
 	f = parse_bitor();
 	while(yypeek() == LAND){
 		yyget();
-		f->l = f;
-		f->r = parse_bitor();
+		op = yylval;
+		op->l = f;
+		op->r = parse_bitor();
+		f = op;
 	}
 	return f;
 }
@@ -279,13 +307,15 @@ parse_land(void)
 static Filter*
 parse_lor(void)
 {
-	Filter *f;
+	Filter *f, *op;
 
 	f = parse_land();
 	while(yypeek() == LOR){
 		yyget();
-		f->l = f;
-		f->r = parse_land();
+		op = yylval;
+		op->l = f;
+		op->r = parse_land();
+		f = op;
 	}
 	return f;
 }

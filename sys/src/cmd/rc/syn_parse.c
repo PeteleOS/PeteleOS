@@ -54,7 +54,7 @@ extern int lastdol;
 YYSTYPE yylval;
 
 static void syn_advance(void);
-static void syn_error(char*);
+static void syn_error(char *s);
 static void skipnl_tok(void);
 static int is_wordstart(int);
 

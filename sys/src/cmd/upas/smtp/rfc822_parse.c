@@ -103,7 +103,7 @@ extern void missing(Node*);
 extern void newfield(Node*, int);
 extern int cistrcmp(char*, char*);
 extern int yylex(void);
-extern void yyerror(char*);
+extern void yyerror(char *s);
 extern String* yywhite(void);
 
 YYSTYPE yylval;

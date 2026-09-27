@@ -120,17 +120,17 @@ int	cflag;
 int	sflag;
 
 char*	bundle(int, ...);
-void	conout(char*, char*);
+void	conout(char *a, char *b);
 int	cpeek(int, int, int);
 int	getch(void);
-char*	geta(char*);
-char*	getf(char*);
+char*	geta(char *s);
+char*	getf(char *s);
 void	getout(void);
-void	output(char*);
-void	pp(char*);
-void	routput(char*);
-void	tp(char*);
-void	yyerror(char*, ...);
+void	output(char *s);
+void	pp(char *s);
+void	routput(char *s);
+void	tp(char *s);
+void	yyerror(char *s, ...);
 int	yyparse(void);
 
 typedef	void*	pointer;

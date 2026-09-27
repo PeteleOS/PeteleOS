@@ -111,7 +111,7 @@ static charp parse_mch(void);
 static charp parse_prefix(void);
 static charp parse_primary(void);
 int yylex(void);
-void yyerror(char*);
+void yyerror(char *s);
 static int yypeek(void);
 static int yyget(void);
 
@@ -368,7 +368,7 @@ yylex(void) {
 	return A_STRING;
 }
 
-char *rel(op, r1, r2) register char *r1, *r2; {
+char *rel(int op, char *r1, char *r2) {
 	register int i;
 
 	if(ematch(r1, "-\\{0,1\\}[0-9]*$") && ematch(r2, "-\\{0,1\\}[0-9]*$"))
@@ -386,7 +386,7 @@ char *rel(op, r1, r2) register char *r1, *r2; {
 	return i? "1": "0";
 }
 
-char *arith(op, r1, r2) char *r1, *r2; {
+char *arith(int op, char *r1, char *r2) {
 	long i1, i2;
 	register char *rv;
 
@@ -406,7 +406,7 @@ char *arith(op, r1, r2) char *r1, *r2; {
 	strcpy(rv, ltoa(i1));
 	return rv;
 }
-char *conj(op, r1, r2) char *r1, *r2; {
+char *conj(int op, char *r1, char *r2) {
 	register char *rv;
 
 	switch(op) {
@@ -436,7 +436,7 @@ char *conj(op, r1, r2) char *r1, *r2; {
 	return rv;
 }
 
-char *substr(v, s, w) char *v, *s, *w; {
+char *substr(char *v, char *s, char *w) {
 register int si, wi;
 register char *res;
 
@@ -452,7 +452,7 @@ register char *res;
 	return res;
 }
 
-char *length(s) register char *s; {
+char *length(char *s) {
 	register int i = 0;
 	register char *rv;
 
@@ -463,7 +463,7 @@ char *length(s) register char *s; {
 	return rv;
 }
 
-char *index(s, t) char *s, *t; {
+char *index(char *s, char *t) {
 	register int i, j;
 	register char *rv;
 
@@ -541,8 +541,7 @@ prt(int fd, char *s)
 	write(fd, s, strlen(s));
 	write(fd, "\n", 1);
 }
-char *ltoa(l)
-long l;
+char *ltoa(long l)
 {
 	static char str[20];
 	register char *sp = &str[18];

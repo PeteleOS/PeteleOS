@@ -91,7 +91,7 @@ Node	*ftmps, *atmps;
 Node	*modulo;
 
 Node*	new(int, Node*, Node*);
-Sym*	sym(char*);
+Sym*	sym(char *s);
 
 Biobuf	bin;
 int	goteof;
@@ -101,7 +101,7 @@ char*	filename;
 
 int	getch(void);
 void	ungetc(void);
-void	yyerror(char*);
+void	yyerror(char *s);
 int	yyparse(void);
 void	diag(Node*, char*, ...);
 void	com(Node*);
@@ -154,7 +154,7 @@ static int yypeek(void);
 static Node* parse_name(void);
 static Node* parse_num(void);
 static Node* parse_args(void);
-static Node* parse_elif(Node*, Node*);
+static Node* parse_elif(void);
 static void parse_sem(void);
 static Node* parse_stmnt(void);
 static Node* parse_block(void);

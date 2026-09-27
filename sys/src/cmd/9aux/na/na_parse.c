@@ -73,8 +73,8 @@
 
 int yyparse(void);
 void assemble(void);
-void yyerror(char *, ...);
-void yywarn(char *, ...);
+void yyerror(char *s, ...);
+void yywarn(char *s, ...);
 void p2error(int line, char *);
 
 struct addr {
@@ -2125,7 +2125,7 @@ preprocess(char *in, FILE *out)
 		argv[ncppopts + 3] = in;
 		argv[ncppopts + 4] = 0;
 		exec("/bin/cpp", argv);
-		fprintf(stderr, "failed to exec cpp (%R)\n");
+		fprintf(stderr, "failed to exec cpp (%r)\n");
 		exits("exec");
 	}
 	w = wait();

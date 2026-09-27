@@ -14,7 +14,7 @@
 YYSTYPE yylval;
 /* forward decls for globals/funcs defined at bottom (strict kencc) */
 extern int indef;
-void defnonly(char*);
+void defnonly(char *s);
 int backslash(int);
 int follow(int, int, int);
 int moreinput(void);
@@ -40,7 +40,7 @@ static Symbol* parse_procname(void);
 static int parse_arglist(void);
 static void parse_defn(void);
 int yylex(void);
-void yyerror(char*);
+void yyerror(char *s);
 static int yypeek(void);
 static int yypeek2(void);
 static int yyget(void);
@@ -188,7 +188,7 @@ parse_primary(void)
 		e = b;
 		code(call);
 		code((Inst)s);
-		code((Inst)n);
+		code((Inst)(uintptr)n);
 		return e;
 	case READ:
 		if(yyget() != '(')
@@ -551,7 +551,7 @@ parse_stmt(void)
 		e = beg;
 		code(call);
 		code((Inst)s);
-		code((Inst)n);
+		code((Inst)(uintptr)n);
 		return e;
 	}
 	e = parse_expr();
@@ -659,8 +659,8 @@ int	gargc;
 int c = '\n';
 
 int	backslash(int), follow(int, int, int);
-void	defnonly(char*), run(void);
-void	warning(char*, char*);
+void	defnonly(char *s), run(void);
+void	warning(char *s, char *t);
 
 int
 yylex(void)
@@ -764,13 +764,13 @@ follow(int expect, int ifyes, int ifno)
 }
 
 void
-yyerror(char* s)
+yyerror(char *s)
 {
 	execerror(s, (char *)0);
 }
 
 void
-execerror(char* s, char* t)
+execerror(char *s, char *t)
 {
 	warning(s, t);
 	Bseek(bin, 0L, 2);

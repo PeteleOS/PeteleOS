@@ -91,7 +91,7 @@ extern	int	specialcase(Node*, Node*, Node*);
 extern	double	fadd(double, double);
 extern	double	fdiv(double, double);
 extern	double	fmul(double, double);
-extern	int	gdigit(void*);
+extern	int	gdigit(void *u);
 extern	Var*	lookup(int);
 extern	void	main(int, char*[]);
 extern	void	mul(Node*, Node*, Node*);
@@ -103,7 +103,7 @@ extern	int	readline(void);
 extern	void	sub(Node*, Node*, Node*);
 extern	int	Ufmt(Fmt*);
 extern	void	xpn(Node*, Node*, int);
-extern	void	yyerror(char*, ...);
+extern	void	yyerror(char *fmt, ...);
 extern	int	yylex(void);
 extern	int	yyparse(void);
 
@@ -552,10 +552,11 @@ ralpha(int c)
 }
 
 int
-gdigit(void*)
+gdigit(void *u)
 {
 	int c;
 
+	USED(u);
 	c = digval;
 	if(c) {
 		digval = 0;

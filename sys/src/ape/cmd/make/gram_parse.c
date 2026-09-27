@@ -97,7 +97,7 @@ static YYSTYPE yysaveval;
 
 static int yypeek(void);
 static int yyget(void);
-int yyerror(char*, ...);
+int yyerror(char *s, ...);
 static void parse_file(void);
 static void parse_comline(void);
 static nameblkp parse_namelist(void);
@@ -347,9 +347,9 @@ yyparse(void)
 	return 0;
 }
 
-static int retsh(char *);
+static int retsh(char *s);
 static int nextlin(void);
-static int isinclude(char *);
+static int isinclude(char *s);
 
 int
 parse(char *name)

@@ -68,7 +68,7 @@ yyerror(char *e, ...)
 	exits("syntax");
 }
 
-static long
+static int
 yylex(void)
 {
 	char *q, *eq;
