@@ -437,7 +437,7 @@ char *conj(op, r1, r2) char *r1, *r2; {
 }
 
 char *substr(v, s, w) char *v, *s, *w; {
-register si, wi;
+register int si, wi;
 register char *res;
 
 	si = atol(s);
@@ -510,11 +510,11 @@ ematch(char *s, char *p)
 	if(advance(s, expbuf)) {
 		if(nbra == 1) {
 			p = braslist[0];
-			num = braelist[0] - p;
+			num = (int)(braelist[0] - p);
 			strncpy(Mstring[0], p, num);
 			Mstring[0][num] = '\0';
 		}
-		return(loc2-s);
+		return (int)(loc2-s);
 	}
 	return(0);
 }

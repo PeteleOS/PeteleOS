@@ -2265,14 +2265,14 @@ parse_string(void)
 	n->class = CSTATIC;
 	while(yypeek(0) == LSTRING){
 		char *s;
-		int w;
+		long w;
 		YYSTYPE v;
 		yyget();
 		v = yylval;
 		w = n->type->width - 1;
 		s = alloc(w+v.sval.l+MAXALIGN);
-		memcpy(s, n->cstring, w);
-		memcpy(s+w, v.sval.s, v.sval.l);
+		memcpy(s, n->cstring, (ulong)w);
+		memcpy(s+w, v.sval.s, (ulong)v.sval.l);
 		s[w+v.sval.l] = 0;
 		n->type->width += v.sval.l;
 		n->cstring = s;
@@ -2295,14 +2295,14 @@ parse_lstring(void)
 	n->class = CSTATIC;
 	while(yypeek(0) == LLSTRING){
 		char *s;
-		int w;
+		long w;
 		YYSTYPE v;
 		yyget();
 		v = yylval;
 		w = n->type->width - sizeof(TRune);
 		s = alloc(w+v.sval.l+MAXALIGN);
-		memcpy(s, n->rstring, w);
-		memcpy(s+w, v.sval.s, v.sval.l);
+		memcpy(s, n->rstring, (ulong)w);
+		memcpy(s+w, v.sval.s, (ulong)v.sval.l);
 		*(TRune*)(s+w+v.sval.l) = 0;
 		n->type->width += v.sval.l;
 		n->rstring = (TRune*)s;

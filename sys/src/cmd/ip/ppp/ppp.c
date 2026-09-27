@@ -2850,7 +2850,7 @@ netlog(char *fmt, ...)
 
 	va_start(arg, fmt);
 	m = vsmprint(fmt, arg);
-	fprint(2, "%ld %s", now-start, m);
+	fprint(2, "%ld %s", (long)(now-start), m);
 	free(m);
 	va_end(arg);
 }

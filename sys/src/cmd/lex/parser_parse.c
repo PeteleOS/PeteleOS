@@ -625,7 +625,7 @@ yylex(void)
 						return(freturn(DELIM));
 					case 'p': case 'P':	/* has overridden number of positions */
 						while(*p && !isdigit(*p))p++;
-						maxpos = atol((char*)p);
+						maxpos = (int)atol((char*)p);
 # ifdef DEBUG
 						if (debug) print("positions (%%p) now %d\n",maxpos);
 # endif
@@ -633,7 +633,7 @@ yylex(void)
 						continue;
 					case 'n': case 'N':	/* has overridden number of states */
 						while(*p && !isdigit(*p))p++;
-						nstates = atol((char*)p);
+						nstates = (int)atol((char*)p);
 # ifdef DEBUG
 						if(debug)print( " no. states (%%n) now %d\n",nstates);
 # endif
@@ -641,7 +641,7 @@ yylex(void)
 						continue;
 					case 'e': case 'E':		/* has overridden number of tree nodes */
 						while(*p && !isdigit(*p))p++;
-						treesize = atol((char*)p);
+						treesize = (int)atol((char*)p);
 # ifdef DEBUG
 						if (debug) print("treesize (%%e) now %d\n",treesize);
 # endif
@@ -649,13 +649,13 @@ yylex(void)
 						continue;
 					case 'o': case 'O':
 						while (*p && !isdigit(*p))p++;
-						outsize = atol((char*)p);
+						outsize = (int)atol((char*)p);
 						if (report ==2) report=1;
 						continue;
 					case 'a': case 'A':		/* has overridden number of transitions */
 						while(*p && !isdigit(*p))p++;
 						if(report == 2)report = 1;
-						ntrans = atol((char*)p);
+						ntrans = (int)atol((char*)p);
 # ifdef DEBUG
 						if (debug)print("N. trans (%%a) now %d\n",ntrans);
 # endif
@@ -664,7 +664,7 @@ yylex(void)
 						while (*p && !isdigit(*p))p++;
 						if (report==2) report=1;
 						free(pchar);
-						pchlen = atol((char*)p);
+						pchlen = (int)atol((char*)p);
 # ifdef DEBUG
 						if (debug) print( "Size classes (%%k) now %d\n",pchlen);
 # endif
@@ -817,7 +817,7 @@ yylex(void)
 						c = gch();
 					}
 					token[i] = 0;
-					yylval.i = atol((char*)token);
+					yylval.i = (int)atol((char*)token);
 					munputc(c);
 					x = ITER;
 					break;

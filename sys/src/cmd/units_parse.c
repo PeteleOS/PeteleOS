@@ -419,7 +419,7 @@ loop:
 alpha:
 	memset(sym, 0, sizeof(sym));
 	for(i=0;; i++) {
-		if(i < nelem(sym))
+		if(i < (int)nelem(sym))
 			sym[i] = c;
 		c = line[linep++];
 		if(!ralpha(c))
@@ -764,11 +764,11 @@ readline(void)
 			return 1;
 		if(c == '\n')
 			break;
-		if(i < nelem(line))
+		if(i < (int)nelem(line))
 			line[i] = c;
 	}
-	if(i >= nelem(line))
-		i = nelem(line)-1;
+	if(i >= (int)nelem(line))
+		i = (int)nelem(line)-1;
 	line[i] = 0;
 	return 0;
 }

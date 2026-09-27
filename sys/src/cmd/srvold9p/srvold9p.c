@@ -695,7 +695,7 @@ rattach(Fcall *t, Fcall *r, char *mdata9p1)
 	if(err)
 		return err;
 
-	r->qid.path = r9.qid.path & ~0x80000000;
+	r->qid.path = r9.qid.path & ~(uvlong)0x80000000;
 	r->qid.vers = r9.qid.version;
 	r->qid.type = QTDIR;
 	f->busy = 1;
@@ -756,7 +756,7 @@ rwalk(Fcall *t, Fcall *r, char *mdata9p1)
 			if(r9.qid.path & 0x80000000)
 				q->type = QTDIR;
 			q->vers = r9.qid.version;
-			q->path = r9.qid.path & ~0x80000000;
+			q->path = r9.qid.path & ~(uvlong)0x80000000;
 		}
 	}
 
@@ -797,7 +797,7 @@ ropen(Fcall *t, Fcall *r, char *mdata9p1)
 	if(err)
 		return err;
 
-	r->qid.path = r9.qid.path & ~0x80000000;
+	r->qid.path = r9.qid.path & ~(uvlong)0x80000000;
 	r->qid.vers = r9.qid.version;
 	r->qid.type = QTFILE;
 	if(r9.qid.path & 0x80000000)
@@ -832,7 +832,7 @@ rcreate(Fcall *t, Fcall *r, char *mdata9p1)
 	if(err)
 		return err;
 
-	r->qid.path = r9.qid.path & ~0x80000000;
+	r->qid.path = r9.qid.path & ~(uvlong)0x80000000;
 	r->qid.vers = r9.qid.version;
 	r->qid.type = QTFILE;
 	if(r9.qid.path & 0x80000000)

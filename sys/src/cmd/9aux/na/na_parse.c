@@ -1924,7 +1924,7 @@ yygetc(void)
 			goto next;
 		}
 		yyline++;
-		ll = strlen(line);
+		ll = (int)strlen(line);
 		lc = 0;
 	}
 	return line[lc++];
@@ -2102,7 +2102,7 @@ main(int argc, char *argv[])
 	yyparse();
 	printf("};\n");
 	printf("\n");
-	printf("#define NA_SCRIPT_SIZE %d\n", dot / 4);
+	printf("#define NA_SCRIPT_SIZE %ud\n", dot / 4);
 	printf("\n");
 	fixup();
 	exits(errors ? "pass2" : "");
@@ -2362,8 +2362,8 @@ fixup(void)
 	int p;
 	printf("struct na_patch na_patches[] = {\n");
 	for (p = 0; p < patches; p++) {
-		printf("\t{ 0x%.4x, %d }, /* %.8lx */\n",
-		    patch[p].lwoff, patch[p].type, patch[p].lwoff * 4L);
+		printf("\t{ 0x%.4x, %d }, /* %.8lux */\n",
+		    patch[p].lwoff, patch[p].type, (ulong)(patch[p].lwoff * 4UL));
 	}
 	if (patches == 0) {
 		printf("\t{ 0, 0 },\n");

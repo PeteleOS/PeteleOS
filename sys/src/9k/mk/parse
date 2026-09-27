@@ -169,8 +169,8 @@ function mkbootconf(				a, n, s, t, u, c, d, p, r){
 		if(n > 1){
 			u = line["boot", i];
 			if(sub(/^[_A-Za-z][_A-Za-z0-9]*[ \t]*/, "", u)){
-				if(match(u, /^".*"$/))
-					u = substr(u, RSTART+1, RLENGTH-2);
+				if(substr(u, 1, 1) == "\"" && substr(u, length(u), 1) == "\"")
+					u = substr(u, 2, length(u)-2);
 				t = "\"" u "\"";
 			}
 		}
@@ -186,7 +186,7 @@ function mkbootconf(				a, n, s, t, u, c, d, p, r){
 
 	t = "int (*cfs)(int) = 0;\n";
 	for(i = 1; i < section["rootdir"]; i++){
-		if($1 !~ /\/bin\/cfs$/)
+		if(line["rootdir", i] !~ /cfs$/)
 			continue;
 		t = "int (*cfs)(int) = cache;\n";
 		break;

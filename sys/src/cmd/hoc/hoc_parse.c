@@ -719,7 +719,7 @@ yylex(void)
 			*p = backslash(c);
 		}
 		*p = 0;
-		yylval.sym = (Symbol *)emalloc(strlen(sbuf)+1);
+		yylval.sym = (Symbol *)emalloc((unsigned)(strlen(sbuf)+1));
 		strcpy((char*)yylval.sym, sbuf);
 		return STRING;
 	}

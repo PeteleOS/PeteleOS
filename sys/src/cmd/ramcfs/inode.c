@@ -218,7 +218,7 @@ iget(Icache *ic, Qid qid)
 	 */
 	m = (Imap*)ic->mlru.lnext;
 	if(m->inuse){
-		DPRINT(2, "superceding file %llud.%ld by %llud.%ld\n",
+		DPRINT(2, "superceding file %llud.%lud by %llud.%lud\n",
 			m->qid.path, m->qid.vers, qid.path, qid.vers);
 		if(iremove(ic, m - ic->map) < 0)
 			return 0;
@@ -229,7 +229,7 @@ iget(Icache *ic, Qid qid)
 	/*
 	 *  init inode and write to disk
 	 */
-	DPRINT(2, "new file %llud.%ld ino %lld\n",
+	DPRINT(2, "new file %llud.%lud ino %lld\n",
 		qid.path, qid.vers, (vlong)(m - ic->map));
 	b = ialloc(ic, m - ic->map);
 	b->inode.inuse = m->inuse = 1;
