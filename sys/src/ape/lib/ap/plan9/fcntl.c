@@ -22,8 +22,8 @@ fcntl(int fd, int cmd, ...)
 	ans = 0;
 	va_start(va, cmd);
 	arg = va_arg(va, int);
+	if(va);else;
 	va_end(va);
-	(void)va;
 	fi = &_fdinfo[fd];
 	if(fd<0 || fd>=OPEN_MAX || !(fi->flags&FD_ISOPEN))
 		err = EBADF;

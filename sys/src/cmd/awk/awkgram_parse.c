@@ -1068,6 +1068,237 @@ parse_primary(void)
 	default:
 		break;
 	}
+	if(t == INDEX){
+		Node *p1, *p2;
+		char *rs;
+
+		yyget();
+		if(yypeek() != '('){
+			synerr = 1;
+			return NULL;
+		}
+		yyget();
+		p1 = parse_pattern();
+		if(p1 == NULL)
+			return NULL;
+		if(!expect_comma())
+			return NULL;
+		if(yypeek() == '/'){
+			rs = parse_reg_expr();
+			if(rs == NULL)
+				return NULL;
+			SYNTAX("index() doesn't permit regular expressions");
+			p2 = (Node*)rs;
+		}else{
+			p2 = parse_pattern();
+			if(p2 == NULL)
+				return NULL;
+		}
+		if(yypeek() != ')'){
+			synerr = 1;
+			return NULL;
+		}
+		yyget();
+		return op2(INDEX, p1, p2);
+	}
+	if(t == MATCHFCN){
+		Node *p1, *p2;
+		char *rs;
+
+		yyget();
+		if(yypeek() != '('){
+			synerr = 1;
+			return NULL;
+		}
+		yyget();
+		p1 = parse_pattern();
+		if(p1 == NULL)
+			return NULL;
+		if(!expect_comma())
+			return NULL;
+		if(yypeek() == '/'){
+			rs = parse_reg_expr();
+			if(rs == NULL)
+				return NULL;
+			if(yypeek() != ')'){
+				synerr = 1;
+				return NULL;
+			}
+			yyget();
+			return op3(MATCHFCN, NIL, p1, (Node*)makedfa(rs, 1));
+		}
+		p2 = parse_pattern();
+		if(p2 == NULL)
+			return NULL;
+		if(yypeek() != ')'){
+			synerr = 1;
+			return NULL;
+		}
+		yyget();
+		if(constnode(p2))
+			return op3(MATCHFCN, NIL, p1, (Node*)makedfa(strnode(p2), 1));
+		return op3(MATCHFCN, (Node*)1, p1, p2);
+	}
+	if(t == SPRINTF){
+		Node *pl;
+
+		yyget();
+		if(yypeek() != '('){
+			synerr = 1;
+			return NULL;
+		}
+		yyget();
+		pl = parse_patlist();
+		if(pl == NULL)
+			return NULL;
+		if(yypeek() != ')'){
+			synerr = 1;
+			return NULL;
+		}
+		yyget();
+		return op1(SPRINTF, pl);
+	}
+	if(t == SPLIT){
+		Node *p1, *vn, *p3;
+		char *rs;
+
+		yyget();
+		if(yypeek() != '('){
+			synerr = 1;
+			return NULL;
+		}
+		yyget();
+		p1 = parse_pattern();
+		if(p1 == NULL)
+			return NULL;
+		if(!expect_comma())
+			return NULL;
+		vn = parse_varname();
+		if(vn == NULL)
+			return NULL;
+		if(yypeek() == ','){
+			if(!expect_comma())
+				return NULL;
+			if(yypeek() == '/'){
+				rs = parse_reg_expr();
+				if(rs == NULL)
+					return NULL;
+				if(yypeek() != ')'){
+					synerr = 1;
+					return NULL;
+				}
+				yyget();
+				return op4(SPLIT, p1, makearr(vn), (Node*)makedfa(rs, 1), (Node*)REGEXPR);
+			}
+			p3 = parse_pattern();
+			if(p3 == NULL)
+				return NULL;
+			if(yypeek() != ')'){
+				synerr = 1;
+				return NULL;
+			}
+			yyget();
+			return op4(SPLIT, p1, makearr(vn), p3, (Node*)STRING);
+		}
+		if(yypeek() != ')'){
+			synerr = 1;
+			return NULL;
+		}
+		yyget();
+		return op4(SPLIT, p1, makearr(vn), NIL, (Node*)STRING);
+	}
+	if(t == SUB || t == GSUB){
+		int op = t;
+		Node *a1 = NIL, *a2, *av;
+		char *rs = 0;
+		int isre = 0;
+
+		yyget();
+		if(yypeek() != '('){
+			synerr = 1;
+			return NULL;
+		}
+		yyget();
+		if(yypeek() == '/'){
+			rs = parse_reg_expr();
+			if(rs == NULL)
+				return NULL;
+			isre = 1;
+		}else{
+			a1 = parse_pattern();
+			if(a1 == NULL)
+				return NULL;
+		}
+		if(!expect_comma())
+			return NULL;
+		a2 = parse_pattern();
+		if(a2 == NULL)
+			return NULL;
+		if(yypeek() == ','){
+			if(!expect_comma())
+				return NULL;
+			av = parse_var();
+			if(av == NULL)
+				return NULL;
+			if(yypeek() != ')'){
+				synerr = 1;
+				return NULL;
+			}
+			yyget();
+			if(isre)
+				return op4(op, NIL, (Node*)makedfa(rs, 1), a2, av);
+			if(constnode(a1))
+				return op4(op, NIL, (Node*)makedfa(strnode(a1), 1), a2, av);
+			return op4(op, (Node*)1, a1, a2, av);
+		}
+		if(yypeek() != ')'){
+			synerr = 1;
+			return NULL;
+		}
+		yyget();
+		if(isre)
+			return op4(op, NIL, (Node*)makedfa(rs, 1), a2, rectonode());
+		if(constnode(a1))
+			return op4(op, NIL, (Node*)makedfa(strnode(a1), 1), a2, rectonode());
+		return op4(op, (Node*)1, a1, a2, rectonode());
+	}
+	if(t == SUBSTR){
+		Node *p1, *p2, *p3;
+
+		yyget();
+		if(yypeek() != '('){
+			synerr = 1;
+			return NULL;
+		}
+		yyget();
+		p1 = parse_pattern();
+		if(p1 == NULL)
+			return NULL;
+		if(!expect_comma())
+			return NULL;
+		p2 = parse_pattern();
+		if(p2 == NULL)
+			return NULL;
+		if(yypeek() == ','){
+			if(!expect_comma())
+				return NULL;
+			p3 = parse_pattern();
+			if(p3 == NULL)
+				return NULL;
+			if(yypeek() != ')'){
+				synerr = 1;
+				return NULL;
+			}
+			yyget();
+			return op3(SUBSTR, p1, p2, p3);
+		}
+		if(yypeek() != ')'){
+			synerr = 1;
+			return NULL;
+		}
+		yyget();
+		return op3(SUBSTR, p1, p2, NIL);
+	}
 	if(t == BLTIN || t == CALL){
 		if(t == BLTIN){
 			sub = peekval()->i;
