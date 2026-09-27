@@ -34,8 +34,12 @@
  *	level 6 (left): LEFT RIGHT (delimiters, not binary ops)
  *	level 7 (highest, right): diacritics DOT DOTDOT HAT TILDE BAR
  *	  LOWBAR HIGHBAR UNDER VEC DYAD UTILDE (postfix on box)
- * Call chain: parse_stuff -> parse_eqn -> parse_box (prefix +
- *	primary + postfix/infix loop) -> parse_sbox/parse_tbox helpers.
+ * Call chain: parse_stuff -> parse_eqn -> parse_box (= parse_fromto,
+ *	FROM/TO, lowest, right) -> parse_over (OVER, left) ->
+ *	parse_supsub (SUB/SUP, right) -> parse_diacritbox (diacritics,
+ *	highest, postfix) -> parse_prefixbox (SIZE/FONT/moves, right) ->
+ *	parse_boxprimary (atoms; MARK/FAT/SQRT/INT/LEFT/columns) ->
+ *	parse_sbox/parse_tbox helpers.
  * Mid-rule {ps -= deltaps;} actions run immediately after consuming
  * SUB/SUP/FROM/TO, copying eqn.y verbatim.
  *
@@ -96,6 +100,13 @@ static int parse_lineupbox(void);
 static int parse_sbox(void);
 static int parse_tbox(void);
 static int parse_box(void);
+static int parse_fromto(void);
+static int parse_frommiddle(void);
+static int parse_over(void);
+static int parse_supsub(void);
+static int parse_submiddle(void);
+static int parse_diacritbox(void);
+static int parse_prefixbox(void);
 static int parse_boxprimary(void);
 static int parse_int(void);
 static int parse_diacrit(void);
@@ -356,15 +367,17 @@ parse_collist(void)
 }
 
 /*
- * parse_boxprimary handles prefix operators and atomic boxes,
- * then the caller parse_box loops over postfix/infix operators
- * by precedence (OVER lowest among them, then SUB/SUP/FROM/TO,
- * diacrit highest).
+ * parse_boxprimary handles atomic boxes and the prefix operators
+ * whose operand is a full box (MARK, FAT) or binds at OVER level
+ * (SQRT).  SIZE/FONT/move prefixes live one level up in
+ * parse_prefixbox; infix/postfix levels are parse_fromto (FROM/TO,
+ * lowest, right), parse_over (OVER, left), parse_supsub (SUB/SUP,
+ * right) and parse_diacritbox (diacritics, highest, postfix).
  */
 static int
 parse_boxprimary(void)
 {
-	int t, b, f, v, n;
+	int t, b, v, n;
 
 	t = yypeek();
 	switch(t){
@@ -421,25 +434,6 @@ parse_boxprimary(void)
 			return -1;
 		mark(b);
 		return 0;
-	case SIZE:
-	case ROMAN:
-	case ITALIC:
-	case BOLD:
-		/* size box / font box : %prec SIZE / FONT */
-		if(t == SIZE)
-			v = parse_size();
-		else
-			v = parse_font();
-		if(v < 0)
-			return -1;
-		b = parse_box();
-		if(b < 0)
-			return -1;
-		if(t == SIZE)
-			size(v, b);
-		else
-			font(v, b);
-		return 0;
 	case FAT:
 		yyget();
 		b = parse_box();
@@ -448,8 +442,11 @@ parse_boxprimary(void)
 		fatbox(b);
 		return 0;
 	case SQRT:
+		/* SQRT box; SQRT shares OVER's level (%left OVER SQRT),
+		 * so the operand stops at OVER/FROM/TO (left-assoc
+		 * reduce) but includes SUP/SUB/diacritics above it. */
 		yyget();
-		b = parse_box();
+		b = parse_supsub();
 		if(b < 0)
 			return -1;
 		sqrt(b);
@@ -463,38 +460,21 @@ parse_boxprimary(void)
 		if(t == SUB || t == SUP){
 			yyget();
 			ps -= deltaps;
-			b = parse_box();
-			if(b < 0)
-				return -1;
 			if(t == SUB){
+				b = parse_submiddle();
+				if(b < 0)
+					return -1;
 				n = parse_sbox();
 				integral(v, b, n);
-			}else
+			}else{
+				b = parse_supsub();
+				if(b < 0)
+					return -1;
 				integral(v, 0, b);
+			}
 			return 0;
 		}
 		integral(v, 0, 0);
-		return 0;
-	case FWD:
-	case UP:
-	case BACK:
-	case DOWN:
-		yyget();
-		if(parse_text() < 0)
-			return -1;
-		n = atoi((char*)yylval);
-		f = t;
-		b = parse_box();
-		if(b < 0)
-			return -1;
-		if(f == FWD)
-			move(FWD, n, b);
-		else if(f == UP)
-			move(UP, n, b);
-		else if(f == BACK)
-			move(BACK, n, b);
-		else
-			move(DOWN, n, b);
 		return 0;
 	case LEFT:
 		{
@@ -550,11 +530,12 @@ parse_boxprimary(void)
 static int
 parse_sbox(void)
 {
-	/* sbox: SUP box | empty */
+	/* sbox: SUP box | empty  (eqn.y, %prec SUP).
+	 * The box nests SUP/SUB right but stops at OVER/FROM/TO below. */
 	if(yypeek() == SUP){
 		int b;
 		yyget();
-		b = parse_box();
+		b = parse_supsub();
 		if(b < 0)
 			return -1;
 		return b;
@@ -565,11 +546,13 @@ parse_sbox(void)
 static int
 parse_tbox(void)
 {
-	/* tbox: TO box | empty */
+	/* tbox: TO box | empty  (eqn.y, %prec TO).
+	 * TO/FROM nest right at the lowest level, so the box takes
+	 * everything via parse_fromto. */
 	if(yypeek() == TO){
 		int b;
 		yyget();
-		b = parse_box();
+		b = parse_fromto();
 		if(b < 0)
 			return -1;
 		return b;
@@ -580,66 +563,248 @@ parse_tbox(void)
 static int
 parse_box(void)
 {
-	int b, b2, sub, sup, d;
+	/* entry point: lowest precedence level (FROM/TO) */
+	return parse_fromto();
+}
 
-	b = parse_boxprimary();
-	if(b < 0){
-		/* eqn.y int-led SUB/SUP/FROM forms start with INT,
-		 * which parse_boxprimary already consumed as lone
-		 * integral; re-handle here only if lookahead shows
-		 * SUB/SUP -- handled inline below instead. */
+/*
+ * Level 1 (lowest, right): FROM TO  (eqn.y %right FROM TO)
+ *	a FROM b tbox		fromto(a, b, tbox)
+ *	a TO b			fromto(a, 0, b)
+ * Right recursion nests `a FROM b FROM c' as a FROM (b FROM c),
+ * matching yacc.  The FROM middle box must not swallow a following
+ * TO (it starts tbox), so it uses parse_frommiddle; the TO right
+ * operand takes everything via parse_fromto.
+ */
+static int
+parse_fromto(void)
+{
+	int b, m, sup;
+
+	b = parse_over();
+	if(b < 0)
 		return -1;
+	if(yypeek() == FROM){
+		yyget();
+		ps -= deltaps;
+		m = parse_frommiddle();
+		if(m < 0)
+			return -1;
+		sup = parse_tbox();
+		if(sup < 0)
+			return -1;
+		fromto(b, m, sup);
+		return 0;
 	}
-	for(;;){
-		int t = yypeek();
-		if(t == OVER){
-			yyget();
-			b2 = parse_box();
-			if(b2 < 0)
-				return -1;
-			boverb(b, b2);
-			b = 0;
-		}else if(t == SUB || t == SUP){
-			yyget();
-			ps -= deltaps;
-			b2 = parse_box();
-			if(b2 < 0)
-				return -1;
-			if(t == SUB){
-				sub = b2;
-				sup = parse_sbox();
-				if(sup < 0 && yypeek() == 0)
-					return -1;
-				subsup(b, sub, sup);
-			}else
-				subsup(b, 0, b2);
-			b = 0;
-		}else if(t == FROM || t == TO){
-			yyget();
-			ps -= deltaps;
-			b2 = parse_box();
-			if(b2 < 0)
-				return -1;
-			if(t == FROM){
-				sub = b2;
-				sup = parse_tbox();
-				fromto(b, sub, sup);
-			}else
-				fromto(b, 0, b2);
-			b = 0;
-		}else if(t == DOT || t == DOTDOT || t == HAT
-		    || t == TILDE || t == BAR || t == LOWBAR
-		    || t == HIGHBAR || t == UNDER || t == VEC
-		    || t == DYAD || t == UTILDE){
-			d = parse_diacrit();
-			if(d < 0)
-				return -1;
-			diacrit(b, d);
-			b = 0;
-		}else
-			break;
+	if(yypeek() == TO){
+		yyget();
+		ps -= deltaps;
+		m = parse_fromto();
+		if(m < 0)
+			return -1;
+		fromto(b, 0, m);
+		return 0;
 	}
 	return b;
+}
+
+/*
+ * FROM middle box: FROM-chains nest right, but a TO ends the middle
+ * (it starts tbox).
+ */
+static int
+parse_frommiddle(void)
+{
+	int b, m, sup;
+
+	b = parse_over();
+	if(b < 0)
+		return -1;
+	if(yypeek() == FROM){
+		yyget();
+		ps -= deltaps;
+		m = parse_frommiddle();
+		if(m < 0)
+			return -1;
+		sup = parse_tbox();
+		if(sup < 0)
+			return -1;
+		fromto(b, m, sup);
+		return 0;
+	}
+	return b;
+}
+
+/*
+ * Level 2 (left): OVER  (eqn.y %left OVER SQRT)
+ *	a OVER b OVER c parses as (a OVER b) OVER c: loop with the
+ *	right operand one level up, so OVER never nests right.
+ */
+static int
+parse_over(void)
+{
+	int b, b2;
+
+	b = parse_supsub();
+	if(b < 0)
+		return -1;
+	while(yypeek() == OVER){
+		yyget();
+		b2 = parse_supsub();
+		if(b2 < 0)
+			return -1;
+		boverb(b, b2);
+		b = 0;
+	}
+	return b;
+}
+
+/*
+ * Level 3 (right): SUP SUB  (eqn.y %right SUP SUB)
+ *	a SUP b SUP c parses as a SUP (b SUP c): right recursion.
+ *	A SUP following a SUB middle box belongs to sbox (as in eqn.y,
+ *	where the sbox production wins the reduce/reduce conflict), so
+ *	the SUB middle box uses parse_submiddle, which stops at SUP.
+ */
+static int
+parse_supsub(void)
+{
+	int b, r, sup;
+
+	b = parse_diacritbox();
+	if(b < 0)
+		return -1;
+	if(yypeek() == SUB){
+		yyget();
+		ps -= deltaps;
+		r = parse_submiddle();
+		if(r < 0)
+			return -1;
+		sup = parse_sbox();
+		if(sup < 0)
+			return -1;
+		subsup(b, r, sup);
+		return 0;
+	}
+	if(yypeek() == SUP){
+		yyget();
+		ps -= deltaps;
+		r = parse_supsub();
+		if(r < 0)
+			return -1;
+		subsup(b, 0, r);
+		return 0;
+	}
+	return b;
+}
+
+/*
+ * SUB middle box: SUB-chains nest right, but a SUP ends the middle
+ * (it starts sbox).
+ */
+static int
+parse_submiddle(void)
+{
+	int b, r, sup;
+
+	b = parse_diacritbox();
+	if(b < 0)
+		return -1;
+	if(yypeek() == SUB){
+		yyget();
+		ps -= deltaps;
+		r = parse_submiddle();
+		if(r < 0)
+			return -1;
+		sup = parse_sbox();
+		if(sup < 0)
+			return -1;
+		subsup(b, r, sup);
+		return 0;
+	}
+	return b;
+}
+
+/*
+ * Highest level (postfix): diacritics (eqn.y %right DOT DOTDOT HAT
+ * TILDE BAR LOWBAR HIGHBAR UNDER VEC DYAD UTILDE).
+ * `a HAT BAR' chains left as (a HAT) BAR.
+ */
+static int
+parse_diacritbox(void)
+{
+	int b, d;
+
+	b = parse_prefixbox();
+	if(b < 0)
+		return -1;
+	while(yypeek() == DOT || yypeek() == DOTDOT || yypeek() == HAT
+	    || yypeek() == TILDE || yypeek() == BAR || yypeek() == LOWBAR
+	    || yypeek() == HIGHBAR || yypeek() == UNDER || yypeek() == VEC
+	    || yypeek() == DYAD || yypeek() == UTILDE){
+		d = parse_diacrit();
+		if(d < 0)
+			return -1;
+		diacrit(b, d);
+		b = 0;
+	}
+	return b;
+}
+
+/*
+ * Prefix levels: SIZE FONT ROMAN ITALIC BOLD (%prec SIZE/FONT) and
+ * FWD UP BACK DOWN (%prec UP), all right-associative.  One function
+ * with right recursion covers nesting (`size 10 up 5 x') either way
+ * around; the operand falls through to parse_diacritbox, so the
+ * lower-precedence infix operators (FROM/TO, OVER, SUB/SUP)
+ * correctly stay outside the prefix operand.
+ */
+static int
+parse_prefixbox(void)
+{
+	int t, v, n;
+
+	t = yypeek();
+	if(t == SIZE){
+		v = parse_size();
+		if(v < 0)
+			return -1;
+		n = parse_prefixbox();
+		if(n < 0)
+			return -1;
+		size(v, n);
+		return 0;
+	}
+	if(t == ROMAN || t == ITALIC || t == BOLD || t == FONT){
+		v = parse_font();
+		if(v < 0)
+			return -1;
+		n = parse_prefixbox();
+		if(n < 0)
+			return -1;
+		font(v, n);
+		return 0;
+	}
+	if(t == FWD || t == UP || t == BACK || t == DOWN){
+		int f = t;
+		yyget();
+		if(parse_text() < 0)
+			return -1;
+		n = atoi((char*)yylval);
+		v = parse_prefixbox();
+		if(v < 0)
+			return -1;
+		if(f == FWD)
+			move(FWD, n, v);
+		else if(f == UP)
+			move(UP, n, v);
+		else if(f == BACK)
+			move(BACK, n, v);
+		else
+			move(DOWN, n, v);
+		return 0;
+	}
+	return parse_boxprimary();
 }
 
 static int

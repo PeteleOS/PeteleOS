@@ -97,7 +97,7 @@ static YYSTYPE yysaveval;
 
 static int yypeek(void);
 static int yyget(void);
-int yyerror(char *s, ...);
+int yyerror(char *s);
 static void parse_file(void);
 static void parse_comline(void);
 static nameblkp parse_namelist(void);
@@ -445,7 +445,7 @@ if(p != zznextc)
 else	{
 	char junk[100];
 	sprintf(junk, "Bad character %c (octal %o), line %d of file %s",
-		*zznextc, *zznextc, yylineno, filestack[ninclude-1].fname);
+		*zznextc, (unsigned char)*zznextc, yylineno, filestack[ninclude-1].fname);
 	fatal(junk);
 	}
 return 0;	/* never executed */
@@ -625,7 +625,7 @@ return YES;
 
 
 int
-yyerror(char *s, ...)
+yyerror(char *s)
 {
 char buf[100];
 

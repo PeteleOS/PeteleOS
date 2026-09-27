@@ -532,7 +532,7 @@ emitline(void)
 	if(pass2){
 		for(x = 0; x < out.len; x++){
 			printf("/* %.4x */ 0x%.8lxL,",
-			    dot, out.data[x]);
+			    dot, (ulong)out.data[x]);
 			if(x == 0){
 				printf(" /*\t");
 				fwrite(line, strlen(line) - 1, 1, stdout);
@@ -1919,7 +1919,7 @@ yygetc(void)
 		/* do nasty check for #line directives */
 		if (strncmp(line, "#line", 5) == 0) {
 			/* #line n "filename" */
-			sscanf(line, "#line %d \"%[^\"]", &yyline, yyfilename);
+			sscanf(line, "#line %d \"%199[^\"]", &yyline, yyfilename);
 			yyline--;
 			goto next;
 		}
@@ -2102,7 +2102,7 @@ main(int argc, char *argv[])
 	yyparse();
 	printf("};\n");
 	printf("\n");
-	printf("#define NA_SCRIPT_SIZE %ud\n", dot / 4);
+	printf("#define NA_SCRIPT_SIZE %u\n", dot / 4);
 	printf("\n");
 	fixup();
 	exits(errors ? "pass2" : "");
@@ -2362,7 +2362,7 @@ fixup(void)
 	int p;
 	printf("struct na_patch na_patches[] = {\n");
 	for (p = 0; p < patches; p++) {
-		printf("\t{ 0x%.4x, %d }, /* %.8lux */\n",
+		printf("\t{ 0x%.4x, %d }, /* %.8lx */\n",
 		    patch[p].lwoff, patch[p].type, (ulong)(patch[p].lwoff * 4UL));
 	}
 	if (patches == 0) {

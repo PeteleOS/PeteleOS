@@ -449,7 +449,6 @@ parse_stat(void)
 		Attr *a = parse_string();
 		fprintf(stderr, "\t%s\n", a->sval);
 		freeattr(a);
-			freeattr(a);
 		}else{
 			double f = parse_expr();
 			fprintf(stderr, "\t%g\n", f);
@@ -1685,7 +1684,7 @@ parse_pow(void)
 
 	if(yypeek() == '^'){
 		yyget();
-		f = pow(f, parse_unary());
+		f = pow(f, parse_pow());
 	}
 	return f;
 }

@@ -318,19 +318,20 @@ yyparse(void)
 }
 /*	expression command */
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 /* get rid of yacc debug printf's */
 #define printf
 #define ESIZE	512
 #define error(c)	errxx(c)
 #define EQL(x,y) !strcmp(x,y)
-long atol();
-char *ltoa();
+char *ltoa(long);
 char	**Av;
 int	Ac;
 int	Argi;
 
 char Mstring[1][128];
-char *malloc();
 extern int nbra;
 int yyparse(void);
 
@@ -407,7 +408,7 @@ char *arith(int op, char *r1, char *r2) {
 	return rv;
 }
 char *conj(int op, char *r1, char *r2) {
-	register char *rv;
+	register char *rv = "0";
 
 	switch(op) {
 
@@ -431,6 +432,8 @@ char *conj(int op, char *r1, char *r2) {
 			rv = "0";
 		else
 			rv = r1;
+		break;
+	default:
 		break;
 	}
 	return rv;
@@ -522,7 +525,7 @@ ematch(char *s, char *p)
 int
 errxx(int c)
 {
-	USED(c);
+	(void)c;
 	yyerror("RE error");
 	return 0;
 }
@@ -531,15 +534,15 @@ errxx(int c)
 void
 yyerror(char *s)
 {
-	write(2, "expr: ", 6);
+	if(write(2, "expr: ", 6) < 0){}
 	prt(2, s);
 	exit(2);
 }
 void
 prt(int fd, char *s)
 {
-	write(fd, s, strlen(s));
-	write(fd, "\n", 1);
+	if(write(fd, s, strlen(s)) < 0){}
+	if(write(fd, "\n", 1) < 0){}
 }
 char *ltoa(long l)
 {

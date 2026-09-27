@@ -1588,7 +1588,7 @@ bundle(int a, ...)
 	va_start(arg, a);
 	q = bsp_nxt;
 	if(bdebug)
-		fprint(2, "bundle %d elements at %lx\n", i, (void*)q);
+		fprint(2, "bundle %d elements at %p\n", i, (void*)q);
 	while(i-- > 0) {
 		if(bsp_nxt >= &bspace[bsp_max])
 			yyerror("bundling space exceeded");
@@ -1606,14 +1606,14 @@ routput(char *p)
 	char **pp;
 	
 	if(bdebug)
-		fprint(2, "routput(%lx)\n", (void*)p);
+		fprint(2, "routput(%p)\n", (void*)p);
 	if((char**)p >= &bspace[0] && (char**)p < &bspace[bsp_max]) {
 		/* part of a bundle */
 		pp = (char**)p;
 		while(*pp != 0)
 			routput(*pp++);
 	} else
-		Bprint(&bstdout, p);
+		Bprint(&bstdout, "%s", p);
 }
 
 void

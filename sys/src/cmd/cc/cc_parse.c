@@ -943,7 +943,7 @@ parse_arg_one(void)
 			 * abdecor, not xdecor (xdecor demands a tag). */
 			int isx = 0;
 			int i;
-			for(i=0;i<16;i++){
+			for(i=0;i<NLA;i++){
 				long tt = yypeek(i);
 				if(tt == LNAME || tt == LTYPE){ isx = 1; break; }
 				if(tt == ',' || tt == ')' || tt == -1 || tt == 0) break;
@@ -952,7 +952,7 @@ parse_arg_one(void)
 					int depth = 1;
 					while(depth > 0){
 						i++;
-						if(i >= 200)
+						if(i >= NLA)
 							break;
 						tt = yypeek(i);
 						if(tt == -1 || tt == 0)

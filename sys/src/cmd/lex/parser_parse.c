@@ -830,7 +830,7 @@ yylex(void)
 					token[i] = 0;
 					i = lookup(token,def);
 					if(i < 0)
-						warning("Definition %s not found",token);
+						warning("Definition %s not found",(char*)token);
 					else
 						munputs(subs[i]);
 					continue;
@@ -851,7 +851,7 @@ yylex(void)
 						goto character;
 					i = lookup(token,sname);
 					if(i < 0) {
-						warning("Undefined start condition %s",token);
+						warning("Undefined start condition %s",(char*)token);
 						continue;
 					}
 					*slptr++ = i+1;
