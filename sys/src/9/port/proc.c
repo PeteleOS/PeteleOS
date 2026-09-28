@@ -793,7 +793,7 @@ procinit0(void)		/* bad planning - clashes with devproc.c */
 	procalloc.free = xalloc(conf.nproc*sizeof(Proc));
 	if(procalloc.free == nil){
 		xsummary();
-		panic("cannot allocate %lud procs (%ludMB)\n", conf.nproc, conf.nproc*sizeof(Proc)/(1024*1024));
+		panic("cannot allocate %lud procs (%lludMB)\n", conf.nproc, conf.nproc*sizeof(Proc)/(1024*1024));
 	}
 	procalloc.arena = procalloc.free;
 
@@ -1422,7 +1422,7 @@ scheddump(void)
 	for(rq = &runq[Nrq-1]; rq >= runq; rq--){
 		if(rq->head == 0)
 			continue;
-		print("rq%ld:", rq-runq);
+		print("rq%lld:", rq-runq);
 		for(p = rq->head; p; p = p->rnext)
 			print(" %lud(%lud)", p->pid, m->ticks - p->readytime);
 		print("\n");

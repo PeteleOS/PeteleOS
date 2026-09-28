@@ -2,7 +2,7 @@
 #include "send.h"
 
 #include "../smtp/smtp.h"
-#include "../smtp/y.tab.h"
+#include "../smtp/rfc822_parse.h"
 
 /* global to this file */
 static Reprog *rfprog;

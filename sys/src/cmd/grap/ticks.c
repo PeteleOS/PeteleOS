@@ -3,7 +3,7 @@
 #include <string.h>
 #include <math.h>
 #include "grap.h"
-#include "y.tab.h"
+#include "grap_parse.h"
 
 #define	MAXTICK	200
 int	ntick	= 0;

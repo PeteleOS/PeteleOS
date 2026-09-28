@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "grap.h"
-#include "y.tab.h"
+#include "grap_parse.h"
 
 void line(int type, Point p1, Point p2, Attr *desc)	/* draw a line segment */
 {

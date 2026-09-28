@@ -555,19 +555,19 @@ dumpkeydescr(Keydescr *kd)
 
 	f = kd->flags[0]<<8 | kd->flags[1];
 	fprint(2, "type=%.*H vers=%d flags=%.*H ( ",
-		sizeof(kd->type), kd->type, kd->flags[1] & 7,
-		sizeof(kd->flags), kd->flags);
+		(int)sizeof(kd->type), kd->type, kd->flags[1] & 7,
+		(int)sizeof(kd->flags), kd->flags);
 	for(i=0; i<nelem(flags); i++)
 		if(flags[i].flag & f)
 			fprint(2, "%s ", flags[i].name);
 	fprint(2, ") len=%.*H\nrepc=%.*H nonce=%.*H\neapoliv=%.*H rsc=%.*H id=%.*H mic=%.*H\n",
-		sizeof(kd->keylen), kd->keylen,
-		sizeof(kd->repc), kd->repc,
-		sizeof(kd->nonce), kd->nonce,
-		sizeof(kd->eapoliv), kd->eapoliv,
-		sizeof(kd->rsc), kd->rsc,
-		sizeof(kd->id), kd->id,
-		sizeof(kd->mic), kd->mic);
+		(int)sizeof(kd->keylen), kd->keylen,
+		(int)sizeof(kd->repc), kd->repc,
+		(int)sizeof(kd->nonce), kd->nonce,
+		(int)sizeof(kd->eapoliv), kd->eapoliv,
+		(int)sizeof(kd->rsc), kd->rsc,
+		(int)sizeof(kd->id), kd->id,
+		(int)sizeof(kd->mic), kd->mic);
 	i = kd->datalen[0]<<8 | kd->datalen[1];
 	fprint(2, "data[%.4x]=%.*H\n", i, i, kd->data);
 }

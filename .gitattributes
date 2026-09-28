@@ -1,0 +1,12 @@
+# Enforce LF line endings for text files (Plan 9 toolchain requires LF,
+# no BOM). Auto-detect binaries so they are never converted.
+* text=auto eol=lf
+
+# Explicit binaries found in the tree
+*.raw binary
+*.iso binary
+*.gz binary
+*.bz2 binary
+*.ttf binary
+*.o binary
+*.a binary

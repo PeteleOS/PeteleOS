@@ -3,7 +3,7 @@
 #include	<stdlib.h>
 #include	<string.h>
 #include	"pic.h"
-#include	"y.tab.h"
+#include "picy_parse.h"
 
 char	*version = "version July 5, 1993";
 

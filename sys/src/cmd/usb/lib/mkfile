@@ -26,4 +26,4 @@ install:V:	$LIB
 safeinstall:V: install
 safeinstallall:V: installall
 nuke:V:
-	rm -f *.[$OS] y.tab.? y.output y.error *.a[$OS]
+	rm -f *.[$OS] y.output y.error *.a[$OS]

@@ -11,15 +11,16 @@ HFILES=../common/common.h\
 	../common/sys.h\
 	smtpd.h\
 	smtp.h\
+	rfc822_parse.h\
 
 BIN=/$objtype/bin/upas
 UPDATE=\
 	greylist.c\
 	mkfile\
 	mxdial.c\
-	rfc822.y\
 	rmtdns.c\
-	smtpd.y\
+	smtpd_parse.c\
+	rfc822_parse.c\
 	spam.c\
 	$HFILES\
 	${OFILES:%.$O=%.c}\
@@ -28,23 +29,17 @@ UPDATE=\
 </sys/src/cmd/mkmany
 CFLAGS=$CFLAGS -I../common -D'SPOOL="/mail"'
 
-$O.smtpd:	smtpd.tab.$O rmtdns.$O spam.$O rfc822.tab.$O greylist.$O
-$O.smtp:	rfc822.tab.$O mxdial.$O
+$O.smtpd:	smtpd_parse.$O rmtdns.$O spam.$O rfc822_parse.$O greylist.$O
+$O.smtp:	rfc822_parse.$O mxdial.$O
 
 smtpd.$O: 	smtpd.h
 
 smtp.$O to.$O: 	smtp.h
 
-smtpd.tab.c: smtpd.y smtpd.h
-	yacc -o xxx smtpd.y
-	sed 's/yy/zz/g' < xxx > $target
-	rm xxx
-
-rfc822.tab.c: rfc822.y smtp.h
-	yacc -d -o $target rfc822.y
+smtpd_parse.$O rfc822_parse.$O: rfc822_parse.h smtp.h smtpd.h
 
 clean:V:
-	rm -f *.[$OS] [$OS].$TARG smtpd.tab.c rfc822.tab.c y.tab.? y.debug $TARG
+	rm -f *.[$OS] [$OS].$TARG $TARG
 
 ../common/libcommon.a$O:
 	@{ 	

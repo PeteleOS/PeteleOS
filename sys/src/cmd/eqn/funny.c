@@ -1,5 +1,5 @@
 #include "e.h"
-#include "y.tab.h"
+#include "eqn_parse.h"
 
 extern int Funnyps;
 extern double Funnyht, Funnybase;

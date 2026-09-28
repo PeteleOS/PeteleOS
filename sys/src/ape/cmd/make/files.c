@@ -9,12 +9,10 @@
 
 char *dfltmacro[] =
 	{
-	".SUFFIXES : .o .c .y .l .a .sh .f",
+	".SUFFIXES : .o .c .l .a .sh .f",
 	"MAKE=make",
 	"AR=ar",
 	"ARFLAGS=rv",
-	"YACC=yacc",
-	"YFLAGS=",
 	"LEX=lex",
 	"LFLAGS=",
 	"LDFLAGS=",
@@ -29,21 +27,11 @@ char *dfltpat[] =
 	"%.o : %.c",
 	"\t$(CC) $(CFLAGS) -c $<",
 
-	"%.o : %.y",
-	"\t$(YACC) $(YFLAGS) $<",
-	"\t$(CC) $(CFLAGS) -c y.tab.c",
-	"\trm y.tab.c",
-	"\tmv y.tab.o $@",
-
 	"%.o : %.l",
 	"\t$(LEX) $(LFLAGS) $<",
 	"\t$(CC) $(CFLAGS) -c lex.yy.c",
 	"\trm lex.yy.c",
 	"\tmv lex.yy.o $@",
-
-	"%.c : %.y",
-	"\t$(YACC) $(YFLAGS) $<",
-	"\tmv y.tab.c $@",
 
 	"%.c : %.l",
 	"\t$(LEX) $(LFLAGS) $<",
@@ -61,18 +49,12 @@ char *dfltpat[] =
 
 char *dfltsuff[] =
 	{
-	".SUFFIXES : .o .c .y .l .a .sh .f",
+	".SUFFIXES : .o .c .l .a .sh .f",
 	".c.o :",
 	"\t$(CC) $(CFLAGS) -c $<",
 
 	".f.o :",
 	"\t$(FC) $(FFLAGS) -c $<",
-
-	".y.o :",
-	"\t$(YACC) $(YFLAGS) $<",
-	"\t$(CC) $(CFLAGS) -c y.tab.c",
-	"\trm -f y.tab.c",
-	"\tmv y.tab.o $@",
 
 	".l.o :",
 	"\t$(LEX) $(LFLAGS) $<",
@@ -80,9 +62,9 @@ char *dfltsuff[] =
 	"\trm -f lex.yy.c",
 	"\tmv lex.yy.o $@",
 
-	".y.c :",
-	"\t$(YACC) $(YFLAGS) $<",
-	"\tmv y.tab.c $@",
+	".l.c :",
+	"\t$(LEX) $(LFLAGS) $<",
+	"\tmv lex.yy.c $@",
 
 	".l.c :",
 	"\t$(LEX) $(LFLAGS) $<",

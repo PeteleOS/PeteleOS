@@ -495,9 +495,9 @@ retry:
 		if (type == Tcname && sp->p - data == 2 && len == 0)
 			return rp;
 		if (len > sp->p - data){
-			dnslog("bad %s RR len (%d bytes nominal, %lud actual): %R",
+			dnslog("bad %s RR len (%d bytes nominal, %lld actual): %R",
 				rrname(type, ptype, sizeof ptype), len,
-				sp->p - data, rp);
+				(vlong)(sp->p - data), rp);
 			rrfree(rp);
 			rp = nil;
 		}

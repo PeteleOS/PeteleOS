@@ -7,7 +7,7 @@
  */
 
 #include "spin.h"
-#include "y.tab.h"
+#include "spin_parse.h"
 
 typedef struct UType {
 	Symbol *nm;	/* name of the type */

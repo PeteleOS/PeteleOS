@@ -21,15 +21,13 @@ PLAN9OFILES=plan9.$O\
 
 UNIXOFILES=unix.$O\
 
-OFILES=$COMMONOFILES $PLAN9OFILES y.tab.$O
+OFILES=$COMMONOFILES $PLAN9OFILES syn_parse.$O
 
 HFILES=rc.h\
-	x.tab.h\
+	syn_parse.h\
 	io.h\
 	exec.h\
-	fns.h\
-
-YFILES=syn.y
+	fns.h
 
 BIN=/$objtype/bin
 
@@ -39,16 +37,12 @@ UPDATE=\
 	${COMMONOFILES:%.$O=%.c}\
 	${UNIXOFILES:%.$O=%.c}\
 	${PLAN9OFILES:%.$O=%.c}\
-	$YFILES\
 	${TARG:%=/amd64/bin/%}\
 
 </sys/src/cmd/mkone
 
-x.tab.h: y.tab.h
-	cmp -s x.tab.h y.tab.h || cp y.tab.h x.tab.h
-
 clean:V:
-	rm -f [$OS].out *.[$OS] [xy].tab.? y.debug $TARG
+	rm -f [$OS].out *.[$OS] y.debug $TARG
 
 regress: $O.out
 	cd test
@@ -58,4 +52,4 @@ unregress:V:
 	for(test in test/*.test) rc $test >$test.out
 
 listing:
-	pr mkfile $HFILES $FILES $FILES9 $FILESUNIX $YFILES|lp -du
+	pr mkfile $HFILES $FILES $FILES9 $FILESUNIX|lp -du

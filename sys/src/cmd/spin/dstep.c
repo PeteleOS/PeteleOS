@@ -8,7 +8,7 @@
 
 #include <assert.h>
 #include "spin.h"
-#include "y.tab.h"
+#include "spin_parse.h"
 
 #define MAXDSTEP	2048	/* was 512 */
 

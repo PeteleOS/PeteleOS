@@ -187,7 +187,7 @@ uint vtzerotruncate(int type, uchar *buf, uint n);
 /*
  * parse score: mungs s
  */
-int vtparsescore(char *s, char **prefix, uchar[VtScoreSize]);
+int vtparsescore(char *s, char **prefix, uchar score[VtScoreSize]);
 
 /*
  * formatting
@@ -419,16 +419,16 @@ struct VtBlock
 	uintptr	pc;
 };
 
-u32int	vtglobaltolocal(uchar[VtScoreSize]);
-void	vtlocaltoglobal(u32int, uchar[VtScoreSize]);
+u32int	vtglobaltolocal(uchar score[VtScoreSize]);
+void	vtlocaltoglobal(u32int, uchar score[VtScoreSize]);
 
 VtCache*vtcachealloc(VtConn*, int blocksize, ulong nblocks);
 void	vtcachefree(VtCache*);
 VtBlock*vtcachelocal(VtCache*, u32int addr, int type);
-VtBlock*vtcacheglobal(VtCache*, uchar[VtScoreSize], int type);
+VtBlock*vtcacheglobal(VtCache*, uchar score[VtScoreSize], int type);
 VtBlock*vtcacheallocblock(VtCache*, int type);
 void	vtcachesetwrite(VtCache*,
-	int(*)(VtConn*, uchar[VtScoreSize], uint, uchar*, int));
+	int(*)(VtConn*, uchar score[VtScoreSize], uint, uchar*, int));
 void	vtblockput(VtBlock*);
 u32int	vtcacheblocksize(VtCache*);
 int	vtblockwrite(VtBlock*);
@@ -470,7 +470,7 @@ enum
 };
 
 VtBlock*vtfileblock(VtFile*, u32int, int mode);
-int	vtfileblockscore(VtFile*, u32int, uchar[VtScoreSize]);
+int	vtfileblockscore(VtFile*, u32int, uchar score[VtScoreSize]);
 void	vtfileclose(VtFile*);
 VtFile*	_vtfilecreate(VtFile*, int offset, int psize, int dsize, int dir);
 VtFile*	vtfilecreate(VtFile*, int psize, int dsize, int dir);

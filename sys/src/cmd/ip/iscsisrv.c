@@ -146,10 +146,10 @@ dumpresppkt(Iscsicmdresp *resp)
 {
 	if (!debug)
 		return;
-	fprint(2, "resp pkt: op %#x opspfc %#x %#x %#x dseglen %ld\n",
+	fprint(2, "resp pkt: op %#x opspfc %#x %#x %#x dseglen %lud\n",
 		resp->op, resp->opspfc[0], resp->opspfc[1], resp->opspfc[2],
 		getbe3(resp->dseglen));
-	fprint(2, "\titt %ld sts seq %ld exp cmd seq %ld\n", getbe4(resp->itt),
+	fprint(2, "\titt %lud sts seq %lud exp cmd seq %lud\n", getbe4(resp->itt),
 		getbe4(resp->stsseq), getbe4(resp->expcmdseq));
 }
 
@@ -500,7 +500,7 @@ inop(Pkts *pk)
 	assert(cont == 0);
 	assert(req->totahslen == 0);
 	if (debug)
-		fprint(2, " dseglen %ld lun %#llux cmd seq %ld expcmd seq %ld ",
+		fprint(2, " dseglen %lud lun %#llux cmd seq %lud expcmd seq %lud ",
 			getbe4(req->dseglen), getbe8(req->lun),
 			getbe4(req->cmdseq), getbe4(req->expcmdseq));
 
@@ -700,8 +700,8 @@ cmdmodesense(Pkts *pk)
 	/* req->cdb[4] is bytes permitted for sense data */
 	alen = req->cdb[4];
 	if (alen > sizeof sense)
-		sysfatal("sense array too small (%d bytes for %d asked)",
-			sizeof sense, alen);
+		sysfatal("sense array too small (%lud bytes for %d asked)",
+			(ulong)sizeof sense, alen);
 
 	memset(sense, 0, sizeof sense);
 	/* mode parameter header */
@@ -1042,7 +1042,7 @@ process(int net, Iscsijustbhdr *bhdr)
 	pk->dseglen = getbe3(bhdr->dseglen);
 	pk->itt = getbe4(bhdr->itt);
 	if (op != Iopnopout && debug)
-		fprint(2, "\n<- iscsi op %#x totahslen %ld dseglen %ld itt %ld\n",
+		fprint(2, "\n<- iscsi op %#x totahslen %lud dseglen %lud itt %lud\n",
 			op, pk->totahslen, pk->dseglen, pk->itt);
 
 	/*

@@ -1,11 +1,10 @@
 </$objtype/mkfile
 
-TARG=`{ls *.[cy] | sed '/\.tab\.c$/d;s/..$//'}
+TARG=`{ls *.[cy] | sed '/\.tab\.c$/d;/\_parse\.c$/d;s/..$//'}
 HFILES=/$objtype/include/u.h /sys/include/libc.h /sys/include/bio.h
 BIN=/$objtype/bin
 PROGS=${TARG:%=$O.%}
 LDFLAGS=
-YFLAGS=-d
 
 NOTSYS=sml|dup|.+\..+
 BUGGERED=unix|jtagfs
@@ -50,9 +49,6 @@ all:V:	$PROGS dirs
 &:n:	$O.&
 	mv $O.$stem $stem
 
-%.tab.h %.tab.c:	%.y
-	$YACC $YFLAGS -s $stem $prereq
-
 %.install:V: $BIN/%
 
 $cpuobjtype._cp:	/bin/cp
@@ -84,7 +80,7 @@ nuke:V:		cleanfiles nuke.directories
 directories:V:	install.directories
 
 cleanfiles:V:
-	rm -f [$OS].out *.[$OS] y.tab.? y.debug y.output [$OS].$TARG [$OS].units.tab $TARG bc.c bc.tab.h units.tab.h units.c mpc.tab.h mpc.c [$OS]._cp
+	rm -f [$OS].out *.[$OS] [$OS].$TARG [$OS].units.tab $TARG bc.c units.c mpc.c [$OS]._cp
 
 %.clean:V:
 	rm -f [$OS].$stem $stem.[$OS]
@@ -105,13 +101,13 @@ installall:V:
 		mk $stem.install &
 	}
 	wait
-	rm -f $stem.[$OS] y.tab.? $stem.tab.? y.debug y.output [$OS].$stem bc.c bc.tab.h units.c mpc.tab.h mpc.c
+	rm -f $stem.[$OS] $stem.tab.? [$OS].$stem bc.c units.c mpc.c
 
 %.acid: %.$O $HFILES
 	$CC $CFLAGS -a $stem.c >$target
 
-(bc|units|mpc).c:R:	\1.tab.c
-	mv $stem1.tab.c $stem1.c
+(bc|units|mpc).c:R:	\1_parse.c
+	cp $prereq $target
 
 $BIN/init:	$O.init
 	cp $prereq /$objtype/init

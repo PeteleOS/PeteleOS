@@ -7,7 +7,7 @@
  */
 
 #include "spin.h"
-#include "y.tab.h"
+#include "spin_parse.h"
 #include "pangen1.h"
 #include "pangen3.h"
 #include "pangen6.h"

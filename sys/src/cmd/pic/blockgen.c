@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "pic.h"
-#include "y.tab.h"
+#include "picy_parse.h"
 
 #define	NBRACK	20	/* depth of [...] */
 #define	NBRACE	20	/* depth of {...} */

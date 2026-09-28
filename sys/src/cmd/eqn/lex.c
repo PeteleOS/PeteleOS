@@ -1,5 +1,5 @@
 #include "e.h"
-#include "y.tab.h"
+#include "eqn_parse.h"
 #include <ctype.h>
 
 #define	SSIZE	1000
@@ -13,6 +13,7 @@ void	ifdef(void);
 void	include(void);
 void	delim(void);
 
+int
 yylex(void)
 {
 	register int c;
@@ -144,6 +145,7 @@ void getstr(char *s, int n)
 	yylval = (int) s;
 }
 
+int
 cstr(char *s, int quote, int maxs)
 {
 	int del, c, i;

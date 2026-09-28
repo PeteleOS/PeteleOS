@@ -25,14 +25,14 @@ THIS SOFTWARE.
 /*
  * this program makes the table to link function names
  * and type indices that is used by execute() in run.c.
- * it finds the indices in y.tab.h, produced by yacc.
+ * it finds the indices in awkgram_parse.h, produced by yacc.
  */
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "awk.h"
-#include "y.tab.h"
+#include "awkgram_parse.h"
 
 struct xx
 {	int token;
@@ -120,12 +120,12 @@ int main(int argc, char *argv[])
 
 	printf("#include <stdio.h>\n");
 	printf("#include \"awk.h\"\n");
-	printf("#include \"y.tab.h\"\n\n");
+	printf("#include \"awkgram_parse.h\"\n\n");
 	for (i = SIZE; --i >= 0; )
 		names[i] = "";
 
-	if ((fp = fopen("y.tab.h", "r")) == NULL) {
-		fprintf(stderr, "maketab can't open y.tab.h!\n");
+	if ((fp = fopen("awkgram_parse.h", "r")) == NULL) {
+		fprintf(stderr, "maketab can't open awkgram_parse.h!\n");
 		exit(1);
 	}
 	printf("static char *printname[%d] = {\n", SIZE);

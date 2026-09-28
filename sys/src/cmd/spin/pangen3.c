@@ -7,7 +7,7 @@
  */
 
 #include "spin.h"
-#include "y.tab.h"
+#include "spin_parse.h"
 #include <assert.h>
 
 extern FILE	*fd_th, *fd_tc;

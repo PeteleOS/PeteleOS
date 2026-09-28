@@ -614,7 +614,7 @@ sendfile(int net, char *name, char *mode, int opts)
 		}
 		else {
 			syslog(dbg, flog, "tftpd %d rexmit %d %s:%d to %s",
-				pid, Hdrsize+n, name, block, raddr);
+				pid, (int)(Hdrsize+n), name, block, raddr);
 			txtry++;
 		}
 

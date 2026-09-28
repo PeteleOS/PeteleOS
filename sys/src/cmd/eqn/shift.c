@@ -1,5 +1,5 @@
 #include "e.h"
-#include "y.tab.h"
+#include "eqn_parse.h"
 
 void subsup(int p1, int p2, int p3)
 {

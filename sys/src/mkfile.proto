@@ -6,7 +6,6 @@ OS=4679jx
 CPUS=amd64 arm64 mips64 power64 riscv64 spim64
 CFLAGS=-FTVw
 LEX=lex
-YACC=yacc
 MK=/bin/mk
 
 # recursive mk will have these set from the parent
@@ -15,4 +14,3 @@ MK=/bin/mk
 TARG=
 OFILES=
 HFILES=
-YFILES=

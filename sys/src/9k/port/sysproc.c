@@ -853,7 +853,7 @@ sysrendezvous(Ar0* ar0, va_list list)
 	tag = PTR2UINT(va_arg(list, void*));
 
 	l = &REND(up->rgrp, tag);
-	up->rendval = ~0;
+	up->rendval = ~(uintptr)0;
 
 	lock(up->rgrp);
 	for(p = *l; p; p = p->rendhash) {

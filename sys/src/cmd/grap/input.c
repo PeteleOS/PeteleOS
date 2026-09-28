@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include "grap.h"
-#include "y.tab.h"
+#include "grap_parse.h"
 
 Infile	infile[10];
 Infile	*curfile = infile;

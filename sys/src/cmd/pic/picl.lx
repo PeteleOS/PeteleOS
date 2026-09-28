@@ -13,7 +13,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include "pic.h"
-#include "y.tab.h"
+#include "picy_parse.h"
 
 extern	char	*filename;
 extern	struct	symtab	symtab[];

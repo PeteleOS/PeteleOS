@@ -186,7 +186,6 @@ int		wbswidth(Window*, Rune);
 int		wclickmatch(Window*, int, int, int, uint*);
 int		wclose(Window*);
 int		wctlmesg(Window*, int, Rectangle, Image*);
-int		wctlmesg(Window*, int, Rectangle, Image*);
 uint		wbacknl(Window*, uint, uint);
 uint		winsert(Window*, Rune*, int, uint);
 void		waddraw(Window*, Rune*, int);

@@ -30,4 +30,4 @@ installall:V:
 
 clean nuke:V:
 	@{ cd libmap; mk $target }
-	rm -f *.[$OS] [$OS].out y.tab.? y.debug y.output $TARG
+	rm -f *.[$OS] [$OS].out y.debug y.output $TARG

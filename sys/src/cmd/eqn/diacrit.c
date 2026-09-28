@@ -1,5 +1,5 @@
 #include "e.h"
-#include "y.tab.h"
+#include "eqn_parse.h"
 
 extern double Dvshift, Dhshift, Dh2shift, Dheight, Barv, Barh, Ubarv, Ubarh;
 

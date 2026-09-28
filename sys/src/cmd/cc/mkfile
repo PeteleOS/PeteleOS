@@ -2,7 +2,7 @@
 
 LIB=cc.a$O
 OFILES=\
-	y.tab.$O\
+	cc_parse.$O\
 	lex.$O\
 	mac.$O\
 	dcl.$O\
@@ -19,9 +19,7 @@ OFILES=\
 	omachcap.$O\
 
 HFILES=cc.h\
-	y.tab.h\
-
-YFILES=cc.y\
+	cc_parse.h\
 
 CURCC=6c 7c 4c 9c jc
 OTHERCC=

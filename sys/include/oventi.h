@@ -172,7 +172,7 @@ int vtSync(VtSession *s);
 
 int vtZeroExtend(int type, uchar *buf, int n, int nn);
 int vtZeroTruncate(int type, uchar *buf, int n);
-int vtParseScore(char*, uint, uchar[VtScoreSize]);
+int vtParseScore(char*, uint, uchar score[VtScoreSize]);
 
 void vtRootPack(VtRoot*, uchar*);
 int vtRootUnpack(VtRoot*, uchar*);

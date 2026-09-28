@@ -24,7 +24,7 @@ void	cacheCountUsed(Cache*, u32int, u32int*, u32int*, u32int*);
 int	cacheDirty(Cache*);
 void	cacheFlush(Cache*, int);
 void	cacheFree(Cache*);
-Block*	cacheGlobal(Cache*, uchar[VtScoreSize], int, u32int, int);
+Block*	cacheGlobal(Cache*, uchar score[VtScoreSize], int, u32int, int);
 Block*	cacheLocal(Cache*, int, u32int, int);
 Block*	cacheLocalData(Cache*, u32int, int, u32int, int, u32int);
 u32int	cacheLocalSize(Cache*, int);
@@ -58,8 +58,8 @@ int	diskWriteRaw(Disk*, int, u32int, uchar*);
 char*	bioStr(int);
 char*	bsStr(int);
 char*	btStr(int);
-u32int	globalToLocal(uchar[VtScoreSize]);
-void	localToGlobal(u32int, uchar[VtScoreSize]);
+u32int	globalToLocal(uchar score[VtScoreSize]);
+void	localToGlobal(u32int, uchar score[VtScoreSize]);
 
 void	headerPack(Header*, uchar*);
 int	headerUnpack(Header*, uchar*);
@@ -84,7 +84,7 @@ int	fileGetSources(File*, Entry*, Entry*);
 File*	fileRoot(Source*);
 int	fileSnapshot(File*, File*, u32int, int);
 int	fsNextQid(Fs*, u64int*);
-int	mkVac(VtConn*, uint, Entry*, Entry*, DirEntry*, uchar[VtScoreSize]);
+int	mkVac(VtConn*, uint, Entry*, Entry*, DirEntry*, uchar score[VtScoreSize]);
 Block*	superGet(Cache*, Super*);
 
 void	archFree(Arch*);
@@ -94,12 +94,12 @@ void	archKick(Arch*);
 void	bwatchDependency(Block*);
 void	bwatchInit(void);
 void	bwatchLock(Block*);
-void	bwatchReset(uchar[VtScoreSize]);
+void	bwatchReset(uchar score[VtScoreSize]);
 void	bwatchSetBlockSize(uint);
 void	bwatchUnlock(Block*);
 
 void	initWalk(WalkPtr*, Block*, uint);
-int	nextWalk(WalkPtr*, uchar[VtScoreSize], uchar*, u32int*, Entry**);
+int	nextWalk(WalkPtr*, uchar score[VtScoreSize], uchar*, u32int*, Entry**);
 
 void	snapGetTimes(Snap*, u32int*, u32int*, u32int*);
 void	snapSetTimes(Snap*, u32int, u32int, u32int);

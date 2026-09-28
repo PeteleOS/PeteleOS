@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "grap.h"
-#include "y.tab.h"
+#include "grap_parse.h"
 
 double	frame_ht;	/* default frame height */
 double	frame_wid;	/* and width */

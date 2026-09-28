@@ -595,7 +595,7 @@ cmd_remove(int argc, char *argv[])
 static void
 cmd_version(int, char *[])
 {
-	print("%d-bit %s as of %T\n", sizeof(Off)*8 - 1, service, fs_mktime);
+	print("%lud-bit %s as of %T\n", (ulong)(sizeof(Off)*8 - 1), service, fs_mktime);
 	print("\tlast boot %T\n", boottime);
 }
 
@@ -695,7 +695,7 @@ cmd_time(int argc, char *argv[])
 	cmd_exec(cmd);
 	t2 = time(nil);
 	free(cmd);
-	print("time = %ld ms\n", TK2MS(t2-t1));
+	print("time = %lud ms\n", TK2MS(t2-t1));
 }
 
 void

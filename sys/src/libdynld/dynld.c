@@ -125,7 +125,7 @@ dynloadgen(void *file, long (*rd)(void*,void*,long), vlong (*sk)(void*,vlong,int
 	syms = lgetbe(e.syms)+lgetbe(e.spsz)+lgetbe(e.pcsz);
 	entry = lgetbe(e.entry);
 	l->size = l->text + l->data + l->bss;
-	if(entry < 0 || entry >= l->size || entry & 3){
+	if(entry >= l->size || entry & 3){
 		err = "invalid export table pointer (entry point)";
 		goto Error;
 	}

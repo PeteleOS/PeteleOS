@@ -1,13 +1,13 @@
 #include "common.h"
 #include "smtpd.h"
 #include "smtp.h"
+#include "rfc822_parse.h"
 #include <ctype.h>
 #include <ip.h>
 #include <ndb.h>
 #include <mp.h>
 #include <libsec.h>
 #include <auth.h>
-#include "../smtp/y.tab.h"
 
 char	*me;
 char	*him="";

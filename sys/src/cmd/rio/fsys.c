@@ -69,22 +69,29 @@ static	Xfid*	filsysremove(Filsys*, Xfid*, Fid*);
 static	Xfid*	filsysstat(Filsys*, Xfid*, Fid*);
 static	Xfid*	filsyswstat(Filsys*, Xfid*, Fid*);
 
-Xfid* 	(*fcall[Tmax])(Filsys*, Xfid*, Fid*) =
+Xfid* 	(*fcall[Tmax])(Filsys*, Xfid*, Fid*);
+
+static void
+initfcall(void)
 {
-	[Tflush]	= filsysflush,
-	[Tversion]	= filsysversion,
-	[Tauth]	= filsysauth,
-	[Tattach]	= filsysattach,
-	[Twalk]	= filsyswalk,
-	[Topen]	= filsysopen,
-	[Tcreate]	= filsyscreate,
-	[Tread]	= filsysread,
-	[Twrite]	= filsyswrite,
-	[Tclunk]	= filsysclunk,
-	[Tremove]= filsysremove,
-	[Tstat]	= filsysstat,
-	[Twstat]	= filsyswstat,
-};
+	static int done;
+	if(done)
+		return;
+	done = 1;
+	fcall[Tflush] = filsysflush;
+	fcall[Tversion] = filsysversion;
+	fcall[Tauth] = filsysauth;
+	fcall[Tattach] = filsysattach;
+	fcall[Twalk] = filsyswalk;
+	fcall[Topen] = filsysopen;
+	fcall[Tcreate] = filsyscreate;
+	fcall[Tread] = filsysread;
+	fcall[Twrite] = filsyswrite;
+	fcall[Tclunk] = filsysclunk;
+	fcall[Tremove] = filsysremove;
+	fcall[Tstat] = filsysstat;
+	fcall[Twstat] = filsyswstat;
+}
 
 void
 post(char *name, char *envname, int srvfd)
@@ -127,6 +134,7 @@ filsysinit(Channel *cxfidalloc)
 	Channel *c;
 	char buf[128];
 
+	initfcall();
 	fs = emalloc(sizeof(Filsys));
 	if(cexecpipe(&fs->cfd, &fs->sfd) < 0)
 		goto Rescue;

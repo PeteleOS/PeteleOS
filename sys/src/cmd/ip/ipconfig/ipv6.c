@@ -487,7 +487,7 @@ sendrs(int fd)
 	rs->type = ICMP6_RS;
 
 	if(write(fd, rs, sizeof buff) < sizeof buff)
-		ralog("sendrs: write failed, pkt size %d", sizeof buff);
+		ralog("sendrs: write failed, pkt size %lud", (ulong)sizeof buff);
 	else
 		ralog("sendrs: sent solicitation to %I from %I on %s",
 			rs->dst, rs->src, conf.dev);

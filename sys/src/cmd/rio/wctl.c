@@ -33,18 +33,18 @@ enum
 };
 
 static char *cmds[] = {
-	[New]	= "new",
-	[Resize]	= "resize",
-	[Move]	= "move",
-	[Scroll]	= "scroll",
-	[Noscroll]	= "noscroll",
-	[Set]		= "set",
-	[Top]	= "top",
-	[Bottom]	= "bottom",
-	[Current]	= "current",
-	[Hide]	= "hide",
-	[Unhide]	= "unhide",
-	[Delete]	= "delete",
+			"new",
+			"resize",
+			"move",
+			"scroll",
+			"noscroll",
+			"set",
+			"top",
+			"bottom",
+			"current",
+			"hide",
+			"unhide",
+			"delete",
 	nil
 };
 
@@ -66,19 +66,19 @@ enum
 };
 
 static char *params[] = {
-	[Cd]	 			= "-cd",
-	[Deltax]			= "-dx",
-	[Deltay]			= "-dy",
-	[Hidden]			= "-hide",
-	[Id]				= "-id",
-	[Maxx]			= "-maxx",
-	[Maxy]			= "-maxy",
-	[Minx]			= "-minx",
-	[Miny]			= "-miny",
-	[PID]				= "-pid",
-	[R]				= "-r",
-	[Scrolling]			= "-scroll",
-	[Noscrolling]		= "-noscroll",
+			"-cd",
+			"-dx",
+			"-dy",
+			"-hide",
+			"-id",
+			"-maxx",
+			"-maxy",
+			"-minx",
+			"-miny",
+			"-pid",
+			"-r",
+			"-scroll",
+			"-noscroll",
 	nil
 };
 

@@ -7,7 +7,7 @@
  */
 
 #include "spin.h"
-#include "y.tab.h"
+#include "spin_parse.h"
 
 typedef struct BuildStack {
 	FSM_trans *t;

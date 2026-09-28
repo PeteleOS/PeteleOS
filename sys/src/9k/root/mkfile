@@ -5,6 +5,5 @@ HFILES=/$objtype/include/u.h /sys/include/libc.h
 BIN=$home/bin/$objtype
 PROGS=${TARG:%=$O.%}
 LDFLAGS=
-YFLAGS=-d
 
 </sys/src/cmd/mkmany

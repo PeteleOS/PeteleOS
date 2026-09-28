@@ -2,18 +2,15 @@
 
 TARG=9a
 OFILES=\
-	y.tab.$O\
+	a_parse.$O\
 	lex.$O\
 
 HFILES=\
 	../9c/9.out.h\
-	y.tab.h\
+	a_parse.h\
 	a.h\
-
-YFILES=a.y\
 
 BIN=/$objtype/bin
 < /sys/src/cmd/mkone
-YFLAGS=-D1 -d
 
 lex.$O:	../cc/macbody ../cc/lexbody ../cc/compat

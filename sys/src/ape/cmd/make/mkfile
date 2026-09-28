@@ -6,21 +6,16 @@ OFILES=ident.$O\
 	main.$O\
 	doname.$O\
 	dosys.$O\
-	gram.$O\
+	gram_parse.$O\
 	misc.$O\
 	files.$O\
 
 HFILES=defs.h
-YFILES=gram.y
 
 BIN=$APEBIN
 </sys/src/cmd/mkone
 
 CFLAGS=-c -DSHELLCOM'="/bin/sh"'
-YFLAGS=-S
-
-gram.c:	y.tab.c
-	mv $prereq $target
 
 nuke clean:V:
-	rm -f *.[$OS] [$OS].out y.tab.? y.debug y.output $TARG gram.c
+	rm -f *.[$OS] [$OS].out $TARG

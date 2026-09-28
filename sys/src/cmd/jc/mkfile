@@ -33,11 +33,7 @@ $LIB:
 	mk install
 	mk clean
 
-../cc/y.tab.h: ../cc/cc.y
-	cd ../cc
-	mk y.tab.h
-
-lex.$O: ../cc/lex.c ../cc/y.tab.h
+lex.$O: ../cc/lex.c ../cc/cc_parse.h
 	$CC -Dmain'='ccmain $CFLAGS ../cc/lex.c
 
 %.$O: ../cc/%.c

@@ -14,7 +14,7 @@ UHFILES= ../common/common.h\
 	dat.h\
 
 HFILES=$UHFILES\
-	../smtp/y.tab.h\
+	../smtp/rfc822_parse.h\
 
 LIB=../common/libcommon.a$O\
 
@@ -25,16 +25,16 @@ UPDATE=\
 	$UHFILES\
 	${TARG:%=%.c}\
 	${OFILES:%.$O=%.c}\
-	../smtp/rfc822.y\
+	../smtp/rfc822_parse.c\
 
 </sys/src/cmd/mkmany
 CFLAGS=$CFLAGS -I../common
 
-$O.ml: ../smtp/rfc822.tab.$O
-$O.mlowner: ../smtp/rfc822.tab.$O
+$O.ml: ../smtp/rfc822_parse.$O
+$O.mlowner: ../smtp/rfc822_parse.$O
 
-../smtp/y.tab.h ../smtp/rfc822.tab.$O:
+../smtp/rfc822_parse.h ../smtp/rfc822_parse.$O:
 	@{
 		cd ../smtp
-		mk rfc822.tab.$O
+		mk rfc822_parse.$O
 	}

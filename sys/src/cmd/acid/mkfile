@@ -12,10 +12,10 @@ UOFILES=	main.$O\
 	dot.$O\
 	print.$O\
 
-OFILES=$UOFILES y.tab.$O
+OFILES=$UOFILES dbg_parse.$O
 
-YFILES=dbg.y
-HFILES=acid.h
+HFILES=acid.h\
+	dbg_parse.h\
 
 BIN=/$objtype/bin
 
@@ -23,11 +23,12 @@ UPDATE=\
 	mkfile\
 	$HFILES\
 	${UOFILES:%.$O=%.c}\
-	$YFILES\
+	dbg_parse.c\
 
 </sys/src/cmd/mkone
 
-lex.$O:		y.tab.h
-util.$O:	y.tab.h
-builtin.$O:	y.tab.h
-main.$O:	y.tab.h
+lex.$O:		dbg_parse.h
+util.$O:	dbg_parse.h
+builtin.$O:	dbg_parse.h
+main.$O:	dbg_parse.h
+proc.$O:	dbg_parse.h

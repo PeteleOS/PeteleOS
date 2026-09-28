@@ -41,7 +41,7 @@ void	birth(int, int);
 void	centerlife(void);
 void	death(int, int);
 int	generate(void);
-int	interest(int [NLIFE], int);
+int	interest(int rc[NLIFE], int i);
 void	main(int, char *[]);
 int	min(int, int);
 void	readlife(char *);

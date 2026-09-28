@@ -595,13 +595,7 @@ uniqs(Reg *r)
 int
 regzer(Adr *a)
 {
-return 0;
-	switch(a->type){
-	case D_CONST:
-		return a->sym == S && a->offset == 0;
-	case D_REG:
-		return a->reg == REGZERO;
-	}
+	USED(a);
 	return 0;
 }
 
@@ -1818,17 +1812,8 @@ int
 modifiescpsr(Prog *p)
 {
 //	return (p->scond&C_SBIT)
-	return 1
-		|| p->as == ATST 
-		|| p->as == ACMN
-		|| p->as == ACMP
-		|| p->as == AUMULL
-		|| p->as == AUDIV
-		|| p->as == AMUL
-		|| p->as == ASDIV
-		|| p->as == AREM
-		|| p->as == AUREM
-		|| p->as == ABL;
+	USED(p);
+	return 1;
 } 
 
 /*

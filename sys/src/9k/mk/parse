@@ -138,7 +138,7 @@ BEGIN{
 function mkbootconf(				a, n, s, t, u, c, d, p, r){
 	s = "#include <u.h>\n";
 	s = s "#include <libc.h>\n\n";
-	s = s "#include \"../boot/boot.h\"\n\n";
+	s = s "#include \42../boot/boot.h\42\n\n";
 	s = s "Method method[] = {\n";
 
 	c = "0";
@@ -164,29 +164,29 @@ function mkbootconf(				a, n, s, t, u, c, d, p, r){
 				d = a[3];
 			continue;
 		}
-		s = s "\t{ \"" a[1] "\", config" a[1] ", connect" a[1] ", ";
+		s = s "\t{ \42" a[1] "\42, config" a[1] ", connect" a[1] ", ";
 		t = "nil";
 		if(n > 1){
 			u = line["boot", i];
 			if(sub(/^[_A-Za-z][_A-Za-z0-9]*[ \t]*/, "", u)){
-				if(match(u, /^".*"$/))
-					u = substr(u, RSTART+1, RLENGTH-2);
-				t = "\"" u "\"";
+				if(substr(u, 1, 1) == "\42" && substr(u, length(u), 1) == "\42")
+					u = substr(u, 2, length(u)-2);
+				t = "\42" u "\42";
 			}
 		}
 		s = s t ", },\n";
 	}
 	s = s "\t{ nil },\n};\n\n";
 	s = s "int cpuflag = " c ";\n";
-	s = s "char* rootdir = \"" r "\";\n";
-	s = s "char* bootdisk = \"" d "\";\n";
+	s = s "char* rootdir = \42" r "\42;\n";
+	s = s "char* bootdisk = \42" d "\42;\n";
 	s = s "extern void " p "(int, char**);\n\n";
 	s = s "void\nmain(int argc, char **argv)\n";
 	s = s "{\n\t" p "(argc, argv);\n}\n"
 
 	t = "int (*cfs)(int) = 0;\n";
 	for(i = 1; i < section["rootdir"]; i++){
-		if($1 !~ /\/bin\/cfs$/)
+		if(line["rootdir", i] !~ /cfs$/)
 			continue;
 		t = "int (*cfs)(int) = cache;\n";
 		break;
@@ -197,12 +197,12 @@ function mkbootconf(				a, n, s, t, u, c, d, p, r){
 }
 
 function mksystab(					a, i, f, n, s, t){
-	s = "#include \"u.h\"\n";
-	s = s "#include \"../port/lib.h\"\n";
-	s = s "#include \"mem.h\"\n";
-	s = s "#include \"dat.h\"\n";
-	s = s "#include \"fns.h\"\n\n";
-	s = s "#include \"/sys/src/libc/9syscall/sys.h\"\n\n";
+	s = "#include \42u.h\42\n";
+	s = s "#include \42../port/lib.h\42\n";
+	s = s "#include \42mem.h\42\n";
+	s = s "#include \42dat.h\42\n";
+	s = s "#include \42fns.h\42\n\n";
+	s = s "#include \42/sys/src/libc/9syscall/sys.h\42\n\n";
 
 	t = "";
 	while(getline < "/sys/src/libc/9syscall/sys.h"){
@@ -223,7 +223,7 @@ function mksystab(					a, i, f, n, s, t){
 		t = t "\t[" $2 "]\t";
 		if(length($2) < 6)
 			t = t "\t";
-		t = t "{ \"" n "\", " f ", ";
+		t = t "{ \42" n "\42, " f ", ";
 		#
 		# The following should really be defined properly in the
 		# manual and code, but changing Plan 9 now is too awkward.
@@ -261,7 +261,7 @@ function mksystab(					a, i, f, n, s, t){
 			if(length(a[2]) < 6)
 				t = t "\t";
 			split(line["syscall", i], a, "{");
-			t = t "{ \"" n "\", " f ", {" a[2] " },\n";
+			t = t "{ \42" n "\42, " f ", {" a[2] " },\n";
 		}
 	}
 	s = s "struct {\n\tchar*\tn;\n\tvoid (*f)(Ar0*, va_list);\n\tAr0\tr;\n}";
@@ -274,7 +274,7 @@ function mkerrstr(					a, s){
 	FS="[ \t;]+";
 	while(getline < "../port/error.h"){
 		split($0, a, /\/\* | \*\//);
-		s = s $2 " " $3 " = \"" a[2] "\";\n";
+		s = s $2 " " $3 " = \42" a[2] "\42;\n";
 	}
 	FS=" ";
 
@@ -282,13 +282,13 @@ function mkerrstr(					a, s){
 }
 
 function mkdevc(		a, d, i, m, n, s, t, u, name, cname){
-	s = "#include \"u.h\"\n";
-	s = s "#include \"../port/lib.h\"\n";
-	s = s "#include \"mem.h\"\n";
-	s = s "#include \"dat.h\"\n";
-	s = s "#include \"fns.h\"\n";
-	s = s "#include \"../port/error.h\"\n\n";
-	s = s "#include \"io.h\"\n\n";
+	s = "#include \42u.h\42\n";
+	s = s "#include \42../port/lib.h\42\n";
+	s = s "#include \42mem.h\42\n";
+	s = s "#include \42dat.h\42\n";
+	s = s "#include \42fns.h\42\n";
+	s = s "#include \42../port/error.h\42\n\n";
+	s = s "#include \42io.h\42\n\n";
 
 	t = "";
 	for(i = 1; i < section["dev"]; i++){
@@ -307,7 +307,7 @@ function mkdevc(		a, d, i, m, n, s, t, u, name, cname){
 	for(i = 1; i < section["rootdir"]; i++){
 		s = s "extern uchar " cname[i] "code[];\n";
 		s = s "extern usize " cname[i] "len;\n";
-		t = t "\taddbootfile(\"" name[i] "\", " cname[i] "code, " cname[i] "len);\n";
+		t = t "\taddbootfile(\42" name[i] "\42, " cname[i] "code, " cname[i] "len);\n";
 	}
 	for(i = 1; i < section["link"]; i++){
 		split(line["link", i], a);
@@ -318,7 +318,7 @@ function mkdevc(		a, d, i, m, n, s, t, u, name, cname){
 
 	if("ip" in d && "ip" in section){
 		t = "";
-		s = s "#include \"../ip/ip.h\"\n";
+		s = s "#include \42../ip/ip.h\42\n";
 		for(i = 1; i < section["ip"]; i++){
 			split(line["ip", i], a);
 			s = s "extern void " a[1] "init(Fs*);\n";
@@ -329,7 +329,7 @@ function mkdevc(		a, d, i, m, n, s, t, u, name, cname){
 
 	if("sd" in d && "sd" in section){
 		t = "";
-		s = s "#include \"../port/sd.h\"\n";
+		s = s "#include \42../port/sd.h\42\n";
 		for(i = 1; i < section["sd"]; i++){
 			split(line["sd", i], a);
 			s = s "extern SDifc " a[1] "ifc;\n";
@@ -354,7 +354,7 @@ function mkdevc(		a, d, i, m, n, s, t, u, name, cname){
 		s = s "#include <draw.h>\n"
 		s = s "#include <memdraw.h>\n"
 		s = s "#include <cursor.h>\n"
-		s = s "#include \"screen.h\"\n"
+		s = s "#include \42screen.h\42\n"
 
 		t = "";
 		for(i = 1; i < section["vga"]; i++){
@@ -396,10 +396,10 @@ function mkdevc(		a, d, i, m, n, s, t, u, name, cname){
 	}
 	s = s "Physseg physseg[" n+8 "] = {\n";
 	s = s "\t{\t.attr\t= SG_SHARED,\n";
-	s = s "\t\t.name\t= \"shared\",\n";
+	s = s "\t\t.name\t= \42shared\42,\n";
 	s = s "\t\t.size\t= SEGMAXSIZE,\n\t},\n";
 	s = s "\t{\t.attr\t= SG_BSS,\n";
-	s = s "\t\t.name\t= \"memory\",\n";
+	s = s "\t\t.name\t= \42memory\42,\n";
 	s = s "\t\t.size\t= SEGMAXSIZE,\n\t},\n";
 	s = s t "};\nint nphysseg = " n+8 ";\n\n";
 
@@ -423,7 +423,7 @@ function mkdevc(		a, d, i, m, n, s, t, u, name, cname){
 		s = s "rdb(void)\n";
 		s = s "{\n";
 		s = s "\tsplhi();\n";
-		s = s "\tiprint(\"rdb...not installed\\n\");\n";
+		s = s "\tiprint(\42rdb...not installed\\n\42);\n";
 		s = s "\tfor(;;);\n";
 		s = s "}\n\n";
 	}
@@ -436,13 +436,13 @@ function mkdevc(		a, d, i, m, n, s, t, u, name, cname){
 			s = s "void\n";
 			s = s "cnksyscall(Ureg*)\n";
 			s = s "{\n";
-			s = s "\tpanic(\"cnkemu...not installed\\n\");\n";
+			s = s "\tpanic(\42cnkemu...not installed\\n\42);\n";
 			s = s "\tfor(;;);\n";
 			s = s "}\n\n";
 			s = s "void*\n";
 			s = s "cnksysexecregs(uintptr, ulong, ulong)\n";
 			s = s "{\n";
-			s = s "\tpanic(\"cnkemu...not installed\\n\");\n";
+			s = s "\tpanic(\42cnkemu...not installed\\n\42);\n";
 			s = s "\tfor(;;);\n";
 			s = s "}\n\n";
 		}
@@ -457,7 +457,7 @@ function mkdevc(		a, d, i, m, n, s, t, u, name, cname){
 		if($0 ~ /^\//)
 			t = $0;
 	}
-	s = s "char* conffile = \"" t "/" ARGV[argc] "\";\n";
+	s = s "char* conffile = \42" t "/" ARGV[argc] "\42;\n";
 	s = s "ulong kerndate = KERNDATE;\n";
 
 	return s;

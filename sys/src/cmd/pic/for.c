@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "pic.h"
-#include "y.tab.h"
+#include "picy_parse.h"
 
 #define	SLOP	1.001
 

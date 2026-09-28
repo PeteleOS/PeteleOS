@@ -6,13 +6,12 @@ SCRIPTS=\
 	push\
 	scan\
 	setupdirs\
-	
+
 TARG=\
 	applychanges\
 	applylog\
 	compactdb\
 	updatedb\
-	$SCRIPTS\
 
 OFILES=\
 	avl.$O\
@@ -30,7 +29,7 @@ UPDATE=\
 	$HFILES\
 	applychanges.c\
 	updatedb.c\
-	${TARG:%=/amd64/bin/replica/%}\
+	${TARG:%=/$objtype/bin/replica/%}\
 	${SCRIPTS:%=/rc/bin/replica/%}\
 	/rc/bin/replica/defs\
 
@@ -38,12 +37,17 @@ UPDATE=\
 BIN=/$objtype/bin/replica
 </sys/src/cmd/mkmany
 
+install:V:
+	mkdir -p $BIN
+	@{for(i in $TARG)
+		mk $MKFLAGS $i.install}
+	mk $MKFLAGS scripts-install
+
+scripts-install:V:
+	@{for(i in $SCRIPTS){
+		{ echo '#!/bin/rc'; echo 'exec /rc/bin/replica/'^$i^' $*' } >$BIN/$i
+		chmod +x $BIN/$i
+	}}
+
 $O.applychanges: revproto.$O
-
-${SCRIPTS:%=$BIN/%}:
-	{ echo '#!/bin/rc'; echo 'exec /rc/bin/replica/'^`{basename $target}^' $*' } >$target
-	chmod +x $target
-
-${SCRIPTS:%=$O.%}:QV:
-	;
 

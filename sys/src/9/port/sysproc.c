@@ -882,7 +882,7 @@ syssegfree(uintptr *arg)
 	s = seg(up, from, 1);
 	if(s == nil)
 		error(Ebadarg);
-	to = (from + arg[1]) & ~(BY2PG-1);
+	to = (from + arg[1]) & ~((uintptr)(BY2PG-1));
 	from = PGROUND(from);
 
 	if(to > s->top) {

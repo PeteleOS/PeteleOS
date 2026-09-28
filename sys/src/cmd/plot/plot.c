@@ -494,7 +494,7 @@ process(Biobuf *fd){
 		case TEXT:	strarg();   text(argstr); pplots=0; break;
 		case VEC:	numargs(2); vec(x[0], x[1]); break;
 		default:
-			fprint(2, "plot: missing case %ld\n", pplots-plots);
+			fprint(2, "plot: missing case %lld\n", (vlong)(pplots-plots));
 			exits("internal error");
 		}
 	}

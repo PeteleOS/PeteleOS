@@ -33,7 +33,7 @@ int	fsSnapshot(Fs*, char*, char*, int);
 void	fsSnapshotRemove(Fs*);
 int	fsSync(Fs*);
 int	fsUnhalt(Fs*);
-int	fsVac(Fs*, char*, uchar[VtScoreSize]);
+int	fsVac(Fs*, char*, uchar score[VtScoreSize]);
 
 void	deeClose(DirEntryEnum*);
 DirEntryEnum *deeOpen(File*);
@@ -55,7 +55,7 @@ int	fileIsAppend(File*);
 int	fileIsExclusive(File*);
 int	fileIsRoFs(File*);
 int	fileIsRoot(File*);
-int	fileMapBlock(File*, ulong, uchar[VtScoreSize], ulong);
+int	fileMapBlock(File*, ulong, uchar score[VtScoreSize], ulong);
 int	fileMetaFlush(File*, int);
 char	*fileName(File *f);
 File	*fileOpen(Fs*, char*);

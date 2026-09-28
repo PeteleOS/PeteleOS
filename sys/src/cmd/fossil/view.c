@@ -49,7 +49,7 @@ Tnode *initxentry(Entry);
 Tnode *initxsource(Entry, int);
 Tnode *initxentryblock(Block*, Entry*);
 Tnode *initxdatablock(Block*, uint);
-Tnode *initxroot(char *name, uchar[VtScoreSize]);
+Tnode *initxroot(char *name, uchar score[VtScoreSize]);
 
 int fd;
 int mainstacksize = STACK;
@@ -368,10 +368,10 @@ initxheader(void)
 	t = stringnode("header "
 		"version=%#ux (%d) "
 		"blockSize=%#ux (%d) "
-		"super=%#lux (%ld) "
-		"label=%#lux (%ld) "
-		"data=%#lux (%ld) "
-		"end=%#lux (%ld)",
+		"super=%#lux (%lud) "
+		"label=%#lux (%lud) "
+		"data=%#lux (%lud) "
+		"end=%#lux (%lud)",
 		h.version, h.version, h.blockSize, h.blockSize,
 		h.super, h.super,
 		h.label, h.label, h.data, h.data, h.end, h.end);

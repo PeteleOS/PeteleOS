@@ -1337,7 +1337,7 @@ msgRecv(TlsConnection *c, Msg *m)
 	}
 
 	if(n > sizeof(c->buf)) {
-		tlsError(c, EDecodeError, "handshake message too long %d %d", n, sizeof(c->buf));
+		tlsError(c, EDecodeError, "handshake message too long %d %lud", n, (ulong)sizeof(c->buf));
 		return 0;
 	}
 

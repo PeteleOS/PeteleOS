@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "grap.h"
-#include "y.tab.h"
+#include "grap_parse.h"
 
 int	pointsize	= 10;	/* assumed pointsize to start */
 int	ps_set		= 0;	/* someone has set pointsize explicitly */

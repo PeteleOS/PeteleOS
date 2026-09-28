@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "grap.h"
-#include "y.tab.h"
+#include "grap_parse.h"
 
 extern	struct	symtab	symtab[];
 

@@ -23,7 +23,7 @@ SPIN_OS=\
 	structs.$O\
 	sym.$O\
 	vars.$O\
-	y.tab.$O\
+	spin_parse.$O\
 
 TL_OS=\
 	tl_buchi.$O\
@@ -37,16 +37,13 @@ TL_OS=\
 
 OFILES=$SPIN_OS $TL_OS
 
-YFILES=spin.y
-
-HFILES=y.tab.h
+HFILES=spin_parse.h
 
 BIN=/$objtype/bin
 </sys/src/cmd/mkone
 
 CC=pcc -c
 CFLAGS=-B -D_POSIX_SOURCE
-YFLAGS=-S -d
 
 $SPIN_OS:	spin.h
 $TL_OS:		tl.h

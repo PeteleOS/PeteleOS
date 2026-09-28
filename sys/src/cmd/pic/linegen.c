@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "pic.h"
-#include "y.tab.h"
+#include "picy_parse.h"
 
 obj *linegen(int type)
 {

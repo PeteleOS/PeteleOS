@@ -10,7 +10,7 @@
 #include <ndb.h>
 #include "dat.h"
 #include "protos.h"
-#include "y.tab.h"
+#include "filter_parse.h"
 
 int Cflag;
 int pflag;

@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "spin.h"
-#include "y.tab.h"
+#include "spin_parse.h"
 
 #ifndef MAXQ
 #define MAXQ	2500		/* default max # queues  */

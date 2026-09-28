@@ -198,7 +198,7 @@ ioapicdump(void)
 		DBG("iointr bus %d:\n", i);
 		while(rbus != nil){
 			rdt = rbus->rdt;
-			DBG(" apic %ld devno %#ux (%d %d) intin %d lo %#ux ref %d\n",
+			DBG(" apic %lld devno %#ux (%d %d) intin %d lo %#ux ref %d\n",
 				rdt->apic-ioapic, rbus->devno, rbus->devno>>2,
 				rbus->devno & 0x03, rdt->intin, rdt->lo, rdt->ref);
 			rbus = rbus->next;

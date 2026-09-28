@@ -5,9 +5,7 @@ HFILES=\
 	na.h\
 
 OFILES=\
-	y.tab.$O\
-
-YFILES=na.y\
+	na_parse.$O\
 
 BIN=/$objtype/bin/9aux
 </sys/src/cmd/mkone

@@ -426,7 +426,7 @@ updaterefs(Conn *c, Hash *cur, Hash *upd, char **ref, int nupd)
 	 * Wrong because it  was computed using
 	 * the proleptic gregorian calendar.
 	 */
-	newtm = -23811206400;	
+	newtm = -23811206400LL;	
 	if((lockfd = lockrepo()) == -1){
 		snprint(buf, sizeof(buf), "repo locked\n");
 		return -1;
