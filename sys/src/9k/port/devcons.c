@@ -1292,7 +1292,7 @@ readtime(ulong off, char *buf, int n)
 	if(fasthz == 0LL)
 		fastticks((uvlong*)&fasthz);
 	sec = nsec/1000000000ULL;
-	snprint(str, sizeof(str), "%*llud %*llud %*llud %*llud %*llud ",
+	snprint(str, sizeof(str), "%*lud %*llud %*llud %*llud %*llud ",
 		NUMSIZE-1, sec,
 		VLNUMSIZE-1, nsec,
 		VLNUMSIZE-1, ticks,

@@ -236,7 +236,7 @@ uartreset(void)
 	uartndir = 1 + 3*uartnuart;
 	uartdir = malloc(uartndir * sizeof(Dirtab));
 	if(uart == nil || uartdir == nil){
-		panic("uartreset: no memory %#p (%lud) %#p (%lud)",
+		panic("uartreset: no memory %#p (%lld) %#p (%lld)",
 			uart, uartnuart*sizeof(Uart*),
 			uartdir, uartndir * sizeof(Dirtab));
 	}

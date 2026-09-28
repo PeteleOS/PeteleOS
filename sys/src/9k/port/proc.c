@@ -1234,7 +1234,7 @@ dumpaproc(Proc *p)
 	s = p->psstate;
 	if(s == nil)
 		s = statename[p->state];
-	print("%3d:%10s pc %#p dbgpc %#p  %8s (%s) ut %lld st %lld bss %#p qpc %#p nl %d nd %llud lpc %#p pri %llud\n",
+	print("%3d:%10s pc %#p dbgpc %#p  %8s (%s) ut %lud st %lud bss %#p qpc %#p nl %d nd %lud lpc %#p pri %lud\n",
 		p->pid, p->text, p->pc, dbgpc(p), s, statename[p->state],
 		p->time[0], p->time[1], bss, p->qpc, p->nlocks,
 		p->delaysched, p->lastlock ? p->lastlock->pc : 0, p->priority);
@@ -1325,7 +1325,7 @@ scheddump(void)
 			continue;
 		print("rq%lld:", rq-runq);
 		for(p = rq->head; p; p = p->rnext)
-			print(" %d(%llud)", p->pid, m->ticks - p->readytime);
+			print(" %d(%lud)", p->pid, m->ticks - p->readytime);
 		print("\n");
 		delay(150);
 	}

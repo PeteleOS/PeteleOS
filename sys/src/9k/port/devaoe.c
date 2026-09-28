@@ -660,7 +660,7 @@ loop:
 			if(tx++ == 0){
 				if((l->rttavg <<= 1) > Rtmax)
 					l->rttavg = Rtmax;
-				eventlog("%æ: rtt %lldms\n", d, TK2MS(l->rttavg));
+				eventlog("%æ: rtt %ldms\n", d, TK2MS(l->rttavg));
 			}
 		}
 		if(d->nout == d->maxout && d->maxout < d->nframes &&
