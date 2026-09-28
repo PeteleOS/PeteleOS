@@ -660,7 +660,7 @@ loop:
 			if(tx++ == 0){
 				if((l->rttavg <<= 1) > Rtmax)
 					l->rttavg = Rtmax;
-				eventlog("%æ: rtt %ldms\n", d, TK2MS(l->rttavg));
+				eventlog("%æ: rtt %lldms\n", d, TK2MS(l->rttavg));
 			}
 		}
 		if(d->nout == d->maxout && d->maxout < d->nframes &&
@@ -2142,7 +2142,7 @@ atarsp(Block *b)
 		case Crd:
 		case Crdext:
 			if(BLEN(b) - AOEATASZ < n){
-				eventlog("%æ: runt read blen %ld expect %d\n",
+				eventlog("%æ: runt read blen %lld expect %d\n",
 					d, BLEN(b), n);
 				goto bail;
 			}
@@ -2160,7 +2160,7 @@ atarsp(Block *b)
 			break;
 		case Cid:
 			if(BLEN(b) - AOEATASZ < 512){
-				eventlog("%æ: runt identify blen %ld expect %d\n",
+				eventlog("%æ: runt identify blen %lld expect %d\n",
 					d, BLEN(b), n);
 				goto bail;
 			}

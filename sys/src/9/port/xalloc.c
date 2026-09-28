@@ -96,7 +96,7 @@ xspanalloc(ulong size, int align, ulong span)
 		panic("xspanalloc: %lud %d %lux", size, align, span);
 
 	if(span > 2) {
-		v = (a + span) & ~(span-1);
+		v = (a + span) & ~((uintptr)(span-1));
 		t = v - a;
 		if(t > 0)
 			xhole(PADDR(a), t);
@@ -108,7 +108,7 @@ xspanalloc(ulong size, int align, ulong span)
 		v = a;
 
 	if(align > 1)
-		v = (v + align) & ~(align-1);
+		v = (v + align) & ~((uintptr)(align-1));
 
 	return (void*)v;
 }
@@ -121,7 +121,7 @@ xallocz(ulong size, int zero)
 
 	/* add room for magix & size overhead, round up to nearest vlong */
 	size += BY2V + offsetof(Xhdr, data[0]);
-	size &= ~(BY2V-1);
+	size &= ~((uintptr)(BY2V-1));
 
 	ilock(&xlists);
 	l = &xlists.table;
