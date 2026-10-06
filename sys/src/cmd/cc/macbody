@@ -151,6 +151,14 @@ dodefine(char *cp)
 		print("#define (-D) %s %s\n", s->name, s->macro+1);
 }
 
+void	maclin(void);
+void	macdef(void);
+void	macinc(void);
+void	macund(void);
+void	macprag(void);
+void	macend(void);
+void	macerror(void);
+
 struct
 {
 	char	*macname;
