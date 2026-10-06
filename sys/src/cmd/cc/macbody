@@ -168,6 +168,7 @@ struct
 
 	"pragma",	macprag,
 	"endif",	macend,
+	"error",	macerror,
 	0
 };
 
@@ -794,6 +795,24 @@ bad:
 	unget(c);
 	yyerror("syntax in #pragma lib");
 	macend();
+}
+
+void
+macerror(void)
+{
+	int c;
+	char *hp;
+
+	hp = symb;
+	for(;;) {
+		c = getc();
+		if(c < 0 || c == '\n')
+			break;
+		if(hp < &symb[NSYMB-1])
+			*hp++ = c;
+	}
+	*hp = 0;
+	yyerror("#error %s", symb);
 }
 
 void
