@@ -151,6 +151,14 @@ dodefine(char *cp)
 		print("#define (-D) %s %s\n", s->name, s->macro+1);
 }
 
+void	maclin(void);
+void	macdef(void);
+void	macinc(void);
+void	macund(void);
+void	macprag(void);
+void	macend(void);
+void	macerror(void);
+
 struct
 {
 	char	*macname;
@@ -168,6 +176,7 @@ struct
 
 	"pragma",	macprag,
 	"endif",	macend,
+	"error",	macerror,
 	0
 };
 
@@ -794,6 +803,24 @@ bad:
 	unget(c);
 	yyerror("syntax in #pragma lib");
 	macend();
+}
+
+void
+macerror(void)
+{
+	int c;
+	char *hp;
+
+	hp = symb;
+	for(;;) {
+		c = getc();
+		if(c < 0 || c == '\n')
+			break;
+		if(hp < &symb[NSYMB-1])
+			*hp++ = c;
+	}
+	*hp = 0;
+	yyerror("#error %s", symb);
 }
 
 void

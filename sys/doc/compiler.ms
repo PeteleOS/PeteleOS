@@ -1161,3 +1161,31 @@ Vol 17(4), pp. 715-728, 1970.
 Communications of the ACM,
 .R
 Vol 21(4), pp. 300-308, 1978.
+.NH
+C90 ISO conformance + Plan 9 extensions (closed-list 6 groups)
+.LP
+Base language is strict ISO C90 (ISO/IEC 9899:1990): translation phases,
+trigraph/digraph handling, full preprocessor
+(#if/#elif/defined/#error/#line/#include/#ifdef/#ifndef,
+function-like macros, stringizing #, token-pasting ##,
+__LINE__/__FILE__/__DATE__/__TIME__/__STDC__==1),
+declarations/prototypes, C90 usual arithmetic conversions and constant
+expressions. Anything outside the closed list below must be strict-C90.
+ABI is frozen: Cc/Ll/Aa toolchains, O=6/7/4/9/j/x, caller-saves,
+6l objects, mk/mklib/mkone/mkmany, YFILES/y.tab.
+.TS
+center box;
+l l l.
+Group	Extension	Notes
+1	unnamed struct/union	kept
+2	struct displays (T){...}	kept
+3	init [idx]/.tag	kept
+4	extern register	u/m kernel only
+5	#pragma lib/packed/profile/varargck/src	kept verbatim
+6	uchar/ushort/uint/ulong/vlong/uvlong/uintptr + nelem/offsetof/assert	see sys/include/libc.h
+.TE
+.LP
+Deviation handling: tools/c90_migrate.py PASS1-4 lints every .c/.h and
+writes tools/C90-REPORT.csv with class c90-strict (must converge) or
+plan9-ext (one of the 6 groups, kept). No new comments are added to .c/.h;
+no CI build/smoke logic is changed.
